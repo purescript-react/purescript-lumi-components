@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[188],{ASMb:function(e,o,n){"use strict";var p=n("Woux"),s=n("mjQF"),l=n("l2UX"),a=n("Fwyz"),c=p.column_([a.h2_("Logo"),s.example(l.logo),a.h2_("Client"),s.example(l.clientSvg),a.h2_("User"),s.example(l.userSvg)]);e.exports={docs:c};n("qajM")}}]);
