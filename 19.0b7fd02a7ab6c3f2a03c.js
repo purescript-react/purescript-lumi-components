@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[19],{938:function(e,n,i){"use strict";var t=i(16),o=i(72),s=i(260),c=i(303),p=i(24),d=i(26),r=i(76),a=p.createComponent("DividerExample"),m=p.makeStateless(a)(function(e){return o.column_([c.example(r.div()({style:d.css({minWidth:300}),children:[s.divider_]}))])})(t.unit);e.exports={component:a,docs:m};i(0)}}]);
