@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[28],{951:function(s,e,o){"use strict";var n=o(21),c=o(72),p=o(303),t=o(183),l=o(26),w=c.column_([p.example(t.loader({style:l.css({}),testId:n.null}))]);s.exports={docs:w};o(0),o(24)}}]);

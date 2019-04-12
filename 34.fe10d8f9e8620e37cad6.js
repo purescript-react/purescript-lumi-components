@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[34],{957:function(e,l,n){"use strict";var p=n(72),a=n(303),i=n(452),o=n(313),r=p.column_([a.example(i.pill_(o.Active.value)("Active")),a.example(i.pill_(o.Warning.value)("Warning")),a.example(i.pill_(o.Error.value)("Error")),a.example(i.pill_(o.Unknown.value)("Unknown"))]);e.exports={docs:r};n(0),n(24)}}]);
