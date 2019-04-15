@@ -1,4 +1,4 @@
-# purescript-lumi-components
+# purescript-lumi-components [![Build Status](https://travis-ci.org/lumihq/purescript-lumi-components.svg?branch=master)](https://travis-ci.org/lumihq/purescript-lumi-components)
 
 [lumihq.github.io/purescript-lumi-components](https://lumihq.github.io/purescript-lumi-components/)
 
