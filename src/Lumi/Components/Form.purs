@@ -25,6 +25,7 @@ module Lumi.Components.Form
   , array
   , fixedSizeArray
   , arrayModal
+  , editableTable
   , fetch
   , fetch_
   , asyncEffect
@@ -49,7 +50,7 @@ import Color (cssStringHSLA)
 import Data.Array (mapWithIndex, (:))
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Foldable (fold, surround)
+import Data.Foldable (fold, foldMap, surround)
 import Data.Generic.Rep (class Generic, Constructor(..), NoArguments(..), Sum(..), to, from)
 import Data.Lens (Iso', Lens', Prism, Prism', matching, review, view)
 import Data.Maybe (Maybe(..), fromMaybe, isJust, isNothing, maybe)
@@ -59,6 +60,7 @@ import Data.Nullable (notNull, null, toNullable)
 import Data.String as String
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Traversable (intercalate, traverse, traverse_)
+import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
@@ -67,6 +69,7 @@ import Effect.Promise.Unsafe (undefer)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
+import Lumi.Components.EditableTable (editableTable) as EditableTable
 import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, revalidate, sequential, pruneTree)
 import Lumi.Components.Form.Internal (FormBuilder, SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
@@ -95,6 +98,7 @@ import React.Basic.Events as Events
 import Record (disjointUnion, get)
 import Type.Row (class Cons)
 import Unsafe.Coerce (unsafeCoerce)
+import Unsafe.Reference (unsafeRefEq)
 
 -- | Create a React component for a form from a `FormBuilder`.
 -- |
@@ -764,6 +768,59 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
       , validate: pure xs
       }
 
+editableTable
+  :: forall props row result
+   . { addLabel :: String
+     , defaultValue :: row
+     , form :: FormBuilder { readonly :: Boolean | props } row result
+     , labels :: Array String
+     , maxRows :: Int
+     , summary :: JSX
+     }
+  -> FormBuilder
+      { readonly :: Boolean
+      | props
+      }
+      (Array row)
+      (Array result)
+editableTable { addLabel, defaultValue, form, labels, maxRows, summary } =
+  FormBuilder \props@{ readonly } rows ->
+    let
+      fs = (un FormBuilder form) props <$> rows
+    in
+      { edit: \onChange -> pure $
+          Child
+            { key: Nothing
+            , child:
+                EditableTable.editableTable
+                  { addLabel
+                  , maxRows
+                  , readonly
+                  , rows: Left (Array.mapWithIndex Tuple rows)
+                  , rowEq: unsafeRefEq
+                  , summary
+                  , onRowAdd: onChange (flip Array.snoc defaultValue)
+                  , onRowRemove: \(Tuple i _) -> onChange \rows' -> fromMaybe rows' (Array.deleteAt i rows')
+                  , columns: labels # Array.mapWithIndex \j label ->
+                      { label
+                      , renderCell: \(Tuple i _) -> fold do
+                          { edit } <- Array.index fs i
+                          tree <- Array.index (edit \f -> onChange (\rows' -> fromMaybe rows' (Array.modifyAt i f rows'))) j
+                          -- TODO: improve this.
+                          let naiveRender = case _ of
+                                Child { child } ->
+                                  child
+                                Wrapper { children } ->
+                                  foldMap naiveRender children
+                                Node { children, validationError } ->
+                                  foldMap naiveRender children
+                          pure $ naiveRender tree
+                      }
+                  }
+            }
+      , validate: traverse _.validate fs
+      }
+
 -- | Form that performs an asynchronous effect whenever `id` changes.
 -- | The result is `Nothing` while the effect is not completed, and a `Just`
 -- | after the value is available.
@@ -1044,6 +1101,15 @@ styles = jss
           , "& .labeled-field--validation-warning":
               { extend: labeledFieldValidationWarningStyles
               , marginBottom: "calc(4 * 4px)"
+              }
+
+          , "& lumi-editable-table":
+              { "& td":
+                  { verticalAlign: "top"
+                  }
+              , "& .labeled-field--validation-error, & .labeled-field--validation-warning":
+                  { marginBottom: "0"
+                  }
               }
           }
       }

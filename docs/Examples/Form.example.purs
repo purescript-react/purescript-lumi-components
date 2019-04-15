@@ -59,7 +59,7 @@ docs = unit # make component { initialState, render }
   where
     initialState =
       { user: (formDefaults :: User)
-          { favoriteColor = Just "red"
+          { leastFavoriteColors = ["red"]
           }
       , result: Nothing :: Maybe ValidatedUser
       , modalOpen: false
@@ -204,6 +204,9 @@ docs = unit # make component { initialState, render }
         "red" -> pure { label: "Red", value: "red" }
         "green" -> pure { label: "Green", value: "green" }
         "blue" -> pure { label: "Blue", value: "blue" }
+        "brown" -> pure { label: "Brown", value: "brown" }
+        "black" -> pure { label: "Black", value: "black" }
+        "white" -> pure { label: "White", value: "white" }
         _ -> throwError (error "No color")
 
     loadColors simulatePauses search = undefer $ affToPromise do
@@ -213,6 +216,9 @@ docs = unit # make component { initialState, render }
         [ { label: "Red", value: "red" }
         , { label: "Green", value: "green" }
         , { label: "Blue", value: "blue" }
+        , { label: "Brown", value: "brown" }
+        , { label: "Black", value: "black" }
+        , { label: "White", value: "white" }
         ]
 
 data Country
@@ -245,7 +251,7 @@ type User =
   , admin :: Boolean
   , height :: Validated String
   , addresses :: Validated (Array Address)
-  , favoriteColor :: Maybe String
+  , pets :: Validated (Array Pet)
   , leastFavoriteColors :: Array String
   , notes :: String
   , avatar :: Maybe Upload.FileId
@@ -258,7 +264,8 @@ type ValidatedUser =
   , admin :: Boolean
   , height :: Maybe Number
   , addresses :: Array ValidatedAddress
-  , favoriteColor :: Maybe String
+  , pets :: Array ValidatedPet
+  , leastFavoriteColors :: Array String
   , notes :: String
   , avatar :: Maybe Upload.FileId
   }
@@ -327,17 +334,6 @@ userComponent = F.build ado
         , defaultValue: formDefaults
         , editor: addressForm
         }
-  favoriteColor <-
-    F.withKey "favoriteColor"
-    $ F.indent "Favorite Color" Neither
-    $ F.focus (prop (SProxy :: SProxy "favoriteColor"))
-    $ F.asyncSelectByKey
-        (SProxy :: SProxy "loadColor")
-        (SProxy :: SProxy "loadColors")
-        identity
-        identity
-        identity
-        (R.text <<< _.label)
   leastFavoriteColors <-
     F.indent "Least Favorite Colors" Neither
     $ F.focus (prop (SProxy :: SProxy "leastFavoriteColors"))
@@ -354,6 +350,21 @@ userComponent = F.build ado
     F.indent "Notes" Optional
     $ F.focus (prop (SProxy :: SProxy "notes"))
     $ F.textarea
+
+  F.section "Pets"
+  pets <-
+    F.focus (prop (SProxy :: SProxy "pets"))
+    $ F.warn (\pets ->
+        guard (Array.null pets) (pure "You should adopt a pet.")
+      )
+    $ F.editableTable
+        { addLabel: "Add pet"
+        , defaultValue: formDefaults
+        , labels: ["Name", "Animal", "Age", "Color"]
+        , maxRows: top
+        , summary: mempty
+        , form: petForm
+        }
 
   F.section "Images"
   avatar <-
@@ -388,7 +399,8 @@ userComponent = F.build ado
     , admin
     , height
     , addresses
-    , favoriteColor
+    , pets
+    , leastFavoriteColors
     , notes
     , avatar
     }
@@ -471,3 +483,71 @@ addressForm = ado
           { label: un State state
           , value: state
           }
+
+type Pet =
+  { name :: Validated String
+  , animal :: Validated (Maybe String)
+  , age :: String
+  , color :: Maybe String
+  }
+
+type ValidatedPet =
+  { name :: NonEmptyString
+  , animal :: String
+  , age :: String
+  , color :: Maybe String
+  }
+
+petForm
+  :: forall props
+   . FormBuilder
+       { loadColor :: String -> Promise { label :: String, value :: String }
+       , loadColors :: String -> Promise (Array { label :: String, value :: String })
+       , readonly :: Boolean
+       | props
+       }
+       Pet
+       ValidatedPet
+petForm = ado
+  name <-
+    F.focus (prop (SProxy :: SProxy "name"))
+    $ F.validated (F.nonEmpty "Name")
+    $ F.textbox
+  animal <-
+    F.focus (prop (SProxy :: SProxy "animal"))
+    $ F.validated (F.nonNull "Animal")
+    $ F.select identity pure
+    $ map (\value -> { label: value, value })
+        [ "Bird"
+        , "Cat"
+        , "Cow"
+        , "Dog"
+        , "Duck"
+        , "Fish"
+        , "Horse"
+        , "Rabbit"
+        , "Rat"
+        , "Turle"
+        ]
+  age <-
+    F.focus (prop (SProxy :: SProxy "age"))
+    $ F.number
+        { step: Input.Step 1.0
+        , min: Just 0.0
+        , max: Nothing
+        }
+  color <-
+    F.focus (prop (SProxy :: SProxy "color"))
+    $ F.asyncSelectByKey
+        (SProxy :: SProxy "loadColor")
+        (SProxy :: SProxy "loadColors")
+        identity
+        identity
+        identity
+        (R.text <<< _.label)
+  in
+    { name
+    , animal
+    , age
+    , color
+    }
