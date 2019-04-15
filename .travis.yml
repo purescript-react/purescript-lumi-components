@@ -1,0 +1,11 @@
+dist: trusty
+sudo: required
+language: node_js
+node_js: 10
+
+install:
+  - npm install
+
+script:
+  - npx bower install
+  - npm run build
