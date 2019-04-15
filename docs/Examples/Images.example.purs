@@ -3,7 +3,7 @@ module Lumi.Components.Examples.Images where
 import Prelude
 
 import Lumi.Components.Column (column_)
-import Lumi.Components.Images (avatar_, defaultAvatar, productThumb_)
+import Lumi.Components.Images (avatar_, productThumb_)
 import Lumi.Components.Size (extraLarge, large, medium, small)
 import Lumi.Components.Text (h2_)
 import Lumi.Components.Example (example)
