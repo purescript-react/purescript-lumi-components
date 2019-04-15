@@ -1,0 +1,45 @@
+module Lumi.Components.Spacing
+  ( Space(..)
+  , hspace
+  , vspace
+  ) where
+
+import React.Basic.Compat (JSX)
+import React.Basic.DOM as R
+
+data Space
+  = S4 | S8 | S12 | S16 | S24 | S32 | S48 | S56
+  | S64 | S72 | S80 | S88 | S96 | S104 | S112
+
+hspace :: Space -> JSX
+hspace size =
+  R.div
+    { style: R.css
+        { paddingLeft: toPixels size
+        }
+    }
+
+vspace :: Space -> JSX
+vspace size =
+  R.div
+    { style: R.css
+        { paddingTop: toPixels size
+        }
+    }
+
+toPixels :: Space -> String
+toPixels S4 = "4px"
+toPixels S8 = "8px"
+toPixels S12 = "12px"
+toPixels S16 = "16px"
+toPixels S24 = "24px"
+toPixels S32 = "32px"
+toPixels S48 = "48px"
+toPixels S56 = "56px"
+toPixels S64 = "64px"
+toPixels S72 = "72px"
+toPixels S80 = "80px"
+toPixels S88 = "88px"
+toPixels S96 = "96px"
+toPixels S104 = "104px"
+toPixels S112 = "112px"
