@@ -4,7 +4,7 @@
   "2.d65577cd6db24df6644e.js": "2.d65577cd6db24df6644e.js",
   "3.9a568390fff4c1f6a6cd.js": "3.9a568390fff4c1f6a6cd.js",
   "4.9e138e497226e2007664.js": "4.9e138e497226e2007664.js",
-  "main.js": "main.a2e64f839d31e6fc3c78.js",
+  "main.js": "main.a96c118e96ac809d2a4c.js",
   "npm~main.js": "npm~main.764e4e928d823fbc681d.js",
   "purs~main.js": "purs~main.d5f5b5191f4bd097f81d.js",
   "runtime.js": "runtime.6db144c58d3207856d0e.js",
@@ -54,5 +54,7 @@
   "52.2b5d5f7d041f771984b7.js": "52.2b5d5f7d041f771984b7.js",
   "53.87ef97f451e4927522b6.js": "53.87ef97f451e4927522b6.js",
   "54.cbad48bc75d5f06645fa.js": "54.cbad48bc75d5f06645fa.js",
+  "COMMITHASH": "COMMITHASH",
+  "VERSION": "VERSION",
   "index.html": "index.html"
 }
