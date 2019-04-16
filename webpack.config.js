@@ -56,17 +56,6 @@ module.exports = (_env, options) => ({
           //   // npm package names are URL-safe, but some servers don't like @ symbols
           //   return `npm.${packageName.replace("@", "")}`;
           // }
-        },
-        purs: {
-          test: /[\\/]bower_components[\\/]/
-          // name(module) {
-          //   // get the name, e.g. bower_components/purescript-packageName/not/this/part.js
-          //   const packageName = module.context.match(
-          //     /[\\/]bower_components[\\/]purescript-(.*?)([\\/]|$)/
-          //   )[1];
-
-          //   return `purs.${packageName}`;
-          // }
         }
       }
     }
@@ -133,47 +122,16 @@ module.exports = (_env, options) => ({
                 ]
               }
             }
-          },
-          {
-            test: /\.purs$/,
-            exclude: /node_modules/,
-            use: {
-              loader: "purs-loader",
-              options: {
-                bundleOutput: "output/bundle.js",
-                // purs bundling breaks webpack's chunk splitting
-                bundle: false, // isProd(options),
-                warnings: true,
-                // watch: options.watch,
-                psc: "psa",
-                pscIde: false, // !isProd(options),
-                pscArgs: {
-                  // Set this to true and rebuild with
-                  // `rm -rf output && npx pulp build -- --sourcemaps`
-                  // to debug with sourcemaps.
-                  // Disabled by default because it slow down
-                  // and frequently breaks webpack/purs-loader,
-                  // and the "locals" in the browser debugger don't
-                  // make sense anyway.
-                  sourceMaps: false,
-                  censorStats: true,
-                  censorLib: true,
-                  stash: true
-                },
-                src: [
-                  "bower_components/purescript-*/src/**/*.purs",
-                  "src/**/*.purs",
-                  "docs/**/*.purs"
-                ]
-              }
-            }
           }
         ]
       }
     ]
   },
   resolve: {
-    extensions: [".purs", ".js", ".jsx"]
+    extensions: [".js", ".jsx"],
+    alias: {
+      purs: path.join(__dirname, "output")
+    }
   },
   devServer: {
     stats: "minimal"

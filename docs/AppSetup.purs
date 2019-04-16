@@ -1,4 +1,4 @@
-module Lumi.Components where
+module AppSetup where
 
 import React.Basic (JSX)
 import React.Basic.ReactDND (createDragDropContext)
