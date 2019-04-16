@@ -6,7 +6,7 @@ import Data.Maybe (Maybe(Just))
 import Data.Nullable (toNullable)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Column (column_)
-import Lumi.Components.Input (CheckboxState(..), alignToInput, checkbox, input, inputRow, radio, range, switch, text_)
+import Lumi.Components.Input (CheckboxState(..), alignToInput, checkbox, input, inputRow, inputRow_, radio, range, switch, text_)
 import Lumi.Components.Row (row_)
 import Lumi.Components.Text (body_, h2_, h4_, p_)
 import Lumi.Components.Example (example)
@@ -71,16 +71,16 @@ docs =
     , h4_ "Padded"
 
     , example
-        $ inputRow "Field label" false checkbox { checked = Off }
+        $ inputRow_ "Field label" checkbox { checked = Off }
 
     , example
-        $ inputRow "Field label" false checkbox
+        $ inputRow_ "Field label" checkbox
             { size = Small
             , checked = Off
             }
 
     , example
-        $ inputRow "Field label" false radio { checked = Off }
+        $ inputRow_ "Field label" radio { checked = Off }
 
     , h4_ "Left aligned"
 
@@ -101,34 +101,34 @@ docs =
 
     , h4_ "Medium"
     , example
-        $ inputRow "Field label" false checkbox { checked = Off }
+        $ inputRow_ "Field label" checkbox { checked = Off }
 
 
     , example
-        $ inputRow "Field label" false checkbox { checked = On }
+        $ inputRow_ "Field label" checkbox { checked = On }
 
 
     , example
-        $ inputRow "Field label" false checkbox { checked = Indeterminate }
+        $ inputRow_ "Field label" checkbox { checked = Indeterminate }
 
 
     , h4_ "Small"
     , example
-        $ inputRow "Field label" false checkbox
+        $ inputRow_ "Field label" checkbox
             { size = Small
             , checked = Off
             }
 
 
     , example
-        $ inputRow "Field label" false checkbox
+        $ inputRow_ "Field label" checkbox
             { size = Small
             , checked = On
             }
 
 
     , example
-        $ inputRow "Field label" false checkbox
+        $ inputRow_ "Field label" checkbox
             { size = Small
             , checked = Indeterminate
             }
@@ -138,23 +138,23 @@ docs =
 
     , h4_ "Medium"
     , example
-        $ inputRow "Field label" false radio { checked = Off }
+        $ inputRow_ "Field label" radio { checked = Off }
 
 
     , example
-        $ inputRow "Field Label" false radio { checked = On }
+        $ inputRow_ "Field Label" radio { checked = On }
 
 
     , h4_ "Small"
     , example
-        $ inputRow "Field Label" false radio
+        $ inputRow_ "Field Label" radio
             { size = Small
             , checked = Off
             }
 
 
     , example
-        $ inputRow "Field label" false radio
+        $ inputRow_ "Field label" radio
             { size = Small
             , checked = On
             }

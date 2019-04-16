@@ -31,6 +31,7 @@ module Lumi.Components.Input
   , label
   , label_
   , inputRow
+  , inputRow_
   , alignToInput
   , styles
   , lumiInputStyles
@@ -291,6 +292,10 @@ inputRow labelText leftAligned opts = label
       , alignToInput $ body_ labelText
       ]
   }
+
+inputRow_ :: String -> InputProps -> JSX
+inputRow_ labelText opts =
+  inputRow labelText false opts
 
 alignToInputComponent :: Component JSX
 alignToInputComponent = createComponent "AlignToInput"
