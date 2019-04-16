@@ -66,38 +66,69 @@ docs =
             ]
 
 
+    , h2_ "Input Row"
+
+    , h4_ "Padded"
+
+    , example
+        $ inputRow "Field label" false checkbox { checked = Off }
+
+    , example
+        $ inputRow "Field label" false checkbox
+            { size = Small
+            , checked = Off
+            }
+
+    , example
+        $ inputRow "Field label" false radio { checked = Off }
+
+    , h4_ "Left aligned"
+
+    , example
+        $ inputRow "Field label" true checkbox { checked = Off }
+
+    , example
+        $ inputRow "Field label" true checkbox
+            { size = Small
+            , checked = Off
+            }
+
+    , example
+        $ inputRow "Field label" true radio { checked = Off }
+
+
     , h2_ "Checkbox"
 
     , h4_ "Medium"
     , example
-        $ inputRow "Field label" checkbox { checked = Off }
+        $ inputRow "Field label" false checkbox { checked = Off }
 
 
     , example
-        $ inputRow "Field label" checkbox { checked = On }
+        $ inputRow "Field label" false checkbox { checked = On }
 
 
     , example
-        $ inputRow "Field label" checkbox { checked = Indeterminate }
+        $ inputRow "Field label" false checkbox { checked = Indeterminate }
 
 
     , h4_ "Small"
     , example
-        $ inputRow "Field label" checkbox
+        $ inputRow "Field label" false checkbox
             { size = Small
             , checked = Off
             }
 
 
     , example
-        $ inputRow "Field label" checkbox
+        $ inputRow "Field label" false checkbox
             { size = Small
             , checked = On
             }
 
 
     , example
-        $ inputRow "Field label" checkbox
+        $ inputRow "Field label" false checkbox
             { size = Small
             , checked = Indeterminate
             }
@@ -107,23 +138,23 @@ docs =
 
     , h4_ "Medium"
     , example
-        $ inputRow "Field label" radio { checked = Off }
+        $ inputRow "Field label" false radio { checked = Off }
 
 
     , example
-        $ inputRow "Field Label" radio { checked = On }
+        $ inputRow "Field Label" false radio { checked = On }
 
 
     , h4_ "Small"
     , example
-        $ inputRow "Field Label" radio
+        $ inputRow "Field Label" false radio
             { size = Small
             , checked = Off
             }
 
 
     , example
-        $ inputRow "Field label" radio
+        $ inputRow "Field label" false radio
             { size = Small
             , checked = On
             }

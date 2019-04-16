@@ -282,12 +282,12 @@ label_ children = label
   , style: R.css {}
   }
 
-inputRow :: String -> InputProps -> JSX
-inputRow labelText opts = label
+inputRow :: String -> Boolean -> InputProps -> JSX
+inputRow labelText leftAligned opts = label
   { style: css { flexDirection: "row" }
   , for: toNullable Nothing
   , children:
-      [ input opts { style = css { marginRight: 8 } }
+      [ input opts { style = css { marginRight: 8, marginLeft: if leftAligned then 0 else 8 } }
       , alignToInput $ body_ labelText
       ]
   }
