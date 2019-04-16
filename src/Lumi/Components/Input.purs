@@ -345,6 +345,7 @@ styles = jss
               , display: "flex"
               , justifyContent: "center"
               , alignItems: "center"
+              , flexShrink: "0"
               , padding: "0"
               , color: cssStringHSLA colors.white
               , backgroundColor: cssStringHSLA colors.white
@@ -596,6 +597,7 @@ styles = jss
           , display: "flex"
           , flexFlow: "row"
           , alignItems: "center"
+          , flexShrink: "1"
           , fontSize: "14px"
           , lineHeight: "20px"
           , padding: inputAlignToPadding
