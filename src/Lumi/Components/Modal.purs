@@ -348,6 +348,9 @@ styles = jss
                   , "&[data-size=\"large\"]":
                       { width: "60rem"
                       }
+                  , "&[data-size=\"extra-large\"]":
+                      { width: "84.8rem"
+                      }
                   , maxWidth: "calc(100vw - (2.4rem * 2))"
                   , background: "rgba(255, 255, 255, 1)"
                   , borderRadius: "0.4rem"
