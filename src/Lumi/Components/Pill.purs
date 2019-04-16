@@ -65,8 +65,8 @@ styles = jss
               }
 
           , "&[data-status=\"unknown\"]":
-              { color: cssStringHSLA colors.black2
-              , borderColor: cssStringHSLA colors.black2
+              { color: cssStringHSLA colors.black1
+              , borderColor: cssStringHSLA colors.black1
               }
           }
       }
