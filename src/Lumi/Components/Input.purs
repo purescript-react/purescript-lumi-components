@@ -291,7 +291,13 @@ inputRow props opts = label
             ]
   , for: toNullable Nothing
   , children:
-      [ input opts { style = css { marginRight: 8, marginLeft: if props.leftAligned then 0 else 8 } }
+      [ input opts
+          { style =
+              R.mergeStyles
+                [ opts.style
+                , css { marginRight: 8, marginLeft: if props.leftAligned then 0 else 8 }
+                ]
+          }
       , alignToInput $ body_ props.labelText
       ]
   }
