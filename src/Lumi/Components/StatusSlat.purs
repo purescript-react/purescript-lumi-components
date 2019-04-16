@@ -87,7 +87,7 @@ styles = jss
                   { color: cssStringHSLA colors.accent3
                   }
               , "&[data-status=\"unknown\"]":
-                  { color: cssStringHSLA colors.black3
+                  { color: cssStringHSLA colors.black1
                   }
               }
           }
