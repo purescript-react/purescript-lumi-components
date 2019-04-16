@@ -11,6 +11,7 @@ import Lumi.Components.Row (row_)
 import Lumi.Components.Text (body_, h2_, h4_, p_)
 import Lumi.Components.Example (example)
 import React.Basic (JSX)
+import React.Basic.DOM as R
 
 docs :: JSX
 docs =
@@ -85,16 +86,16 @@ docs =
     , h4_ "Left aligned"
 
     , example
-        $ inputRow "Field label" true checkbox { checked = Off }
+        $ inputRow { labelText: "Field label", leftAligned: true, style: R.css {} } checkbox { checked = Off }
 
     , example
-        $ inputRow "Field label" true checkbox
+        $ inputRow { labelText: "Field label", leftAligned: true, style: R.css {} } checkbox
             { size = Small
             , checked = Off
             }
 
     , example
-        $ inputRow "Field label" true radio { checked = Off }
+        $ inputRow { labelText: "Field label", leftAligned: true, style: R.css {} } radio { checked = Off }
 
 
     , h2_ "Checkbox"
