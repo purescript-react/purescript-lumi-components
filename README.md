@@ -27,6 +27,17 @@ npm start
 
 You can run production builds (output minified, static files to `build/`) using `npm run build`.
 
+
+## Tagging a new release
+
+```sh
+pulp version 0.x.y
+git push --follow-tags
+npm run deploy
+```
+
+_Don't use `npm version`!_
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more info.
