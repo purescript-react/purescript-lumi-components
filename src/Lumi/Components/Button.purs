@@ -2,7 +2,7 @@ module Lumi.Components.Button where
 
 import Prelude
 
-import Color (cssStringHSLA, darken, lighten)
+import Color (cssStringHSLA, darken, desaturate, lighten)
 import Data.Array as Array
 import Data.Char (fromCharCode)
 import Data.Foldable (fold)
@@ -293,6 +293,6 @@ styles = jss
       , "&:hover": { backgroundColor: cssStringHSLA $ darken 0.1 value }
       , "&:active": { backgroundColor: cssStringHSLA $ darken 0.15 value }
       , "&:disabled, &[data-loading=\"true\"]":
-          { backgroundColor: cssStringHSLA $ lighten 0.25 value
+          { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
           }
       }
