@@ -4,9 +4,9 @@ import Media from "react-media";
 import Loadable from "react-loadable";
 import changeCase from "change-case";
 
-import { colors, colorNames } from "../src/Lumi/Components/Color";
-import { column, column_ } from "../src/Lumi/Components/Column";
-import { row, row_ } from "../src/Lumi/Components/Row";
+import { colors, colorNames } from "purs/Lumi.Components.Color";
+import { column, column_ } from "purs/Lumi.Components.Column";
+import { row, row_ } from "purs/Lumi.Components.Row";
 import {
   text,
   body_,
@@ -17,13 +17,13 @@ import {
   subtext_,
   h1_,
   h3_
-} from "../src/Lumi/Components/Text";
-import { icon, iconRearrange } from "../src/Lumi/Components/Icon";
-import { loader } from "../src/Lumi/Components/Loader";
-import { exampleStyleToggle } from "./Example";
-import { dragDropContext } from "./App.purs_bundle_hacks";
-import { cssStringHSLA } from "./ColorHelper";
-import { attachGlobalComponentStyles } from "../src/Lumi/Components/Styles";
+} from "purs/Lumi.Components.Text";
+import { icon, iconRearrange } from "purs/Lumi.Components.Icon";
+import { loader } from "purs/Lumi.Components.Loader";
+import { exampleStyleToggle } from "purs/Lumi.Components.Example";
+import { dragDropContext } from "purs/AppSetup";
+import { cssStringHSLA } from "purs/Color";
+import { attachGlobalComponentStyles } from "purs/Lumi.Components.Styles";
 
 attachGlobalComponentStyles();
 
@@ -34,7 +34,9 @@ const fromComponentPath = title => ({
     loader: () =>
       // Note: The string bits inside `require(...)` need to stay static strings, or Webpack
       // won't be able to infer which files need to be included in the bundle.
-      import(`./Examples/${title}.example`).then(module_ => () => module_.docs),
+      import(`purs/Lumi.Components.Examples.${title}`).then(module_ => () =>
+        module_.docs
+      ),
     loading: () => null // these load quickly enough that a noisy loader makes it look slower
   }),
   title,
