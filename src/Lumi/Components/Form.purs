@@ -62,8 +62,6 @@ import Data.Traversable (intercalate, traverse, traverse_)
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
-import Effect.Promise (Promise)
-import Effect.Promise.Unsafe (undefer)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
@@ -84,7 +82,6 @@ import Lumi.Components.Select as Select
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
-import Lumi.Components.Utility.AffToPromise (promiseToAff)
 import Prim.Row (class Nub, class Union)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
@@ -457,7 +454,7 @@ multiSelect encode opts = formBuilder_ \{ readonly } selected onChange ->
 -- |    . (Select.SelectOption additionalData -> JSX)
 -- |   -> FormBuilder
 -- |      { readonly :: Boolean
--- |      , foo :: String -> Promise (Either String
+-- |      , foo :: String -> Aff (Either String
 -- |                 (Array (Select.SelectOption additionalData)))
 -- |      | props
 -- |      }
@@ -468,7 +465,7 @@ asyncSelect
    . IsSymbol l
   => Cons
        l
-       (String -> Promise (Array a))
+       (String -> Aff (Array a))
        rest
        (readonly :: Boolean | props)
   => SProxy l
@@ -487,7 +484,7 @@ asyncSelect l toSelectOption optionRenderer =
 
       else Select.asyncSingleSelect
         { value
-        , loadOptions: \search -> promiseToAff (undefer (get l props search))
+        , loadOptions: get l props
         , onChange: onChange
         , className: ""
         , style: css {}
@@ -510,12 +507,12 @@ asyncSelectByKey
   => IsSymbol l
   => Cons
        k
-       (id -> Promise a)
+       (id -> Aff a)
        rest1
        (readonly :: Boolean | props)
   => Cons
        l
-       (String -> Promise (Array a))
+       (String -> Aff (Array a))
        rest2
        (readonly :: Boolean | props)
   => SProxy k
@@ -528,7 +525,7 @@ asyncSelectByKey
 asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
   formBuilder_ \props@{ readonly } value onChange ->
     FetchCache.single
-      { getData: \key -> promiseToAff (undefer (get k props (toId key)))
+      { getData: \key -> get k props (toId key)
       , id: map fromId value
       , render: \data_ ->
           if readonly
@@ -546,7 +543,7 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
             else
               Select.asyncSingleSelect
                 { value: data_
-                , loadOptions: \search -> promiseToAff (undefer (get l props search))
+                , loadOptions: get l props
                 , onChange: onChange <<< map (toId <<< _.value <<< toSelectOption)
                 , className: ""
                 , style: css {}
