@@ -28,7 +28,6 @@
     "purescript-numbers": "^6.0.0",
     "purescript-prelude": "^4.0.1",
     "purescript-profunctor-lenses": "^4.0.0",
-    "purescript-promises": "^3.0.0",
     "purescript-random": "^4.0.0",
     "purescript-react-basic": "^8.0.0 || ^9.0.0",
     "purescript-react-dnd-basic": "^6.0.0",

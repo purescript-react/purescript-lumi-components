@@ -15,13 +15,12 @@ import Data.String as String
 import Data.String.NonEmpty (length, NonEmptyString, toString)
 import Data.Symbol (SProxy(..))
 import Effect (Effect)
-import Effect.Aff (Milliseconds(..), delay, error, throwError)
+import Effect.Aff (Aff, Milliseconds(..), delay, error, throwError)
 import Effect.Class (liftEffect)
-import Effect.Promise (Promise)
-import Effect.Promise.Unsafe (undefer)
 import Effect.Random (randomRange)
 import Lumi.Components.Button as Button
 import Lumi.Components.Column (column, column_)
+import Lumi.Components.Example (example)
 import Lumi.Components.Form (FormBuilder, Validated)
 import Lumi.Components.Form as F
 import Lumi.Components.Form.Defaults (formDefaults)
@@ -33,8 +32,6 @@ import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (h1_)
 import Lumi.Components.Upload (FileId(..))
 import Lumi.Components.Upload as Upload
-import Lumi.Components.Utility.AffToPromise (affToPromise)
-import Lumi.Components.Example (example)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
@@ -197,7 +194,7 @@ docs = unit # make component { initialState, render }
                   }
           ]
 
-    loadColor simulatePauses c = undefer $ affToPromise do
+    loadColor simulatePauses c = do
       when simulatePauses do
         delay (Milliseconds 500.0)
       case String.toLower c of
@@ -206,7 +203,7 @@ docs = unit # make component { initialState, render }
         "blue" -> pure { label: "Blue", value: "blue" }
         _ -> throwError (error "No color")
 
-    loadColors simulatePauses search = undefer $ affToPromise do
+    loadColors simulatePauses search = do
       when simulatePauses do
         delay (Milliseconds 1000.0)
       pure
@@ -268,8 +265,8 @@ type ValidatedUser =
 userComponent
   :: { value :: User
      , onChange :: Maybe ValidatedUser -> User -> Effect Unit
-     , loadColor :: String -> Promise { label :: String, value :: String }
-     , loadColors :: String -> Promise (Array { label :: String, value :: String })
+     , loadColor :: String -> Aff { label :: String, value :: String }
+     , loadColors :: String -> Aff (Array { label :: String, value :: String })
      , inlineTable :: Boolean
      , forceTopLabels :: Boolean
      , readonly :: Boolean
