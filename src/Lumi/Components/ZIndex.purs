@@ -1,40 +1,40 @@
 module Lumi.Components.ZIndex where
 
 ziButtonGroup :: Int
-ziButtonGroup = 100
+ziButtonGroup = 1000
 
 ziDropdownButton :: Int
-ziDropdownButton = 100
+ziDropdownButton = 1000
 
 ziInputGroup :: Int
-ziInputGroup = 100
+ziInputGroup = 1000
 
 ziModal :: Int
-ziModal = 1000
+ziModal = 10000
 
 ziNavigationBar :: Int
-ziNavigationBar = 10
+ziNavigationBar = 100
 
 ziNavigationDropdown :: Int
-ziNavigationDropdown = 11
+ziNavigationDropdown = 101
 
 ziSelect :: Int
-ziSelect = 100
+ziSelect = 1000
 
 ziTableHeader :: Int
-ziTableHeader = 2
+ziTableHeader = 12
 
 ziTableHeaderMenu :: Int
-ziTableHeaderMenu = 4
+ziTableHeaderMenu = 14
 
 ziTableLockedColumn :: Int
-ziTableLockedColumn = 1
+ziTableLockedColumn = 11
 
 ziTableLockedColumnHeader :: Int
-ziTableLockedColumnHeader = 3
+ziTableLockedColumnHeader = 13
 
 ziToast :: Int
-ziToast = 10000
+ziToast = 100000
 
 ziTooltip :: Int
-ziTooltip = 100000
+ziTooltip = 1000000
