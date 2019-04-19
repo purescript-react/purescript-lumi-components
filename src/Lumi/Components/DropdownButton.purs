@@ -17,6 +17,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Divider (divider_)
 import Lumi.Components.Link as Link
 import Lumi.Components.Text (p_)
+import Lumi.Components.ZIndex (ziDropdownButton)
 import Math as Math
 import React.Basic (Component, JSX, createComponent, element, fragment, make, makeStateless, readProps, readState)
 import React.Basic.DOM as R
@@ -275,7 +276,7 @@ styles = jss
           , borderRadius: "3px"
           , boxShadow: "0 2px 4px 0 rgba(12, 0, 51, 0.06)"
           , background: cssStringHSLA colors.white
-          , zIndex: "5"
+          , zIndex: ziDropdownButton
 
           , "& a.lumi.lumi-dropdown-menu-item":
               { boxSizing: "border-box"

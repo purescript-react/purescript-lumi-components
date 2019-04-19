@@ -1,6 +1,7 @@
 module Lumi.Components.ButtonGroup where
 
 import JSS (JSS, jss)
+import Lumi.Components.ZIndex (ziButtonGroup)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (unsafeCreateDOMComponent, CSS)
 
@@ -48,8 +49,8 @@ styles = jss
                   { borderTopLeftRadius: "0"
                   , borderBottomLeftRadius: "0"
                   }
-              , "&:focus": { zIndex: "1" }
-              , "&:hover": { zIndex: "2" }
+              , "&:focus": { zIndex: ziButtonGroup }
+              , "&:hover": { zIndex: ziButtonGroup }
               }
           }
       }
