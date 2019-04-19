@@ -3,6 +3,7 @@ module Lumi.Components.InputGroup where
 import Data.Array (fromFoldable)
 import Data.Nullable (Nullable, toMaybe)
 import JSS (JSS, jss)
+import Lumi.Components.ZIndex (ziInputGroup)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
@@ -43,7 +44,7 @@ styles = jss
           , "& a.input-container":
               { flex: "1"
               , marginRight: "-1px"
-              -- , "&:focus, &:hover": { zIndex: "1" }
+              , "&:focus, &:hover": { zIndex: ziInputGroup }
               , "& input[type=\"text\"], & input.lumi[type=\"text\"]":
                   { borderRadius: "0"
                   , width: "100%"
@@ -73,9 +74,9 @@ styles = jss
               , borderBottomLeftRadius:"0"
               }
 
-          -- , "& input-group-addon button.lumi":
-          --     { "&:focus, &:hover": { zIndex: "1" }
-          --     }
+          , "& input-group-addon button.lumi":
+              { "&:focus, &:hover": { zIndex: ziInputGroup }
+              }
           }
       }
   }
