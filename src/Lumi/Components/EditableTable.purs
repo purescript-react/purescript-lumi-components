@@ -32,11 +32,10 @@ type EditableTableProps row =
   , onRowRemove :: row -> Effect Unit
   , readonly :: Boolean
   , rows :: Either (Array row) (NonEmptyArray row)
-  , rowEq :: row -> row -> Boolean
   , summary :: JSX
   }
 
-editableTableDefaults :: forall row. Eq row => EditableTableProps row
+editableTableDefaults :: forall row. EditableTableProps row
 editableTableDefaults =
   { addLabel: "Add row"
   , columns: []
@@ -45,7 +44,6 @@ editableTableDefaults =
   , onRowRemove: \_ -> pure unit
   , readonly: false
   , rows: Left []
-  , rowEq: eq
   , summary: empty
   }
 

@@ -82,7 +82,6 @@ docs = unit # make component
               , onRowAdd: addRow self
               , onRowRemove: removeRow self
               , readonly: false
-              , rowEq: eq
               , rows: Right self.state.rows
               , summary:
                   row_
