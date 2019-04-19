@@ -19,6 +19,7 @@ import Lumi.Components.Link (link, defaults)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (body_, subtext_, text, subtext)
+import Lumi.Components.ZIndex (ziNavigationBar, ziNavigationDropdown)
 import React.Basic (Component, JSX, createComponent, element, empty, fragment, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
@@ -384,7 +385,7 @@ styles = jss
   { "@global":
       { "lumi-navigation":
           { boxSizing: "border-box"
-          , zIndex: "99"
+          , zIndex: ziNavigationBar
           , position: "relative"
           , display: "flex"
           , flexFlow: "row"
@@ -424,7 +425,7 @@ styles = jss
           , "& lumi-subnav-link-container":
               { boxSizing: "border-box"
               , position: "absolute"
-              , zIndex: "999"
+              , zIndex: ziNavigationDropdown
               , top: "calc(100% - 4px)"
               , right: "16px"
               , display: "none"
@@ -479,7 +480,7 @@ styles = jss
                       { position: "absolute"
                       , top: "0"
                       , left: "0"
-                      , zIndex: "9999"
+                      , zIndex: ziNavigationDropdown
 
                       , display: "none"
                       , flexFlow: "column"

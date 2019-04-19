@@ -7,6 +7,7 @@ import Data.Nullable (Nullable)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size)
+import Lumi.Components.ZIndex (ziTooltip)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 
@@ -54,7 +55,7 @@ styles = jss
               , borderRadius: "3px"
               , padding: "7px"
               , position: "absolute"
-              , zIndex: "1"
+              , zIndex: ziTooltip
               , transition: "opacity 0.3s"
               -- , -webkit-backdrop-filter: blur(1px);
               , backdropFilter: "blur(1px)"

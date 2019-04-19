@@ -17,6 +17,7 @@ import Lumi.Components.Icon (IconType(..), icon_)
 import Lumi.Components.Link as Link
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (sectionHeader_, subsectionHeader, text)
+import Lumi.Components.ZIndex (ziModal)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, make, makeStateless, toReactComponent)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)
@@ -313,7 +314,7 @@ styles = jss
           , left: "0"
           , bottom: "0"
           , right: "0"
-          , zIndex: "10000000"
+          , zIndex: ziModal
           , display: "flex"
           , flexFlow: "column"
           , alignItems: "center" -- horizontal centering, vertical centering is handled by lumi-modal-overlay > lumi-modal

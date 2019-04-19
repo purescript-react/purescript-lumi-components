@@ -27,6 +27,7 @@ import Lumi.Components.Input (CheckboxState(..), checkbox, input)
 import Lumi.Components.Link as Link
 import Lumi.Components.Table.FilterDropdown (Item, filterDropdown)
 import Lumi.Components.Text (subtext_)
+import Lumi.Components.ZIndex (ziTableHeader, ziTableHeaderMenu, ziTableLockedColumn, ziTableLockedColumnHeader)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, keyed, make, readProps, readState)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
@@ -605,7 +606,7 @@ styles = jss
               , "& th":
                   { position: "sticky"
                   , top: "0"
-                  , zIndex: "2"
+                  , zIndex: ziTableHeader
                   }
 
                 -- sticky columns
@@ -616,10 +617,10 @@ styles = jss
                       }
                   , "&.selectable .sticky-column": { left: "45px" }
                   , "&.selectable th:first-child, & th.sticky-column":
-                      { zIndex: "3"
+                      { zIndex: ziTableLockedColumnHeader
                       }
                   , "&.selectable td:first-child, & td.sticky-column":
-                      { zIndex: "1"
+                      { zIndex: ziTableLockedColumn
                       }
                   , "& .sticky-column":
                       { transition: "box-shadow 200ms ease-in-out"
@@ -691,7 +692,7 @@ styles = jss
       , "lumi-filter-dropdown":
           { boxSizing: "border-box"
           , position: "absolute"
-          , zIndex: "4"
+          , zIndex: ziTableHeaderMenu
           , backgroundColor: cssStringHSLA colors.white
           , border: [ "1px", "solid", cssStringHSLA colors.black4 ]
           , borderRadius: "3px"

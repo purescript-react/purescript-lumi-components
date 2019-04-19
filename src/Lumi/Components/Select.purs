@@ -31,6 +31,7 @@ import Lumi.Components.Icon as Icon
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputStyles)
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Select.Backend (SelectBackendProps, SelectOption, SelectOptions(..), selectBackend)
+import Lumi.Components.ZIndex (ziSelect)
 import React.Basic (Component, JSX, createComponent, element, elementKeyed, empty, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
@@ -505,7 +506,7 @@ styles = jss
 
               , position: "absolute"
               , top: "4px"
-              , zIndex: "1"
+              , zIndex: ziSelect
 
               , display: "flex"
               , flexFlow: "column"

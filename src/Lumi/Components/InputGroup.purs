@@ -43,7 +43,7 @@ styles = jss
           , "& a.input-container":
               { flex: "1"
               , marginRight: "-1px"
-              , "&:focus, &:hover": { zIndex: "1" }
+              -- , "&:focus, &:hover": { zIndex: "1" }
               , "& input[type=\"text\"], & input.lumi[type=\"text\"]":
                   { borderRadius: "0"
                   , width: "100%"
@@ -73,9 +73,9 @@ styles = jss
               , borderBottomLeftRadius:"0"
               }
 
-          , "& input-group-addon button.lumi":
-              { "&:focus, &:hover": { zIndex: "1" }
-              }
+          -- , "& input-group-addon button.lumi":
+          --     { "&:focus, &:hover": { zIndex: "1" }
+          --     }
           }
       }
   }
