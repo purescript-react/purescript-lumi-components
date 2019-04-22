@@ -481,7 +481,7 @@ styles = jss
                   , backgroundColor: cssStringHSLA colors.primary
 
                   , "&::before":
-                      { content: "On"
+                      { content: "'On'"
                       }
                   , "&::after":
                       { transform: "translateX(11px)"
