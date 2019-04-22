@@ -207,34 +207,38 @@ select :: forall option. SelectProps option -> JSX
 select = makeStateless component render
   where
     render props =
-      selectBackend
-        { isOpen: Nothing
-        , loadOnMount: props.loadOnMount
-        , loadOptions: props.loadOptions
-        , optionSort: props.optionSort
-        , toSelectOption: props.toSelectOption
-        , allowMultiple: props.allowMultiple
-        , disabled: props.disabled
-        , onChange: props.onChange
-        , value: props.value
-        , render: \selectState ->
-            lumiSelectElement
-              { "class": props.className
-              , "data-disabled": props.disabled
-              , "data-focus": selectState.isOpen
-              , "data-multi": props.allowMultiple
-              , style: props.style
-              , children:
-                  [ renderInput props selectState
-                  , if selectState.isOpen
-                      then renderMenu props selectState
-                      else empty
-                  ]
-              , onClick: Events.handler currentTarget \ct -> do
-                  selectState.openSelect
-                  traverse_ focusChildInput $ Node.fromEventTarget ct
-              , onFocus: Events.handler_ selectState.openSelect
-              }
+      lumiSelectElement
+        { "class": props.className
+        , "data-disabled": props.disabled
+        , "data-multi": props.allowMultiple
+        , style: props.style
+        , children:
+            [ selectBackend
+                { isOpen: Nothing
+                , loadOnMount: props.loadOnMount
+                , loadOptions: props.loadOptions
+                , optionSort: props.optionSort
+                , toSelectOption: props.toSelectOption
+                , allowMultiple: props.allowMultiple
+                , disabled: props.disabled
+                , onChange: props.onChange
+                , value: props.value
+                , render: \selectState ->
+                    lumiSelectInnerElement
+                      { "data-focus": selectState.isOpen
+                      , children:
+                          [ renderInput props selectState
+                          , if selectState.isOpen
+                              then renderMenu props selectState
+                              else empty
+                          ]
+                      , onClick: Events.handler currentTarget \ct -> do
+                          selectState.openSelect
+                          traverse_ focusChildInput $ Node.fromEventTarget ct
+                      , onFocus: Events.handler_ selectState.openSelect
+                      }
+                }
+            ]
         }
 
     renderInput props selectState =
@@ -344,6 +348,8 @@ select = makeStateless component render
 
     lumiSelectElement =
       element (R.unsafeCreateDOMComponent "lumi-select")
+    lumiSelectInnerElement =
+      element (R.unsafeCreateDOMComponent "lumi-select-inner")
     lumiSelectInputElement =
       element (R.unsafeCreateDOMComponent "lumi-select-input")
     lumiSelectNativeInputElement =
@@ -402,7 +408,7 @@ styles = jss
               }
 
           , "&:hover lumi-select-input": lumiInputHoverStyles
-          , "&:focus lumi-select-input, &[data-focus=\"true\"] lumi-select-input": lumiInputFocusStyles
+          , "&:focus lumi-select-input, & lumi-select-inner[data-focus=\"true\"] lumi-select-input": lumiInputFocusStyles
           , "&[data-disabled=\"true\"] lumi-select-input": lumiInputDisabledStyles
 
           , "& lumi-select-input-selected-values":
