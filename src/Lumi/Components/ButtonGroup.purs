@@ -1,5 +1,7 @@
 module Lumi.Components.ButtonGroup where
 
+import Prelude
+
 import JSS (JSS, jss)
 import Lumi.Components.ZIndex (ziButtonGroup)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
@@ -21,10 +23,14 @@ buttonGroup = makeStateless component render
       buttonGroupElement
         { "data-joined": props.joined
         , style: props.style
-        , children: props.children
+        , children: map renderChild props.children
         }
+      where
+        renderChild child =
+          buttonGroupChildElement { children: [ child ] }
 
     buttonGroupElement = element (unsafeCreateDOMComponent "lumi-button-group")
+    buttonGroupChildElement = element (unsafeCreateDOMComponent "lumi-button-group-child")
 
 styles :: JSS
 styles = jss
@@ -34,12 +40,12 @@ styles = jss
           , display: "flex"
           , flexFlow: "row"
 
-          , "&[data-joined=false] > *":
+          , "&[data-joined=false] > lumi-button-group-child":
               { marginRight: "10px"
               , "&:last-child": { marginRight: "0" }
               }
 
-          , "&[data-joined=true] > *":
+          , "&[data-joined=true] > lumi-button-group-child":
               { "&:not(:last-child)":
                   { marginRight: "-1px"
                   , borderTopRightRadius: "0"
