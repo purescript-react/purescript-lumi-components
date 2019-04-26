@@ -135,23 +135,22 @@ styles = jss
 
           , "& > a.lumi-breadcrumb-back:hover::before":
               { borderColor: cssStringHSLA colors.black
-              }
+              , "&::before":
+                  { display: "inline-block"
 
-          , "&::before":
-              { display: "inline-block"
+                  , content: "\"\""
+                  , verticalAlign: "baseline"
 
-              , content: "\"\""
-              , verticalAlign: "baseline"
+                  , borderTop: [ "1px", "solid", cssStringHSLA colors.black1 ]
+                  , borderRight: "none"
+                  , borderBottom: "none"
+                  , borderLeft: [ "1px", "solid", cssStringHSLA colors.black1 ]
+                  , transform: "rotate(-45deg)"
 
-              , borderTop: [ "1px", "solid", cssStringHSLA colors.black1 ]
-              , borderRight: "none"
-              , borderBottom: "none"
-              , borderLeft: [ "1px", "solid", cssStringHSLA colors.black1 ]
-              , transform: "rotate(-45deg)"
-
-              , width: "8px"
-              , height: "8px"
-              , margin: "0 7px 0 2px"
+                  , width: "8px"
+                  , height: "8px"
+                  , margin: "0 7px 0 2px"
+                  }
               }
           }
       }
