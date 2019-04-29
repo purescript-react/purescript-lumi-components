@@ -133,8 +133,10 @@ styles = jss
 
           , "& > .lumi-breadcrumb-separator": { margin: "0 10px" }
 
-          , "& > a.lumi-breadcrumb-back:hover::before":
-              { borderColor: cssStringHSLA colors.black
+          , "& > a.lumi-breadcrumb-back":
+              { "&:hover::before":
+                  { borderColor: cssStringHSLA colors.black
+                  }
               , "&::before":
                   { display: "inline-block"
 
