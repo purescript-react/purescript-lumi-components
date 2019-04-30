@@ -48,7 +48,7 @@ docs = unit # make component
             editableTable
               { addLabel: "Add another row"
               , columns:
-                  [ { label: "Descriptionxxx"
+                  [ { label: "Description"
                     , renderCell: \row -> Input.input Input.text_
                         { value = row.description
                         , onChange = handler targetValue \value ->
@@ -62,9 +62,6 @@ docs = unit # make component
                         , onChange = handler targetValue \value ->
                             updateRow self row { quantity = fromMaybe row.quantity $ fromString =<< value }
                         }
-                    }
-                  , { label: "foobar"
-                    , renderCell: \row -> R.text "hello"
                     }
                   , { label: "Price"
                     , renderCell: \row -> Input.input Input.number
