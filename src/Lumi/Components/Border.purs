@@ -27,6 +27,7 @@ border = makeStateless component render
       lumiBorderElement
         { "data-rounded-borders": props.roundedBorders
         , children: props.children
+        , style: props.style
         }
 
 border_ :: JSX -> JSX
