@@ -42,7 +42,7 @@ styles = jss
           , display: "flex"
           , flexDirection: "row"
 
-          , "& @media (max-width: 860px)":
+          , "@media (max-width: 860px)":
               { flexDirection: "column"
               }
           }
