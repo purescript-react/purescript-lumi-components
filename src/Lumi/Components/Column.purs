@@ -48,7 +48,7 @@ styles = jss
           , display: "flex"
           , flexDirection: "column"
 
-          , "& @media (max-width: 860px)":
+          , "@media (max-width: 860px)":
               { flexDirection: "row"
               }
           }
