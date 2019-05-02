@@ -16,7 +16,7 @@ bower i -S purescript-lumi-components
 
 To use the styles that come with these components the CSS needs to be injected into the page. The easiest way to do this is to run the `attachGlobalComponentStyles` effect available in `Lumi.Components.Styles` one time as your application initializes.
 
-You will also need a few `npm` dependencies. These dependencies and their versions must be compatible with the ones listed [here](https://github.com/lumihq/purescript-lumi-components/blob/master/package.json#L30).
+You will also need a few `npm` dependencies. These dependencies and their versions must be compatible with the ones listed [here](https://github.com/lumihq/purescript-lumi-components/blob/master/package.json#L31).
 
 ## Local development
 
