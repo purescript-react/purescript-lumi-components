@@ -7,6 +7,7 @@ import Data.Traversable (traverse_)
 import Effect (Effect)
 import JSS (JSS, jss)
 import JSS as JSS
+import Lumi.Components.Border as Border
 import Lumi.Components.Breadcrumb as Breadcrumb
 import Lumi.Components.Button (styles) as Button
 import Lumi.Components.ButtonGroup as ButtonGroup
@@ -60,6 +61,7 @@ attachGlobalComponentStyles = do
   jssInstance <- JSS.createInstance JSS.preset
   traverse_ (JSS.globalAttachStyleSheet <=< JSS.createStyleSheet jssInstance)
     [ globals
+    , Border.styles
     , Breadcrumb.styles
     , Button.styles
     , ButtonGroup.styles
