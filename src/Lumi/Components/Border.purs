@@ -6,16 +6,26 @@ import Color (cssStringHSLA)
 import Lumi.Components.Color (colors)
 import JSS (JSS, jss)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
-import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
-import React.Basic.DOM as R
+import React.Basic.DOM (unsafeCreateDOMComponent)
+
+data BorderStyle
+  = Top
+  | Bottom
+  | Round
+  | Square
+
+toStyle :: BorderStyle -> String
+toStyle Top = "top"
+toStyle Bottom = "bottom"
+toStyle Round = "round"
+toStyle Square = "square"
 
 component :: Component BorderProps
 component = createComponent "Border"
 
 type BorderProps =
   { children :: JSX
-  , roundedBorders :: Boolean
-  , style :: CSS
+  , borderStyle :: BorderStyle
   }
 
 border :: BorderProps -> JSX
@@ -25,18 +35,38 @@ border = makeStateless component render
 
     render props =
       lumiBorderElement
-        { "data-rounded-borders": props.roundedBorders
+        { "data-border-style": toStyle props.borderStyle
         , children: props.children
-        , style: props.style
         }
 
-border_ :: JSX -> JSX
-border_ children =
+borderSquare :: JSX -> JSX
+borderSquare children =
   border
     { children
-    , style: R.css {}
-    , roundedBorders: true
+    , borderStyle: Square
     }
+
+borderRound :: JSX -> JSX
+borderRound children =
+  border
+    { children
+    , borderStyle: Round
+    }
+
+borderTop :: JSX -> JSX
+borderTop children =
+  border
+    { children
+    , borderStyle: Top
+    }
+
+borderBottom :: JSX -> JSX
+borderBottom children =
+  border
+    { children
+    , borderStyle: Bottom
+    }
+
 
 styles :: JSS
 styles = jss
@@ -44,8 +74,22 @@ styles = jss
       { "lumi-border":
           { border: "1px solid " <> cssStringHSLA colors.black3
           , overflow: "hidden"
-          , "&[data-rounded-borders=true]":
+          , "&[data-border-style='round']":
               { borderRadius: "5px" }
+          , "&[data-border-style='square']":
+              { borderRadius: "0px" }
+          , "&[data-border-style='top']":
+              { borderTopRightRadius: "5px"
+              , borderTopLeftRadius: "5px"
+              , borderBottomRightRadius: "0px"
+              , borderBottomLeftRadius: "0px"
+              }
+          , "&[data-border-style='bottom']":
+              { borderTopRightRadius: "0px"
+              , borderTopLeftRadius: "0px"
+              , borderBottomRightRadius: "5px"
+              , borderBottomLeftRadius: "5px"
+              }
           }
       }
   }
