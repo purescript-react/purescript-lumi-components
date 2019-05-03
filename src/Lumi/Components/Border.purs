@@ -2,23 +2,27 @@ module Lumi.Components.Border where
 
 import Prelude
 
-import Color (cssStringHSLA)
+import Color (toHexString)
 import Lumi.Components.Color (colors)
 import JSS (JSS, jss)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 
 data BorderStyle
-  = Top
-  | Bottom
+  = SquareTop
+  | SquareBottom
   | Round
   | Square
+  | Top
+  | Bottom
 
 toStyle :: BorderStyle -> String
-toStyle Top = "top"
-toStyle Bottom = "bottom"
+toStyle SquareTop = "square-top"
+toStyle SquareBottom = "square-bottom"
 toStyle Round = "round"
 toStyle Square = "square"
+toStyle Top = "top"
+toStyle Bottom = "bottom"
 
 component :: Component BorderProps
 component = createComponent "Border"
@@ -53,6 +57,20 @@ borderRound children =
     , borderStyle: Round
     }
 
+borderSquareTop :: JSX -> JSX
+borderSquareTop children =
+  border
+    { children
+    , borderStyle: SquareTop
+    }
+
+borderSquareBottom :: JSX -> JSX
+borderSquareBottom children =
+  border
+    { children
+    , borderStyle: SquareBottom
+    }
+
 borderTop :: JSX -> JSX
 borderTop children =
   border
@@ -72,23 +90,40 @@ styles :: JSS
 styles = jss
   { "@global":
       { "lumi-border":
-          { border: "1px solid " <> cssStringHSLA colors.black3
+          { borderColor: toHexString colors.black3
+          , borderStyle: "solid"
+          , borderWidth: "1px"
+          , padding: "16px"
           , overflow: "hidden"
           , "&[data-border-style='round']":
-              { borderRadius: "5px" }
+              { borderRadius: "5px"
+              }
           , "&[data-border-style='square']":
-              { borderRadius: "0px" }
-          , "&[data-border-style='top']":
+              { borderRadius: "0px"
+              }
+          , "&[data-border-style='square-bottom']":
               { borderTopRightRadius: "5px"
               , borderTopLeftRadius: "5px"
               , borderBottomRightRadius: "0px"
               , borderBottomLeftRadius: "0px"
               }
-          , "&[data-border-style='bottom']":
+          , "&[data-border-style='square-top']":
               { borderTopRightRadius: "0px"
               , borderTopLeftRadius: "0px"
               , borderBottomRightRadius: "5px"
               , borderBottomLeftRadius: "5px"
+              }
+          , "&[data-border-style='top']":
+              { border: "inherit"
+              , borderTop: "1px solid " <> toHexString colors.black3
+              , paddingLeft: "0px"
+              , paddingRight: "0px"
+              }
+          , "&[data-border-style='bottom']":
+              { border: "inherit"
+              , borderBottom: "1px solid " <> toHexString colors.black3
+              , paddingLeft: "0px"
+              , paddingRight: "0px"
               }
           }
       }

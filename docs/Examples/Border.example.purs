@@ -3,7 +3,7 @@ module Lumi.Components.Examples.Border where
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Lumi.Components.Border (border, borderSquare, borderRound, borderTop, borderBottom)
+import Lumi.Components.Border (border, borderSquare, borderRound, borderSquareTop, borderSquareBottom, borderTop, borderBottom)
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Spacing (Space(..))
@@ -20,27 +20,41 @@ docs =
         $ borderRound $
             column
               { children: [ R.text "bordered element" ]
-              , style: R.css { padding: "12px" }
+              , style: R.css {}
               }
     , h2_ "Square borders"
     , example
         $ borderSquare $
             column
               { children: [ R.text "bordered element" ]
-              , style: R.css { padding: "12px" }
+              , style: R.css {}
+              }
+    , h2_ "Square Top borders"
+    , example
+        $ borderSquareTop $
+            column
+              { children: [ R.text "bordered element" ]
+              , style: R.css {}
+              }
+    , h2_ "Square Bottom borders"
+    , example
+        $ borderSquareBottom $
+            column
+              { children: [ R.text "bordered element" ]
+              , style: R.css {}
               }
     , h2_ "Top borders"
     , example
         $ borderTop $
             column
               { children: [ R.text "bordered element" ]
-              , style: R.css { padding: "12px" }
+              , style: R.css {}
               }
     , h2_ "Bottom borders"
     , example
         $ borderBottom $
             column
               { children: [ R.text "bordered element" ]
-              , style: R.css { padding: "12px" }
+              , style: R.css {}
               }
     ]
