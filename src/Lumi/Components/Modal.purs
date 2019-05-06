@@ -394,8 +394,6 @@ styles = jss
                       { boxSizing: "border-box"
                       , margin: "2.4rem 0"
                       , flex: "1 0 auto"
-                      , display: "flex"
-                      , flexFlow: "column"
                       , paddingLeft: "2.4rem"
                       , paddingRight: "2.4rem"
                       , "@media (max-width: 860px)":
