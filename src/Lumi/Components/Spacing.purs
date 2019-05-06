@@ -2,6 +2,7 @@ module Lumi.Components.Spacing
   ( Space(..)
   , hspace
   , vspace
+  , toPixels
   ) where
 
 import React.Basic.Compat (JSX)
