@@ -13,12 +13,13 @@ import Data.Array (delete, elem, find, fold, length, mapMaybe, null, snoc)
 import Data.Array as Array
 import Data.Either (either)
 import Data.Foldable (for_)
-import Data.Maybe (Maybe(..), fromMaybe, isJust, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, isJust, isNothing, maybe)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype, un)
 import Data.Nullable (Nullable, toMaybe)
 import Data.String (contains, joinWith, Pattern(..))
 import Effect (Effect)
+import Effect.Console (log)
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn1, runEffectFn2)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
@@ -32,7 +33,7 @@ import React.Basic (Component, JSX, ReactComponent, createComponent, element, em
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (QuerySelector(..), selectorRef)
-import React.Basic.DOM.Events (nativeEvent, preventDefault, stopPropagation, targetChecked)
+import React.Basic.DOM.Events (button, nativeEvent, preventDefault, stopPropagation, targetChecked)
 import React.Basic.Events (SyntheticEvent, syntheticEvent)
 import React.Basic.Events as Events
 import Simple.JSON (class ReadForeign, class WriteForeign, readJSON, writeJSON)
@@ -92,6 +93,23 @@ type TableProps row =
         , hidden :: Boolean
         , sticky :: Boolean
         }
+  , onColumnChange ::
+      Nullable
+        ( EffectFn1
+          ( Array
+              { required :: Boolean
+              , name :: ColumnName
+              , label :: Nullable String
+              , filterLabel :: Nullable String
+              , sortBy :: Nullable ColumnName
+              , style :: R.CSS
+              , renderCell :: row -> JSX
+              , hidden :: Boolean
+              , sticky :: Boolean
+              }
+          )
+          Unit
+        )
   }
 
 component :: forall row. Component (TableProps row)
@@ -108,7 +126,7 @@ data Action
 table :: forall a. TableProps a -> JSX
 table = make component
   { initialState
-  , didMount
+  , didMount: syncProps
   , didUpdate
   , render
   }
@@ -123,19 +141,16 @@ table = make component
       , menuStyle: { top: "0px", left: "0px" }
       }
 
-    didMount self = do
-      maybeSavedColumnSort <- loadColumnState $ columnSaveKey self.props.name
-      syncProps self maybeSavedColumnSort
-
     didUpdate self _ = do
       case toMaybe self.props.selected of
         Nothing -> pure unit
         Just selected ->
           when (selected /= self.state.selected) do
-            syncProps self Nothing
+            syncProps self
 
-    syncProps self maybeSavedColumnSort = do
-      when (null self.state.columns) do
+    syncProps self = do
+      when (isNothing (toMaybe self.props.onColumnChange) && null self.state.columns) do
+        maybeSavedColumnSort <- loadColumnState $ columnSaveKey self.props.name
         self.setState \state -> state
           { columns =
               case maybeSavedColumnSort of
@@ -157,21 +172,21 @@ table = make component
       self.setState \state -> state { showMenu = false }
 
     setColumnSort self newColumnOrder = do
-      self.setStateThen (\state ->
-        let
-          columnsSorted = sortColumnsBy state.columns $
-            newColumnOrder <#> \{ name, hidden } ->
-              { name: ColumnName name
-              , hidden
-              }
-        in
-          state { columns = columnsSorted })
-        do
-          props <- readProps self
-          state <- readState self
-          saveColumnState
-            (columnSaveKey props.name)
-            (getColumnSortFields <$> state.columns)
+      case toMaybe self.props.onColumnChange of
+        Nothing ->
+          self.setStateThen (\state ->
+            let
+              columnsSorted = state.columns `sortColumnsBy` newColumnOrder
+            in
+              state { columns = columnsSorted })
+            do
+              props <- readProps self
+              state <- readState self
+              saveColumnState
+                (columnSaveKey props.name)
+                (getColumnSortFields <$> state.columns)
+        Just onColumnChange ->
+          runEffectFn1 onColumnChange $ self.props.columns `sortColumnsBy` newColumnOrder
 
     onSelect self { shift, key, checked } = do
       self.setStateThen (\state ->
@@ -232,72 +247,81 @@ table = make component
     getColumnSortFields { name, hidden } = { name, hidden }
 
     render self =
-      renderLumiTable \tableRef ->
-        [ if not self.state.showMenu
-            then empty
-            else renderFilterDropdown
-              { close: closeMenu self
-              , reorderItems: setColumnSort self
-              , items: self.state.columns <#> \{ name, label, filterLabel, hidden } ->
-                  { name: un ColumnName name
-                  , label
-                  , filterLabel
-                  , hidden
-                  }
-              , style: R.css self.state.menuStyle
+      let
+        columns =
+          if isNothing $ toMaybe self.props.onColumnChange
+            then self.state.columns
+            else self.props.columns
+      in
+        renderLumiTable \tableRef ->
+          [ if not self.state.showMenu
+              then empty
+              else renderFilterDropdown
+                { close: closeMenu self
+                , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
+                    { name: ColumnName name
+                    , hidden
+                    }
+                , items: columns <#> \{ name, label, filterLabel, hidden } ->
+                    { name: un ColumnName name
+                    , label
+                    , filterLabel
+                    , hidden
+                    }
+                , style: R.css self.state.menuStyle
+                }
+          , element scrollObserver
+              { node: tableRef
+              , render: \{ hasScrolledY, hasScrolledX } ->
+                  R.table
+                    { className:
+                        let
+                          isCompact = contains (Pattern "compact") (show self.props.variant)
+                          isFixed = contains (Pattern "fixed") (show self.props.variant)
+                        in
+                          joinWith " "
+                            $ [ "lumi" ]
+                            <> guard isCompact [ "compact" ]
+                            <> guard isFixed [ "fixed" ]
+                            <> guard hasScrolledX [ "has-scrolled-x" ]
+                            <> guard hasScrolledY [ "has-scrolled-y" ]
+                            <> guard self.props.selectable [ "selectable" ]
+                    , children:
+                        [ renderTableHead columns tableRef
+                        , R.tbody_
+                            let
+                              tableProps =
+                                { columns
+                                , primaryColumn
+                                , selectable: self.props.selectable
+                                , getRowKey: self.props.getRowKey
+                                , rowEq: self.props.rowEq
+                                , onNavigate: self.props.onNavigate
+                                , onSelect: onSelect self
+                                }
+                            in
+                              self.props.rows # map \row ->
+                                keyed
+                                  (tableProps.getRowKey row)
+                                  (tableRow
+                                    { tableProps
+                                    , row
+                                    , isSelected:
+                                        tableProps.selectable &&
+                                        tableProps.getRowKey row `elem` selected
+                                    })
+                        ]
+                    }
               }
-        , element scrollObserver
-            { node: tableRef
-            , render: \{ hasScrolledY, hasScrolledX } ->
-                R.table
-                  { className:
-                      let
-                        isCompact = contains (Pattern "compact") (show self.props.variant)
-                        isFixed = contains (Pattern "fixed") (show self.props.variant)
-                      in
-                        joinWith " "
-                          $ [ "lumi" ]
-                          <> guard isCompact [ "compact" ]
-                          <> guard isFixed [ "fixed" ]
-                          <> guard hasScrolledX [ "has-scrolled-x" ]
-                          <> guard hasScrolledY [ "has-scrolled-y" ]
-                          <> guard self.props.selectable [ "selectable" ]
-                  , children:
-                      [ renderTableHead tableRef
-                      , R.tbody_
-                          let
-                            tableProps =
-                              { columns: self.state.columns
-                              , primaryColumn
-                              , selectable: self.props.selectable
-                              , getRowKey: self.props.getRowKey
-                              , rowEq: self.props.rowEq
-                              , onNavigate: self.props.onNavigate
-                              , onSelect: onSelect self
-                              }
-                          in
-                            self.props.rows # map \row ->
-                              keyed
-                                (tableProps.getRowKey row)
-                                (tableRow
-                                  { tableProps
-                                  , row
-                                  , isSelected:
-                                      tableProps.selectable &&
-                                      tableProps.getRowKey row `elem` selected
-                                  })
-                      ]
-                  }
-            }
-        ]
+          ]
       where
         selected = fromMaybe self.state.selected (toMaybe self.props.selected)
 
         primaryColumn = toMaybe self.props.primaryColumn
 
-        renderTableHead tableRef =
+        renderTableHead columns tableRef =
           element (R.unsafeCreateDOMComponent "thead")
-            { onContextMenu: Events.handler preventDefault \e -> do
+            { onContextMenu: Events.handler (preventDefault >>> stopPropagation) \e -> do
                 { x, y } <- runEffectFn2 getMouseEventPositionWithOffset tableRef e
                 openMenu self
                   { top: show (y - 2.0) <> "px"
@@ -307,7 +331,7 @@ table = make component
                 [ R.tr_ $
                     [ renderHeadCheckbox ]
                     <> (maybe [] (pure <<< renderHeadPrimaryCell) primaryColumn)
-                    <> (map renderHeadCell self.state.columns)
+                    <> (map renderHeadCell columns)
                 ]
             }
 
@@ -320,7 +344,7 @@ table = make component
               then empty
               else R.th
                 { style: R.css { width: "2rem" }
-                , onClick: Events.handler stopPropagation (const (pure unit))
+                , onClick: Events.handler (stopPropagation) (const (pure unit))
                 , children:
                     [ input checkbox
                         { checked =
@@ -409,8 +433,9 @@ table = make component
           , handler: case maybeMenuRef of
               Nothing      -> \e -> pure unit
               Just menuRef -> \e -> do
+
                 isEventTargetInTree <- runEffectFn2 checkIsEventTargetInTree menuRef e
-                when (not isEventTargetInTree) close
+                when (not isRightClick e && not isEventTargetInTree) close
           , options: { capture: false, once: false, passive: false }
           }
           $ filterDropdown
@@ -560,6 +585,8 @@ foreign import dataSize :: forall a. Array a -> Int
 foreign import getMouseEventPositionWithOffset :: EffectFn2 Node SyntheticEvent { x :: Number, y :: Number }
 
 foreign import checkIsEventTargetInTree :: EffectFn2 Node Event Boolean
+
+foreign import isRightClick :: Event -> Boolean
 
 foreign import hasWindowSelection :: Effect Boolean
 

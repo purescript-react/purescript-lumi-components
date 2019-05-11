@@ -35,6 +35,32 @@ docs = unit # make component { initialState, render }
       { sort: SortString "asc"
       , sortBy: Just (ColumnName "createdDate")
       , selected: ["10cms9", "0mf7w"]
+      , ex2Columns:
+          [ { required: true
+            , name: ColumnName "product-type"
+            , label: notNull "Product type"
+            , filterLabel: null
+            , sortBy: notNull $ ColumnName "title"
+            , style: css {}
+            , hidden: false
+            , sticky: false
+            , renderCell: \rowData ->
+                Link.link Link.defaults
+                  { href = rowData.link
+                  , text = R.text rowData.title
+                  }
+            }
+          , { required: true
+            , name: ColumnName "created-date"
+            , label: notNull "Created date"
+            , filterLabel: null
+            , sortBy: notNull $ ColumnName "createdDate"
+            , style: css {}
+            , hidden: false
+            , sticky: false
+            , renderCell: \rowData -> R.text rowData.createdDate
+            }
+          ]
       }
 
     render self =
@@ -109,6 +135,7 @@ docs = unit # make component { initialState, render }
                             , renderCell: \rowData -> R.text rowData.createdDate
                             }
                           ]
+                      , onColumnChange: null
                       }
                   ]
               }
@@ -149,32 +176,9 @@ docs = unit # make component { initialState, render }
                           , renderCell: R.text <<< _.title
                           , sticky: false
                           }
-                      , columns:
-                          [ { required: true
-                            , name: ColumnName "product-type"
-                            , label: notNull "Product type"
-                            , filterLabel: null
-                            , sortBy: notNull $ ColumnName "title"
-                            , style: css {}
-                            , hidden: false
-                            , sticky: false
-                            , renderCell: \rowData ->
-                                Link.link Link.defaults
-                                  { href = rowData.link
-                                  , text = R.text rowData.title
-                                  }
-                            }
-                          , { required: true
-                            , name: ColumnName "created-date"
-                            , label: notNull "Created date"
-                            , filterLabel: null
-                            , sortBy: notNull $ ColumnName "createdDate"
-                            , style: css {}
-                            , hidden: false
-                            , sticky: false
-                            , renderCell: \rowData -> R.text rowData.createdDate
-                            }
-                          ]
+                      , columns: self.state.ex2Columns
+                      , onColumnChange: notNull $ mkEffectFn1 \columns ->
+                          self.setState _ { ex2Columns = columns }
                       }
                   ]
               }
