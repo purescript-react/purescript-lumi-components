@@ -40,7 +40,7 @@ styles = jss
 spinnerMixin :: { radius :: String, borderWidth :: String } -> JSS
 spinnerMixin { radius, borderWidth } = jss
   { boxSizing: "border-box"
-  , content: ""
+  , content: "\"\""
   , display: "inline-block"
   , height: radius
   , width: radius
