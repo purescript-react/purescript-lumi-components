@@ -19,7 +19,6 @@ import Data.Newtype (class Newtype, un)
 import Data.Nullable (Nullable, toMaybe)
 import Data.String (contains, joinWith, Pattern(..))
 import Effect (Effect)
-import Effect.Console (log)
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn1, runEffectFn2)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
@@ -33,7 +32,7 @@ import React.Basic (Component, JSX, ReactComponent, createComponent, element, em
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (QuerySelector(..), selectorRef)
-import React.Basic.DOM.Events (button, nativeEvent, preventDefault, stopPropagation, targetChecked)
+import React.Basic.DOM.Events (nativeEvent, preventDefault, stopPropagation, targetChecked)
 import React.Basic.Events (SyntheticEvent, syntheticEvent)
 import React.Basic.Events as Events
 import Simple.JSON (class ReadForeign, class WriteForeign, readJSON, writeJSON)
@@ -240,9 +239,18 @@ table = make component
           runEffectFn1 props.onSelect state.selected
 
     sortColumnsBy columns newColumnOrder =
-      newColumnOrder `flip mapMaybe` \newCol -> do
-        matchedCol <- columns `flip find` \c -> c.name == newCol.name
-        pure $ matchedCol { hidden = newCol.hidden }
+      let
+        matches =
+          newColumnOrder `flip Array.mapMaybe` \newCol -> do
+            matchedCol <- columns # find (\c -> c.name == newCol.name)
+            pure $ matchedCol { hidden = newCol.hidden }
+        newColumnOrderNames = map _.name newColumnOrder
+        nonMatches =
+          columns
+            # Array.filter (\c -> c.name `not elem` newColumnOrderNames)
+            # map _ { hidden = true }
+      in
+        matches <> nonMatches
 
     getColumnSortFields { name, hidden } = { name, hidden }
 
