@@ -159,8 +159,10 @@ buildConcurrently editor = makeStateless (createComponent "Form") render where
           Child { key, child } ->
             maybe identity keyed key $ child
           Wrapper { key, children } ->
-            maybe identity keyed key $
-              fragment [ intercalate fieldDivider (map toRow children) ]
+            R.div
+              { key: fromMaybe "" key
+              , children: [ intercalate fieldDivider (map toRow children) ]
+              }
           Node { label, key, required, validationError, children } ->
             maybe identity keyed key $ labeledField
               { label: text body
