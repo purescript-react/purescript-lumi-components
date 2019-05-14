@@ -89,7 +89,7 @@ import React.Basic.DOM (css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
-import Record (disjointUnion, get)
+import Record (get)
 import Type.Row (class Cons)
 import Unsafe.Coerce (unsafeCoerce)
 
