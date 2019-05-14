@@ -1,9 +1,8 @@
 module Lumi.Components.Form
-  ( module Internal
+  ( module Defaults
+  , module Internal
   , module Validation
   , build
-  , buildConcurrently
-  , buildWithDefaults
   , static
   , section
   , inputBox
@@ -66,7 +65,8 @@ import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
 import Lumi.Components.FetchCache as FetchCache
-import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, revalidate, sequential, pruneTree)
+import Lumi.Components.Form.Defaults (formDefaults) as Defaults
+import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (FormBuilder, SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, optional, setFresh, setModified, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
@@ -101,30 +101,6 @@ build
   :: forall props unvalidated result
    . FormBuilder { readonly :: Boolean | props } unvalidated result
   -> { value :: unvalidated
-     , onChange :: Maybe result -> unvalidated -> Effect Unit
-     , inlineTable :: Boolean
-     , forceTopLabels :: Boolean
-     , readonly :: Boolean
-     | props
-     }
-  -> JSX
-build editor = \props ->
-  form props
-    { onChange = \f ->
-        let v = f props.value
-         in props.onChange (revalidate editor (unsafeCoerce props) v) v
-    }
-  where
-     form = buildConcurrently editor
-
--- | Create a React component for a form from a `FormBuilder`.
--- |
--- | _Note_: this function should be fully applied, to avoid remounting
--- | the component on each render.
-buildConcurrently
-  :: forall props unvalidated result
-   . FormBuilder { readonly :: Boolean | props } unvalidated result
-  -> { value :: unvalidated
      , onChange :: (unvalidated -> unvalidated) -> Effect Unit
      , inlineTable :: Boolean
      , forceTopLabels :: Boolean
@@ -132,7 +108,7 @@ buildConcurrently
      | props
      }
   -> JSX
-buildConcurrently editor = makeStateless (createComponent "Form") render where
+build editor = makeStateless (createComponent "Form") render where
   render props@{ value, onChange, inlineTable, forceTopLabels, readonly } =
 
     let forest = Array.mapMaybe pruneTree $ edit onChange
@@ -181,29 +157,6 @@ buildConcurrently editor = makeStateless (createComponent "Form") render where
                        ]
           , children: surround fieldDivider (map toRow forest)
           }
-
--- | Utility function.
--- | Create a React component for a form from a `FormBuilder` and a default
--- | form state. This default value is used in the form whenever the `value`
--- | prop is `Nothing`.
--- |
--- | _Note_: this function should be fully applied, to avoid remounting
--- | the component on each render.
-buildWithDefaults
-  :: forall props unvalidated result
-   . unvalidated
-  -> FormBuilder { readonly :: Boolean | props } unvalidated result
-  -> { value :: Maybe unvalidated
-     , onChange :: Maybe result -> unvalidated -> Effect Unit
-     , inlineTable :: Boolean
-     , forceTopLabels :: Boolean
-     , readonly :: Boolean
-     | props
-     }
-  -> JSX
-buildWithDefaults defaults editor = \props -> form props { value = fromMaybe defaults props.value }
-  where
-     form = build editor
 
 -- | Create an always-valid `FormBuilder` that renders the supplied `JSX`.
 static :: forall props value. JSX -> FormBuilder props value Unit

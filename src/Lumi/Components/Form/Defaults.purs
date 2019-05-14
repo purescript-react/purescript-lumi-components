@@ -10,7 +10,7 @@ import Prelude
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, SProxy(..))
-import Lumi.Components.Form (Validated(..))
+import Lumi.Components.Form.Validation (Validated(..))
 import Prim.Row (class Cons, class Lacks)
 import Prim.RowList (class RowToList, Cons, Nil)
 import Record.Builder (Builder)
