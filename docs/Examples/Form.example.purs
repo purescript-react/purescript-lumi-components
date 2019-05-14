@@ -47,7 +47,7 @@ data Action formData formResult
   | SetForceTopLabels Boolean
   | SetReadonly Boolean
   | SetSimulatePauses Boolean
-  | SetUser (Maybe formResult) formData
+  | SetUser (formData -> formData)
   | Submit
   | Reset
 
@@ -79,11 +79,18 @@ docs = unit # make component { initialState, render }
       SetSimulatePauses simulatePauses ->
         self.setState _ { simulatePauses = simulatePauses }
 
-      SetUser result user ->
-        self.setState _
-          { result = result
-          , user = user
-          }
+      SetUser update ->
+        let
+          formProps =
+            { loadColor: loadColor self.state.simulatePauses
+            , loadColors: loadColors self.state.simulatePauses
+            , readonly: self.state.readonly
+            }
+        in
+          self.setState \s -> s
+            { result = F.revalidate userForm formProps (update s.user)
+            , user = update s.user
+            }
 
       Submit ->
         self.setState \state -> state { user = F.setModified state.user, modalOpen = isJust state.result }
@@ -155,7 +162,7 @@ docs = unit # make component { initialState, render }
                   , children:
                       [ userComponent
                           { value: user
-                          , onChange: \r -> send self <<< SetUser r
+                          , onChange: send self <<< SetUser
                           , loadColor: loadColor simulatePauses
                           , loadColors: loadColors simulatePauses
                           , inlineTable
@@ -264,7 +271,7 @@ type ValidatedUser =
 -- | remounting this component on each render.
 userComponent
   :: { value :: User
-     , onChange :: Maybe ValidatedUser -> User -> Effect Unit
+     , onChange :: (User -> User) -> Effect Unit
      , loadColor :: String -> Aff { label :: String, value :: String }
      , loadColors :: String -> Aff (Array { label :: String, value :: String })
      , inlineTable :: Boolean
@@ -272,7 +279,19 @@ userComponent
      , readonly :: Boolean
      }
   -> JSX
-userComponent = F.build ado
+userComponent = F.build userForm
+
+userForm
+  :: forall props
+   . FormBuilder
+      { loadColor :: String -> Aff { label :: String, value :: String }
+      , loadColors :: String -> Aff (Array { label :: String, value :: String })
+      , readonly :: Boolean
+      | props
+      }
+      User
+      ValidatedUser
+userForm = ado
   firstName <-
     F.indent "First Name" Required
     $ F.focus (prop (SProxy :: SProxy "firstName"))
