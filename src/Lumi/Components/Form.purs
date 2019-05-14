@@ -786,17 +786,20 @@ fetch_ loading getData = fetch loading "" (const getData)
 -- | A dummy form that, whenever the specified key changes, performs an
 -- | asynchronous effect. It displays the specified JSX while the effect is not
 -- | complete, sets the form data to the result of the effect and returns it.
-asyncEffect :: forall props a. String -> JSX -> Aff a -> FormBuilder props a a
+asyncEffect :: forall props a. String -> JSX -> Aff (a -> a) -> FormBuilder props a a
 asyncEffect key loader aff =
-  withKey key $ formBuilder_ \_ _ onChange ->
-    keyed key $ asyncWithLoader loader do
-      newValue <- aff
-      liftEffect $ onChange newValue
-      mempty
+  withKey key $ formBuilder \_ value ->
+    { edit: \onChange ->
+        keyed key $ asyncWithLoader loader do
+          f <- aff
+          liftEffect $ onChange f
+          mempty
+    , validate: Just value
+    }
 
 -- | A dummy form that, whenever the specified key changes, performs an
 -- | effect. It sets the form data to the result of the effect and returns it.
-effect :: forall props a. String -> Effect a -> FormBuilder props a a
+effect :: forall props a. String -> Effect (a -> a) -> FormBuilder props a a
 effect key = asyncEffect key mempty <<< liftEffect
 
 -- | Sequential `SeqFormBuilder` used for asynchronously initializing some
@@ -823,16 +826,18 @@ initializer
   :: forall props value
    . Nub (initialized :: Boolean | value) (initialized :: Boolean | value)
   => JSX
-  -> (props -> {| value } -> Aff {| value })
+  -> (props -> {| value } -> Aff ({ initialized :: Boolean | value } -> { initialized :: Boolean | value }))
   -> SeqFormBuilder props { initialized :: Boolean | value } Unit
 initializer loader aff =
   sequential "initializer" $ withValue \value@{ initialized } -> withProps \props ->
-    if initialized
-      then pure unit
-      else
-        invalidate $ void $ asyncEffect "" loader do
-          newValue <- aff props (contractValue value)
-          pure $ disjointUnion { initialized: true } newValue
+    if initialized then
+      pure unit
+    else
+      invalidate
+        $ void
+        $ asyncEffect "" loader
+        $ map (_{ initialized = true } <<< _)
+        $ aff props (contractValue value)
   where
     contractValue :: { initialized :: Boolean | value } -> {| value }
     contractValue = unsafeCoerce
