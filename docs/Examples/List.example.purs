@@ -29,6 +29,15 @@ docs =
                 }
             ]
 
+    , h2_ "Basic List w/ no Borders"
+    , example
+        $ columnSelfStretch
+            [ list defaultList
+                { rows = simpleListData
+                , borders = false
+                }
+            ]
+
     , h2_ "Compact Basic List"
     , example
         $ columnSelfStretch

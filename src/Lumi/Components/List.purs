@@ -15,6 +15,7 @@ type ListProps =
   { size :: Maybe Size
   , rightAligned :: Boolean
   , rows :: Array (Array JSX)
+  , borders :: Boolean
   }
 
 component :: Component ListProps
@@ -30,6 +31,7 @@ list = makeStateless component $ lumiList <<< mapProps
             Just size -> show size
             Nothing -> show Medium
       , "data-right-aligned": props.rightAligned
+      , "data-borders": props.borders
       , children: map renderRow props.rows
       }
       where
@@ -48,6 +50,7 @@ defaultList =
   { size: Just $ Medium
   , rightAligned: false
   , rows: []
+  , borders: true
   }
 
 compactList :: ListProps
@@ -55,6 +58,7 @@ compactList =
   { size: Just $ Small
   , rightAligned: false
   , rows: []
+  , borders: true
   }
 
 type StructuredColumnListProps row =
@@ -76,6 +80,7 @@ structuredColumnList = makeStateless structuredColumnListComponent render
         { size: Just $ Large
         , rightAligned: props.rightAligned
         , rows: map renderRow props.rows
+        , borders: true
         }
       where
         renderRow row =
@@ -100,9 +105,9 @@ styles = jss
               , display: "flex"
               , flexFlow: "row wrap"
               , justifyContent: "space-between"
-              , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
               , minHeight: "calc(48px + 1px)"
               , padding: "6px 0"
+              , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
 
               , "& > lumi-list-row-cell":
                   { boxSizing: "border-box"
@@ -113,6 +118,13 @@ styles = jss
                   , maxWidth: "100%"
                   }
               }
+
+            , "&[data-borders=\"false\"]":
+                { border: "0"
+                , "& > lumi-list-row":
+                  { border: "0"
+                  }
+                }
 
             , "&[data-size=\"small\"] > lumi-list-row":
                 { minHeight: "calc(40px + 1px)"
