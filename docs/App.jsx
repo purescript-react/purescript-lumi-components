@@ -75,6 +75,7 @@ const componentLoaders = [
   "Pagination",
   "Pill",
   "Progress",
+  "Responsive",
   "Row",
   "Select",
   "Slider",
