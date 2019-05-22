@@ -34,6 +34,7 @@ import Lumi.Components.NativeSelect as NativeSelect
 import Lumi.Components.Navigation as Navigation
 import Lumi.Components.Pagination as Pagination
 import Lumi.Components.Pill as Pill
+import Lumi.Components.Responsive as Responsive
 import Lumi.Components.Row as Row
 import Lumi.Components.Select as Select
 import Lumi.Components.Slider as Slider
@@ -87,6 +88,7 @@ attachGlobalComponentStyles = do
     , Navigation.styles
     , Pagination.styles
     , Pill.styles
+    , Responsive.styles
     , Row.styles
     , Select.styles
     , Slider.styles
