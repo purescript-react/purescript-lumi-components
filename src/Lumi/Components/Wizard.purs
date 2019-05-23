@@ -63,7 +63,7 @@ step
   ~> Wizard step { readonly :: Boolean | props } value
 step s f =
   let
-    form = F.buildConcurrently f
+    form = F.build f
   in
     Wizard $ liftF $ Form
       { step: s

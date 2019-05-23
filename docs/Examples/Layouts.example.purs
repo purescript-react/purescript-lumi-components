@@ -275,6 +275,7 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
               , renderCell: \rowData -> R.text rowData.createdDate
               }
             ]
+        , onColumnChange: toNullable Nothing
         }
 
     overviewTableData =

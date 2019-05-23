@@ -1,9 +1,8 @@
 module Lumi.Components.Form
-  ( module Internal
+  ( module Defaults
+  , module Internal
   , module Validation
   , build
-  , buildConcurrently
-  , buildWithDefaults
   , static
   , section
   , inputBox
@@ -66,7 +65,8 @@ import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
 import Lumi.Components.FetchCache as FetchCache
-import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, revalidate, sequential, pruneTree)
+import Lumi.Components.Form.Defaults (formDefaults) as Defaults
+import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (FormBuilder, SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, optional, setFresh, setModified, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
@@ -89,7 +89,7 @@ import React.Basic.DOM (css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
-import Record (disjointUnion, get)
+import Record (get)
 import Type.Row (class Cons)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -101,30 +101,6 @@ build
   :: forall props unvalidated result
    . FormBuilder { readonly :: Boolean | props } unvalidated result
   -> { value :: unvalidated
-     , onChange :: Maybe result -> unvalidated -> Effect Unit
-     , inlineTable :: Boolean
-     , forceTopLabels :: Boolean
-     , readonly :: Boolean
-     | props
-     }
-  -> JSX
-build editor = \props ->
-  form props
-    { onChange = \f ->
-        let v = f props.value
-         in props.onChange (revalidate editor (unsafeCoerce props) v) v
-    }
-  where
-     form = buildConcurrently editor
-
--- | Create a React component for a form from a `FormBuilder`.
--- |
--- | _Note_: this function should be fully applied, to avoid remounting
--- | the component on each render.
-buildConcurrently
-  :: forall props unvalidated result
-   . FormBuilder { readonly :: Boolean | props } unvalidated result
-  -> { value :: unvalidated
      , onChange :: (unvalidated -> unvalidated) -> Effect Unit
      , inlineTable :: Boolean
      , forceTopLabels :: Boolean
@@ -132,7 +108,7 @@ buildConcurrently
      | props
      }
   -> JSX
-buildConcurrently editor = makeStateless (createComponent "Form") render where
+build editor = makeStateless (createComponent "Form") render where
   render props@{ value, onChange, inlineTable, forceTopLabels, readonly } =
 
     let forest = Array.mapMaybe pruneTree $ edit onChange
@@ -159,8 +135,10 @@ buildConcurrently editor = makeStateless (createComponent "Form") render where
           Child { key, child } ->
             maybe identity keyed key $ child
           Wrapper { key, children } ->
-            maybe identity keyed key $
-              fragment [ intercalate fieldDivider (map toRow children) ]
+            R.div
+              { key: fromMaybe "" key
+              , children: [ intercalate fieldDivider (map toRow children) ]
+              }
           Node { label, key, required, validationError, children } ->
             maybe identity keyed key $ labeledField
               { label: text body
@@ -181,29 +159,6 @@ buildConcurrently editor = makeStateless (createComponent "Form") render where
                        ]
           , children: surround fieldDivider (map toRow forest)
           }
-
--- | Utility function.
--- | Create a React component for a form from a `FormBuilder` and a default
--- | form state. This default value is used in the form whenever the `value`
--- | prop is `Nothing`.
--- |
--- | _Note_: this function should be fully applied, to avoid remounting
--- | the component on each render.
-buildWithDefaults
-  :: forall props unvalidated result
-   . unvalidated
-  -> FormBuilder { readonly :: Boolean | props } unvalidated result
-  -> { value :: Maybe unvalidated
-     , onChange :: Maybe result -> unvalidated -> Effect Unit
-     , inlineTable :: Boolean
-     , forceTopLabels :: Boolean
-     , readonly :: Boolean
-     | props
-     }
-  -> JSX
-buildWithDefaults defaults editor = \props -> form props { value = fromMaybe defaults props.value }
-  where
-     form = build editor
 
 -- | Create an always-valid `FormBuilder` that renders the supplied `JSX`.
 static :: forall props value. JSX -> FormBuilder props value Unit
@@ -786,17 +741,20 @@ fetch_ loading getData = fetch loading "" (const getData)
 -- | A dummy form that, whenever the specified key changes, performs an
 -- | asynchronous effect. It displays the specified JSX while the effect is not
 -- | complete, sets the form data to the result of the effect and returns it.
-asyncEffect :: forall props a. String -> JSX -> Aff a -> FormBuilder props a a
+asyncEffect :: forall props a. String -> JSX -> Aff (a -> a) -> FormBuilder props a a
 asyncEffect key loader aff =
-  withKey key $ formBuilder_ \_ _ onChange ->
-    keyed key $ asyncWithLoader loader do
-      newValue <- aff
-      liftEffect $ onChange newValue
-      mempty
+  withKey key $ formBuilder \_ value ->
+    { edit: \onChange ->
+        keyed key $ asyncWithLoader loader do
+          f <- aff
+          liftEffect $ onChange f
+          mempty
+    , validate: Just value
+    }
 
 -- | A dummy form that, whenever the specified key changes, performs an
 -- | effect. It sets the form data to the result of the effect and returns it.
-effect :: forall props a. String -> Effect a -> FormBuilder props a a
+effect :: forall props a. String -> Effect (a -> a) -> FormBuilder props a a
 effect key = asyncEffect key mempty <<< liftEffect
 
 -- | Sequential `SeqFormBuilder` used for asynchronously initializing some
@@ -823,16 +781,18 @@ initializer
   :: forall props value
    . Nub (initialized :: Boolean | value) (initialized :: Boolean | value)
   => JSX
-  -> (props -> {| value } -> Aff {| value })
+  -> (props -> {| value } -> Aff ({ initialized :: Boolean | value } -> { initialized :: Boolean | value }))
   -> SeqFormBuilder props { initialized :: Boolean | value } Unit
 initializer loader aff =
   sequential "initializer" $ withValue \value@{ initialized } -> withProps \props ->
-    if initialized
-      then pure unit
-      else
-        invalidate $ void $ asyncEffect "" loader do
-          newValue <- aff props (contractValue value)
-          pure $ disjointUnion { initialized: true } newValue
+    if initialized then
+      pure unit
+    else
+      invalidate
+        $ void
+        $ asyncEffect "" loader
+        $ map (_{ initialized = true } <<< _)
+        $ aff props (contractValue value)
   where
     contractValue :: { initialized :: Boolean | value } -> {| value }
     contractValue = unsafeCoerce
