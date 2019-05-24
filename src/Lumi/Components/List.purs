@@ -11,22 +11,18 @@ import Lumi.Components.Size (Size(..))
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 
-type CommonListProps rest =
+type ListProps =
   { size :: Maybe Size
   , rightAligned :: Boolean
   , rows :: Array (Array JSX)
-  | rest
+  , borders :: Boolean
   }
-
-type ListProps = CommonListProps
-  ( borders :: Boolean
-  )
 
 component :: Component ListProps
 component = createComponent "List"
 
-listComponent :: ListProps -> JSX
-listComponent = makeStateless component $ lumiList <<< mapProps
+list :: ListProps -> JSX
+list = makeStateless component $ lumiList <<< mapProps
   where
     mapProps props =
       { className: "lumi"
@@ -49,35 +45,20 @@ listComponent = makeStateless component $ lumiList <<< mapProps
     lumiListRow = element (R.unsafeCreateDOMComponent "lumi-list-row")
     lumiListRowCell = element (R.unsafeCreateDOMComponent "lumi-list-row-cell")
 
-list :: CommonListProps () -> JSX
-list props =
-  listComponent
-    { size: props.size
-    , rightAligned: props.rightAligned
-    , rows: props.rows
-    , borders: true
-    }
-
-defaultList :: CommonListProps ()
+defaultList :: ListProps
 defaultList =
   { size: Just $ Medium
   , rightAligned: false
   , rows: []
+  , borders: true
   }
 
-compactList :: CommonListProps ()
+compactList :: ListProps
 compactList =
   { size: Just $ Small
   , rightAligned: false
   , rows: []
-  }
-
-borderlessList :: ListProps
-borderlessList =
-  { size: Just $ Medium
-  , rightAligned: false
-  , rows: []
-  , borders: false
+  , borders: true
   }
 
 type StructuredColumnListProps row =
@@ -99,6 +80,7 @@ structuredColumnList = makeStateless structuredColumnListComponent render
         { size: Just $ Large
         , rightAligned: props.rightAligned
         , rows: map renderRow props.rows
+        , borders: true
         }
       where
         renderRow row =
