@@ -44,7 +44,8 @@
     "purescript-heterogeneous": "^0.3.0",
     "purescript-free": "^5.1.0",
     "purescript-colors": "^5.0.0",
-    "purescript-record-extra": "^2.0.2"
+    "purescript-record-extra": "^2.0.2",
+    "purescript-react-basic-hooks": "^0.6.1"
   },
   "devDependencies": {
     "purescript-debug": "^4.0.0",

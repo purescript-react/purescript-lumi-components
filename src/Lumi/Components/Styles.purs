@@ -15,6 +15,7 @@ import Lumi.Components.Card as Card
 import Lumi.Components.CardGrid as CardGrid
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column as Column
+import Lumi.Components.Details as Details
 import Lumi.Components.Divider as Divider
 import Lumi.Components.DropdownButton as DropdownButton
 import Lumi.Components.EditableTable as EditableTable
@@ -69,6 +70,7 @@ attachGlobalComponentStyles = do
     , Card.styles
     , CardGrid.styles
     , Column.styles
+    , Details.styles
     , Divider.styles
     , DropdownButton.styles
     , EditableTable.styles
