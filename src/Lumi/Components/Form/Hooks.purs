@@ -21,6 +21,7 @@ import React.Basic.Hooks (Hook, JSX, ReactComponent, UseState, component, elemen
 import React.Basic.Hooks as React
 import Unsafe.Coerce (unsafeCoerce)
 
+
 useForm
   :: forall props unvalidated result xs
    . RowToList unvalidated xs
@@ -49,55 +50,39 @@ useForm
       , form :: JSX
       }
 useForm editor props = React.do
-  { formData
-  , setFormData
-  , setModified: setModified'
-  , reset
-  , validated
-  , forest
-  } <- useForm' editor props
+  let
+    renderer = renderForm
+      { readonly: props.readonly
+      , inlineTable: props.inlineTable
+      , forceTopLabels: props.forceTopLabels
+      }
 
-  pure
-    { formData
-    , setFormData
-    , setModified: setModified'
-    , reset
-    , validated
-    , form: renderForm forest
-        { readonly: props.readonly
-        , inlineTable: props.inlineTable
-        , forceTopLabels: props.forceTopLabels
-        }
-    }
+  useForm' editor props renderer
+
 
 useForm'
-  :: forall props unvalidated result xs
-   . RowToList unvalidated xs
+  :: forall props unvalidated unvalidated_ result
+   . RowToList unvalidated unvalidated_
   => HMap ModifyValidated { | unvalidated } { | unvalidated }
   => FormBuilder
        { initialState :: { | unvalidated }
-       , readonly :: Boolean
-       , inlineTable :: Boolean
-       , forceTopLabels :: Boolean
        | props
        }
        { | unvalidated }
        result
   -> { initialState :: { | unvalidated }
-     , readonly :: Boolean
-     , inlineTable :: Boolean
-     , forceTopLabels :: Boolean
      | props
      }
+  -> (Forest JSX -> JSX)
   -> Hook (UseState { | unvalidated })
       { formData :: { | unvalidated }
       , setFormData :: ({ | unvalidated } -> { | unvalidated }) -> Effect Unit
       , setModified :: Effect Unit
       , reset :: Effect Unit
       , validated :: Maybe result
-      , forest :: Forest JSX
+      , form :: JSX
       }
-useForm' editor props = React.do
+useForm' editor props renderer = React.do
   formData /\ setFormData <- useState props.initialState
 
   let
@@ -110,17 +95,18 @@ useForm' editor props = React.do
     , setModified: setFormData \f -> setModified f
     , reset: setFormData \_ -> props.initialState
     , validated
-    , forest
+    , form: renderer forest
     }
 
+
 renderForm
-  :: Forest JSX
-  -> { forceTopLabels :: Boolean
+  :: { forceTopLabels :: Boolean
      , readonly :: Boolean
      , inlineTable :: Boolean
      }
+  -> Forest JSX
   -> JSX
-renderForm forest { inlineTable, readonly, forceTopLabels } =
+renderForm { inlineTable, readonly, forceTopLabels } forest =
   element (R.unsafeCreateDOMComponent "lumi-form")
     { class:
         String.joinWith " " $ fold
@@ -153,6 +139,7 @@ renderForm forest { inlineTable, readonly, forceTopLabels } =
           , forceTopLabel: forceTopLabels
           , style: R.css {}
           }
+
 
 -- | Consume `useForm` as a render-prop component.
 -- |
