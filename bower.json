@@ -30,6 +30,7 @@
     "purescript-profunctor-lenses": "^4.0.0",
     "purescript-random": "^4.0.0",
     "purescript-react-basic": "^8.0.0 || ^9.0.0",
+    "purescript-react-basic-hooks": "^0.6.1",
     "purescript-react-dnd-basic": "^6.0.0",
     "purescript-record": "^1.0.0",
     "purescript-simple-json": "^4.0.0",

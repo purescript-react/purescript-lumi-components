@@ -7,192 +7,150 @@ import Data.Array as Array
 import Data.Int as Int
 import Data.Lens (iso)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..), fromMaybe, isJust, maybe)
+import Data.Maybe (Maybe(..), isJust, maybe)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
 import Data.String as String
 import Data.String.NonEmpty (length, NonEmptyString, toString)
 import Data.Symbol (SProxy(..))
-import Effect (Effect)
 import Effect.Aff (Aff, Milliseconds(..), delay, error, throwError)
 import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
+import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Button as Button
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Form (FormBuilder, Validated)
 import Lumi.Components.Form as F
 import Lumi.Components.Form.Defaults (formDefaults)
+import Lumi.Components.Form.Hook (useForm)
 import Lumi.Components.Input as Input
-import Lumi.Components.LabeledField (labeledField, RequiredField(..))
+import Lumi.Components.LabeledField (RequiredField(..))
 import Lumi.Components.Modal (dialog)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (h1_)
 import Lumi.Components.Upload (FileId(..))
 import Lumi.Components.Upload as Upload
-import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
-import React.Basic.DOM.Events (targetChecked)
+import React.Basic.DOM.Events (preventDefault)
 import React.Basic.Events (handler, handler_)
+import React.Basic.Hooks (JSX, CreateComponent, component, element, useEffect, useState, (/\))
+import React.Basic.Hooks as React
 import Web.File.File as File
 
-component :: Component Unit
-component = createComponent "FormExample"
-
-data Action formData formResult
-  = SetInlineTable Boolean
-  | SetForceTopLabels Boolean
-  | SetReadonly Boolean
-  | SetSimulatePauses Boolean
-  | SetUser (formData -> formData)
-  | Submit
-  | Reset
-
 docs :: JSX
-docs = unit # make component { initialState, render }
-  where
-    initialState =
-      { user: (formDefaults :: User)
-          { favoriteColor = Just "red"
+docs = flip element {} $ unsafePerformEffect do
+
+  userFormExample <- mkUserFormExample
+
+  component "FormExample" \_ -> React.do
+    { formData, form } <- useForm metaForm
+        { initialState: formDefaults
+        , readonly: false
+        , inlineTable: false
+        , forceTopLabels: false
+        }
+
+    pure $ column_
+      [ h1_ "Form"
+
+      , column
+          { style: css { maxWidth: "50rem", padding: "2rem 0" }
+          , children: [ form ]
           }
-      , result: Nothing :: Maybe ValidatedUser
-      , modalOpen: false
-      , inlineTable: false
-      , forceTopLabels: false
-      , readonly: false
-      , simulatePauses: true
+
+      , example $ element userFormExample formData
+      ]
+
+-- | This form renders the toggles at the top of the example
+metaForm
+  :: forall props
+   . FormBuilder
+      { readonly :: Boolean
+      | props
       }
+      { inlineTable :: Boolean
+      , forceTopLabels :: Boolean
+      , readonly :: Boolean
+      , simulatePauses :: Boolean
+      }
+      Unit
+metaForm = ado
+  inlineTable <-
+    F.indent "Inline table" Neither
+    $ F.focus (prop (SProxy :: SProxy "inlineTable"))
+    $ F.switch
+  forceTopLabels <-
+    F.indent "Force top labels" Neither
+    $ F.focus (prop (SProxy :: SProxy "forceTopLabels"))
+    $ F.switch
+  readonly <-
+    F.indent "Readonly" Neither
+    $ F.focus (prop (SProxy :: SProxy "readonly"))
+    $ F.switch
+  simulatePauses <-
+    F.indent "Simulate pauses" Neither
+    $ F.focus (prop (SProxy :: SProxy "simulatePauses"))
+    $ F.switch
+  in unit
 
-    send self = case _ of
-      SetInlineTable inlineTable ->
-        self.setState _ { inlineTable = inlineTable }
+mkUserFormExample
+  :: CreateComponent
+       { inlineTable :: Boolean
+       , forceTopLabels :: Boolean
+       , readonly :: Boolean
+       , simulatePauses :: Boolean
+       }
+mkUserFormExample = do
+  component "UserFormExample" \props -> React.do
+    modalOpen /\ setModalOpen <- useState false
 
-      SetForceTopLabels forceTopLabels ->
-        self.setState _ { forceTopLabels = forceTopLabels }
+    { setModified, reset, validated, form } <- useForm userForm
+        { initialState: userFormDefaults
+        , readonly: props.readonly
+        , inlineTable: props.inlineTable
+        , forceTopLabels: props.forceTopLabels && not props.inlineTable
+        , loadColor: loadColor props.simulatePauses
+        , loadColors: loadColors props.simulatePauses
+        }
 
-      SetReadonly readonly ->
-        self.setState _ { readonly = readonly }
+    let hasResult = isJust validated
+    useEffect hasResult do
+      setModalOpen $ const hasResult
+      mempty
 
-      SetSimulatePauses simulatePauses ->
-        self.setState _ { simulatePauses = simulatePauses }
-
-      SetUser update ->
-        let
-          formProps =
-            { loadColor: loadColor self.state.simulatePauses
-            , loadColors: loadColors self.state.simulatePauses
-            , readonly: self.state.readonly
-            }
-        in
-          self.setState \s -> s
-            { result = F.revalidate userForm formProps (update s.user)
-            , user = update s.user
-            }
-
-      Submit ->
-        self.setState \state -> state { user = F.setModified state.user, modalOpen = isJust state.result }
-
-      Reset ->
-        self.setState (const initialState)
-
-    render self@{ state: { user, result, inlineTable, forceTopLabels, readonly, simulatePauses, modalOpen } } =
-        column_
-          [ h1_ "Form"
-
-          , column
-              { style: css { maxWidth: "50rem", padding: "2rem 0" }
+    pure $ R.form -- Forms should be enclosed in a single "<form>" element to enable
+                  -- default browser behavior, such as the enter key. Use "type=submit"
+                  -- on the form's submit button and `preventDefault` to keep the browser
+                  -- from reloading the page on submission.
+      { onSubmit: handler preventDefault \_ -> setModified
+      , style: R.css { alignSelf: "stretch" }
+      , children:
+          [ form
+          , row
+              { style: R.css { justifyContent: "flex-end" }
               , children:
-                  [ labeledField
-                      { label: R.text "Inline Table"
-                      , value: Input.input Input.switch
-                          { checked = if inlineTable then Input.On else Input.Off
-                          , onChange = handler targetChecked $ send self <<< SetInlineTable <<< fromMaybe false
-                          }
-                      , validationError: Nothing
-                      , required: Neither
-                      , forceTopLabel: false
-                      , style: css {}
+                  [ Button.button Button.secondary
+                      { title = "Reset"
+                      , onPress = handler_ reset
                       }
-
-                  , labeledField
-                      { label: R.text "Force Top Labels"
-                      , value: Input.input Input.switch
-                          { checked = if forceTopLabels then Input.On else Input.Off
-                          , disabled = inlineTable
-                          , onChange = handler targetChecked $ send self <<< SetForceTopLabels <<< fromMaybe false
-                          }
-                      , validationError: Nothing
-                      , required: Neither
-                      , forceTopLabel: false
-                      , style: css {}
-                      }
-
-                  , labeledField
-                      { label: R.text "Readonly"
-                      , value: Input.input Input.switch
-                          { checked = if readonly then Input.On else Input.Off
-                          , onChange = handler targetChecked $ send self <<< SetReadonly <<< fromMaybe false
-                          }
-                      , validationError: Nothing
-                      , required: Neither
-                      , forceTopLabel: false
-                      , style: css {}
-                      }
-
-                  , labeledField
-                      { label: R.text "Simulate pauses"
-                      , value: Input.input Input.switch
-                          { checked = if simulatePauses then Input.On else Input.Off
-                          , onChange = handler targetChecked $ send self <<< SetSimulatePauses <<< fromMaybe false
-                          }
-                      , validationError: Nothing
-                      , required: Neither
-                      , forceTopLabel: false
-                      , style: css {}
+                  , Button.button Button.primary
+                      { title = "Submit"
+                      , type = "submit"
+                      , style = R.css { marginLeft: "12px" }
                       }
                   ]
               }
-
-          , example
-              $ column
-                  { style: css { alignSelf: "stretch" }
-                  , children:
-                      [ userComponent
-                          { value: user
-                          , onChange: send self <<< SetUser
-                          , loadColor: loadColor simulatePauses
-                          , loadColors: loadColors simulatePauses
-                          , inlineTable
-                          , forceTopLabels: forceTopLabels && not inlineTable
-                          , readonly
-                          }
-                      , row
-                          { style: css { justifyContent: "flex-end" }
-                          , children:
-                              [ Button.button Button.secondary
-                                  { title = "Reset"
-                                  , onPress = handler_ $ send self Reset
-                                  }
-                              , Button.button Button.primary
-                                  { title = "Submit"
-                                  , style = css { marginLeft: "12px" }
-                                  , onPress = handler_ $ send self Submit
-                                  }
-                              ]
-                          }
-                      ]
-                  }
-
-          , case result of
+          , case validated of
               Nothing ->
                 mempty
               Just { firstName, lastName } ->
                 dialog
                   { modalOpen
-                  , onRequestClose: send self Reset
+                  , onRequestClose: reset
                   , onActionButtonClick: Nullable.null
                   , actionButtonTitle: ""
                   , size: Medium
@@ -200,7 +158,8 @@ docs = unit # make component { initialState, render }
                       "Created user " <> toString firstName <> " " <> toString lastName <> "!"
                   }
           ]
-
+      }
+  where
     loadColor simulatePauses c = do
       when simulatePauses do
         delay (Milliseconds 500.0)
@@ -266,20 +225,6 @@ type ValidatedUser =
   , notes :: String
   , avatar :: Maybe Upload.FileId
   }
-
--- | We have to fully apply `Form.build` in order to avoid
--- | remounting this component on each render.
-userComponent
-  :: { value :: User
-     , onChange :: (User -> User) -> Effect Unit
-     , loadColor :: String -> Aff { label :: String, value :: String }
-     , loadColors :: String -> Aff (Array { label :: String, value :: String })
-     , inlineTable :: Boolean
-     , forceTopLabels :: Boolean
-     , readonly :: Boolean
-     }
-  -> JSX
-userComponent = F.build userForm
 
 userForm
   :: forall props
@@ -412,6 +357,9 @@ userForm = ado
     randomPause = do
       interval <- liftEffect $ randomRange 100.0 700.0
       delay $ Milliseconds interval
+
+userFormDefaults :: User
+userFormDefaults = (formDefaults :: User) { favoriteColor = Just "red" }
 
 type Address =
   { name :: Validated String
