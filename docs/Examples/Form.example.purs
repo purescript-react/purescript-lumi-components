@@ -24,13 +24,11 @@ import Lumi.Components.Example (example)
 import Lumi.Components.Form (FormBuilder, Validated)
 import Lumi.Components.Form as F
 import Lumi.Components.Form.Defaults (formDefaults)
-import Lumi.Components.Form.Hook (useForm)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..))
 import Lumi.Components.Modal (dialog)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
-import Lumi.Components.Text (h1_)
 import Lumi.Components.Upload (FileId(..))
 import Lumi.Components.Upload as Upload
 import React.Basic.DOM (css)
@@ -47,7 +45,7 @@ docs = flip element {} $ unsafePerformEffect do
   userFormExample <- mkUserFormExample
 
   component "FormExample" \_ -> React.do
-    { formData, form } <- useForm metaForm
+    { formData, form } <- F.useForm metaForm
         { initialState: formDefaults
         , readonly: false
         , inlineTable: false
@@ -55,9 +53,7 @@ docs = flip element {} $ unsafePerformEffect do
         }
 
     pure $ column_
-      [ h1_ "Form"
-
-      , column
+      [ column
           { style: css { maxWidth: "50rem", padding: "2rem 0" }
           , children: [ form ]
           }
@@ -108,7 +104,7 @@ mkUserFormExample = do
   component "UserFormExample" \props -> React.do
     modalOpen /\ setModalOpen <- useState false
 
-    { setModified, reset, validated, form } <- useForm userForm
+    { setModified, reset, validated, form } <- F.useForm userForm
         { initialState: userFormDefaults
         , readonly: props.readonly
         , inlineTable: props.inlineTable

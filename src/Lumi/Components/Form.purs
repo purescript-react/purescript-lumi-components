@@ -3,6 +3,10 @@ module Lumi.Components.Form
   , module Internal
   , module Validation
   , build
+  , useForm
+  , useForm'
+  , defaultRenderForm
+  , formState
   , static
   , section
   , inputBox
@@ -58,16 +62,20 @@ import Data.Nullable (notNull, null, toNullable)
 import Data.String as String
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Traversable (intercalate, traverse, traverse_)
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
+import Effect.Unsafe (unsafePerformEffect)
+import Heterogeneous.Mapping (class HMap)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
 import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
-import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
+import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), Forest, formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (FormBuilder, SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
+import Lumi.Components.Form.Validation (ModifyValidated, setModified)
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, optional, setFresh, setModified, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
@@ -83,12 +91,13 @@ import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
 import Prim.Row (class Nub, class Union)
+import Prim.RowList (class RowToList)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
-import React.Basic.DOM (css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
+import React.Basic.Hooks as Hooks
 import Record (get)
 import Type.Row (class Cons)
 import Unsafe.Coerce (unsafeCoerce)
@@ -129,36 +138,174 @@ build editor = makeStateless (createComponent "Form") render where
              }
         contractProps = unsafeCoerce
 
-        fieldDivider = R.hr { className: "lumi field-divider" }
-
-        toRow = case _ of
-          Child { key, child } ->
-            maybe identity keyed key $ child
-          Wrapper { key, children } ->
-            R.div
-              { key: fromMaybe "" key
-              , children: [ intercalate fieldDivider (map toRow children) ]
-              }
-          Node { label, key, required, validationError, children } ->
-            maybe identity keyed key $ labeledField
-              { label: text body
-                  { children = [ label ]
-                  , className = toNullable (pure "field-label")
-                  }
-              , value: intercalate fieldDivider (map toRow children)
-              , validationError: validationError
-              , required: required
-              , forceTopLabel: forceTopLabels
-              , style: css {}
-              }
-
-     in element (unsafeCreateDOMComponent "lumi-form")
-          { "class": String.joinWith " " $ fold
-                       [ guard inlineTable ["inline-table"]
-                       , guard readonly ["readonly"]
-                       ]
-          , children: surround fieldDivider (map toRow forest)
+     in defaultRenderForm
+          { readonly: props.readonly
+          , inlineTable: props.inlineTable
+          , forceTopLabels: props.forceTopLabels
           }
+          forest
+
+-- | Render a form with state managed automatically.
+useForm
+  :: forall props unvalidated result xs
+   . RowToList unvalidated xs
+  => HMap ModifyValidated { | unvalidated } { | unvalidated }
+  => FormBuilder
+       { initialState :: { | unvalidated }
+       , readonly :: Boolean
+       , inlineTable :: Boolean
+       , forceTopLabels :: Boolean
+       | props
+       }
+       { | unvalidated }
+       result
+  -> { initialState :: { | unvalidated }
+     , readonly :: Boolean
+     , inlineTable :: Boolean
+     , forceTopLabels :: Boolean
+     | props
+     }
+  -> Hooks.Hook (Hooks.UseState { | unvalidated })
+      { formData :: { | unvalidated }
+      , setFormData :: ({ | unvalidated } -> { | unvalidated }) -> Effect Unit
+      , setModified :: Effect Unit
+      , reset :: Effect Unit
+      , validated :: Maybe result
+      , form :: JSX
+      }
+useForm editor props = React.do
+  let
+    renderer = defaultRenderForm
+      { readonly: props.readonly
+      , inlineTable: props.inlineTable
+      , forceTopLabels: props.forceTopLabels
+      }
+
+  useForm' editor props renderer
+
+
+-- | Like `useForm`, but allows an alternative render implementation
+-- | to be provided as an additional argument.
+useForm'
+  :: forall props unvalidated unvalidated_ result
+   . RowToList unvalidated unvalidated_
+  => HMap ModifyValidated { | unvalidated } { | unvalidated }
+  => FormBuilder
+       { initialState :: { | unvalidated }
+       | props
+       }
+       { | unvalidated }
+       result
+  -> { initialState :: { | unvalidated }
+     | props
+     }
+  -> (Forest JSX -> JSX)
+  -> Hooks.Hook (Hooks.UseState { | unvalidated })
+      { formData :: { | unvalidated }
+      , setFormData :: ({ | unvalidated } -> { | unvalidated }) -> Effect Unit
+      , setModified :: Effect Unit
+      , reset :: Effect Unit
+      , validated :: Maybe result
+      , form :: JSX
+      }
+useForm' editor props renderer = Hooks.do
+  formData /\ setFormData <- Hooks.useState props.initialState
+
+  let
+    { edit, validate: validated } = un FormBuilder editor props formData
+    forest = Array.mapMaybe pruneTree $ edit setFormData
+
+  pure
+    { formData
+    , setFormData
+    , setModified: setFormData setModified
+    , reset: setFormData \_ -> props.initialState
+    , validated
+    , form: renderer forest
+    }
+
+
+-- | The default Lumi implementation for rendering a forest of JSX
+-- | form fields.
+defaultRenderForm
+  :: { forceTopLabels :: Boolean
+     , readonly :: Boolean
+     , inlineTable :: Boolean
+     }
+  -> Forest JSX
+  -> JSX
+defaultRenderForm { inlineTable, readonly, forceTopLabels } forest =
+  element (R.unsafeCreateDOMComponent "lumi-form")
+    { class:
+        String.joinWith " " $ fold
+          [ guard inlineTable ["inline-table"]
+          , guard readonly ["readonly"]
+          ]
+    , children:
+        surround fieldDivider (map toRow forest)
+    }
+  where
+    fieldDivider = R.hr { className: "lumi field-divider" }
+
+    toRow = case _ of
+      Child { key, child } ->
+        maybe identity keyed key $ child
+      Wrapper { key, children } ->
+        R.div
+          { key: fromMaybe "" key
+          , children: [ intercalate fieldDivider (map toRow children) ]
+          }
+      Node { label, key, required, validationError, children } ->
+        maybe identity keyed key $ labeledField
+          { label: text body
+              { children = [ label ]
+              , className = toNullable (pure "field-label")
+              }
+          , value: intercalate fieldDivider (map toRow children)
+          , validationError
+          , required
+          , forceTopLabel: forceTopLabels
+          , style: R.css {}
+          }
+
+
+-- | Consume `useForm` as a render-prop component. Useful when `useForm`
+-- | would be preferred but you don't want to migrate an entire component
+-- | to React's hooks API.
+-- |
+-- | _Note_: this function should be fully applied, to avoid remounting
+-- | the component on each render.
+formState
+  :: forall props unvalidated result xs
+   . RowToList unvalidated xs
+  => HMap ModifyValidated { | unvalidated } { | unvalidated }
+  => FormBuilder
+       { initialState :: { | unvalidated }
+       , readonly :: Boolean
+       , inlineTable :: Boolean
+       , forceTopLabels :: Boolean
+       | props
+       }
+       { | unvalidated }
+       result
+  -> Hooks.ReactComponent
+      { initialState :: { | unvalidated }
+      , render
+          :: { formData :: { | unvalidated }
+             , setFormData :: ({ | unvalidated } -> { | unvalidated }) -> Effect Unit
+             , setModified :: Effect Unit
+             , reset :: Effect Unit
+             , validated :: Maybe result
+             , form :: JSX
+             }
+          -> JSX
+      | props
+      }
+formState editor = unsafePerformEffect do
+  Hooks.component "FormState" \props -> Hooks.do
+    state <- useForm editor (unsafeCoerce props)
+    pure (props.render state)
+
 
 -- | Create an always-valid `FormBuilder` that renders the supplied `JSX`.
 static :: forall props value. JSX -> FormBuilder props value Unit
@@ -190,7 +337,7 @@ inputBox inputProps = formBuilder_ \{ readonly } s onChange ->
     else Input.input inputProps
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = css { width: "100%" }
+           , style = R.css { width: "100%" }
            }
 
 -- | A simple text box makes a `FormBuilder` for strings
@@ -224,7 +371,7 @@ textarea = formBuilder_ \{ readonly } s onChange ->
     else Textarea.textarea Textarea.defaults
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = css { width: "100%" }
+           , style = R.css { width: "100%" }
            }
 
 -- | A `switch` is an editor for booleans which displays Yes or No.
@@ -442,7 +589,7 @@ asyncSelect l toSelectOption optionRenderer =
         , loadOptions: get l props
         , onChange: onChange
         , className: ""
-        , style: css {}
+        , style: R.css {}
         , searchable: true
         , id: ""
         , name: ""
@@ -489,7 +636,7 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
               Just _  -> alignToInput
                 case data_ of
                   Nothing     -> loader
-                    { style: css { width: "20px", height: "20px", borderWidth: "2px" }
+                    { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }
                     , testId: toNullable Nothing
                     }
                   Just data_' -> text body
@@ -501,7 +648,7 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
                 , loadOptions: get l props
                 , onChange: onChange <<< map (toId <<< _.value <<< toSelectOption)
                 , className: ""
-                , style: css {}
+                , style: R.css {}
                 , searchable: true
                 , id: ""
                 , name: ""
@@ -693,7 +840,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                                     , actionButtonTitle: addLabel
                                     , component
                                     , componentProps
-                                    , style: css {}
+                                    , style: R.css {}
                                     }
                       }
                   })
@@ -710,7 +857,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                             , actionButtonTitle: addLabel
                             , component
                             , componentProps
-                            , style: css {}
+                            , style: R.css {}
                             }
                     })
       , validate: pure xs
