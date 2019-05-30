@@ -26,13 +26,17 @@ desktop_ = desktop <<< { style: css {}, children: _ }
 styles :: JSS
 styles = jss
   { "@global":
-      { "@media (max-width: 860px)":
-          { "lumi-desktop":
+      { "lumi-desktop":
+          { "display": "flex"
+          , "flex-shrink": "0"
+          , "@media (max-width: 860px)":
               { "display": "none !important"
               }
           }
-      , "@media (min-width: 861px)":
-          { "lumi-mobile":
+      , "lumi-mobile":
+          { "display": "flex"
+          , "flex-shrink": "0"
+          , "@media (min-width: 861px)":
               { "display": "none !important"
               }
           }
