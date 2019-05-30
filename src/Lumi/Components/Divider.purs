@@ -35,6 +35,7 @@ styles = jss
           , background: cssStringHSLA colors.black4
           , fontSize: "0"
           , border: "0"
+          , flexShrink: "0"
           }
       }
   }
