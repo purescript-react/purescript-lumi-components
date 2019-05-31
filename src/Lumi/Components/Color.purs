@@ -8,11 +8,10 @@ module Lumi.Components.Color
 
 import Prelude
 
-import Color (rgba)
+import Color (rgb, rgba)
 import Color as C
 import Data.Maybe (fromMaybe)
 import Data.Newtype (class Newtype)
-import Record.Extra (mapRecord)
 
 type Color = C.Color
 
@@ -45,31 +44,29 @@ type ColorMap a =
   }
 
 colors :: ColorMap Color
-colors = mapRecord (fromMaybe transparent <<< C.fromHexString)
-  { black: "#232220"
-  , black1: "#91908d"
-  , black2: "#bebcb9"
-  , black3: "#dddddc"
-  , black4: "#e7e6e5"
-  , black5: "#f5f4f2"
-  , black6: "#f7f6f4"
-  , black7: "#f9f8f7"
-  , black8: "#fbfaf9"
-  , primary: "#0044e4"
-  , primary1: "#a6bef6"
-  , primary2: "#bfd0f8"
-  , primary3: "#d9e3fb"
-  , primary4: "#edf2fd"
-  , secondary: "#91908d"
-  , accent1: "#49b860"
-  , accent2: "#ffa502"
-  , accent3: "#f1500d"
-  , accent33: "#fde5db"
-  , white: "#ffffff"
-  , transparent: "transparent"
+colors =
+  { black: rgb 0x23 0x22 0x20
+  , black1: rgb 0x91 0x90 0x8d
+  , black2: rgb 0xbe 0xbc 0xb9
+  , black3: rgb 0xdd 0xdd 0xdc
+  , black4: rgb 0xe7 0xe6 0xe5
+  , black5: rgb 0xf5 0xf4 0xf2
+  , black6: rgb 0xf7 0xf6 0xf4
+  , black7: rgb 0xf9 0xf8 0xf7
+  , black8: rgb 0xfb 0xfa 0xf9
+  , primary: rgb 0x00 0x44 0xe4
+  , primary1: rgb 0xa6 0xbe 0xf6
+  , primary2: rgb 0xbf 0xd0 0xf8
+  , primary3: rgb 0xd9 0xe3 0xfb
+  , primary4: rgb 0xed 0xf2 0xfd
+  , secondary: rgb 0x91 0x90 0x8d
+  , accent1: rgb 0x49 0xb8 0x60
+  , accent2: rgb 0xff 0xa5 0x02
+  , accent3: rgb 0xf1 0x50 0x0d
+  , accent33: rgb 0xfd 0xe5 0xdb
+  , white: rgb 0xff 0xff 0xff
+  , transparent: rgba 0 0 0 0.0
   }
-  where
-    transparent = rgba 0 0 0 0.0
 
 colorNames :: ColorMap ColorName
 colorNames =

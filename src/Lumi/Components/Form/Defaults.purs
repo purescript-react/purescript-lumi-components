@@ -15,7 +15,7 @@ import Prim.Row (class Cons, class Lacks)
 import Prim.RowList (class RowToList, Cons, Nil)
 import Record.Builder (Builder)
 import Record.Builder as Builder
-import Type.Row (RLProxy(..))
+import Type.Data.RowList (RLProxy(..))
 
 -- | Provides default values for primitive data types to be used as initial
 -- | values in form builders.

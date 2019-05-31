@@ -90,7 +90,7 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
 import Record (get)
-import Type.Row (class Cons)
+import Prim.Row (class Cons)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
