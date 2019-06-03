@@ -949,17 +949,6 @@ styles = jss
               { "&:first-child, &:last-child": { display: "none" }
               }
 
-            -- not InlineTable Form rules
-          , "&:not(.inline-table)":
-              { "& .labeled-field":
-                  { paddingBottom: "16px"
-
-                  , "&[data-force-top-label=\"true\"] lumi-align-to-input":
-                      { padding: "0 0 4px 0"
-                      }
-                  }
-              }
-
           , "&.readonly label.lumi":
               { cursor: "auto"
               , userSelect: "auto"
@@ -972,10 +961,25 @@ styles = jss
               , "&:hover": { textDecoration: "underline" }
               }
 
+            -- not InlineTable Form rules
+          , "& .labeled-field":
+              { paddingBottom: "16px"
+
+              , "&[data-force-top-label=\"true\"] lumi-align-to-input":
+                  { padding: "0 0 4px 0"
+                  }
+              }
+
           , "&.inline-table":
               { -- If necessary, override the not(.inline-table)
                 -- rule above (for nested forms)
-                "& .labeled-field": { paddingBottom: "0" }
+                "& .labeled-field":
+                  { paddingBottom: "0"
+
+                  , "&[data-force-top-label=\"true\"] lumi-align-to-input":
+                      { padding: "0"
+                      }
+                  }
 
               , "& hr.lumi.field-divider":
                   { height: "0.1rem"

@@ -92,6 +92,7 @@ displayStep (Step e) = show e
 type InputProps =
   { "type" :: String
   , autoComplete :: String
+  , autoFocus :: Boolean
   , checked :: CheckboxState
   , disabled :: Boolean
   , max :: Nullable Number
@@ -125,6 +126,7 @@ input = makeStateless component $ element lumiInputElement <<< mapProps
       , "data-variant": show props.variant
       , "type": props."type"
       , autoComplete: props.autoComplete
+      , autoFocus: props.autoFocus
       , checked: props.checked == On
       , className: "lumi"
       , disabled: props.disabled
@@ -149,6 +151,7 @@ text_ :: InputProps
 text_ =
   { "type": "text"
   , autoComplete: "on"
+  , autoFocus: false
   , checked: Off
   , disabled: false
   , max: toNullable Nothing

@@ -11,17 +11,15 @@ import Lumi.Components.Size (Size(..))
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 
-type ListProps =
+type ListProps r =
   { size :: Maybe Size
   , rightAligned :: Boolean
   , rows :: Array (Array JSX)
+  | r
   }
 
-component :: Component ListProps
-component = createComponent "List"
-
-list :: ListProps -> JSX
-list = makeStateless component $ lumiList <<< mapProps
+listComponent :: ListProps (borders :: Boolean) -> JSX
+listComponent = makeStateless (createComponent "List") $ lumiList <<< mapProps
   where
     mapProps props =
       { className: "lumi"
@@ -30,6 +28,7 @@ list = makeStateless component $ lumiList <<< mapProps
             Just size -> show size
             Nothing -> show Medium
       , "data-right-aligned": props.rightAligned
+      , "data-borders": props.borders
       , children: map renderRow props.rows
       }
       where
@@ -43,14 +42,32 @@ list = makeStateless component $ lumiList <<< mapProps
     lumiListRow = element (R.unsafeCreateDOMComponent "lumi-list-row")
     lumiListRowCell = element (R.unsafeCreateDOMComponent "lumi-list-row-cell")
 
-defaultList :: ListProps
+list :: ListProps () -> JSX
+list props =
+  listComponent
+    { size: props.size
+    , rightAligned: props.rightAligned
+    , rows: props.rows
+    , borders: true
+    }
+
+borderlessList :: ListProps () -> JSX
+borderlessList props =
+  listComponent
+    { size: props.size
+    , rightAligned: props.rightAligned
+    , rows: props.rows
+    , borders: false
+    }
+
+defaultList :: ListProps ()
 defaultList =
   { size: Just $ Medium
   , rightAligned: false
   , rows: []
   }
 
-compactList :: ListProps
+compactList :: ListProps ()
 compactList =
   { size: Just $ Small
   , rightAligned: false
@@ -100,9 +117,9 @@ styles = jss
               , display: "flex"
               , flexFlow: "row wrap"
               , justifyContent: "space-between"
-              , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
               , minHeight: "calc(48px + 1px)"
               , padding: "6px 0"
+              , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
 
               , "& > lumi-list-row-cell":
                   { boxSizing: "border-box"
@@ -113,6 +130,13 @@ styles = jss
                   , maxWidth: "100%"
                   }
               }
+
+            , "&[data-borders=\"false\"]":
+                { border: "0"
+                , "& > lumi-list-row":
+                  { border: "0"
+                  }
+                }
 
             , "&[data-size=\"small\"] > lumi-list-row":
                 { minHeight: "calc(40px + 1px)"
