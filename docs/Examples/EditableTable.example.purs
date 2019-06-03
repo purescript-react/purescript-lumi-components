@@ -6,6 +6,7 @@ import Data.Array.NonEmpty (filter, fromArray, fromNonEmpty, length, snoc)
 import Data.BigInt (fromInt, fromString, toNumber, toString)
 import Data.Either (Either(..))
 import Data.Foldable (sum, traverse_)
+import Data.Foldable as Array
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.NonEmpty ((:|))
 import Data.Nullable (toNullable)
@@ -159,11 +160,12 @@ docs = unit # make component
                         , text = p_ "Do something with this row"
                         , navigate = pure $ log $ "Did something: " <> show row
                         }
-                    , Link.link Link.defaults
-                        { className = pure "lumi-dropdown-menu-item"
-                        , text = p_ "Remove this row"
-                        , navigate = pure $ onRemove row
-                        }
+                    , onRemove # Array.foldMap \onRemove' ->
+                        Link.link Link.defaults
+                          { className = pure "lumi-dropdown-menu-item"
+                          , text = p_ "Remove this row"
+                          , navigate = pure $ onRemove' row
+                          }
                     ]
                 }
             }

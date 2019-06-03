@@ -31,7 +31,7 @@ type EditableTableProps row =
   , onRowAdd :: Effect Unit
   , onRowRemove :: row -> Effect Unit
   , readonly :: Boolean
-  , removeCell :: (row -> Effect Unit) -> row -> JSX
+  , removeCell :: Maybe (row -> Effect Unit) -> row -> JSX
   , rows :: Either (Array row) (NonEmptyArray row)
   , rowEq :: row -> row -> Boolean
   , summary :: JSX
@@ -52,13 +52,14 @@ editableTableDefaults =
   }
   where
   removeCell onRowRemove item =
-    R.a
-      { children: [ icon_ Bin ]
-      , className: "lumi"
-      , onClick: capture_ $ onRowRemove item
-      , role: "button"
-      , style: R.css { fontSize: "20px", lineHeight: "20px", textDecoration: "none" }
-      }
+    onRowRemove # Array.foldMap \onRowRemove' ->
+      R.a
+        { children: [ icon_ Bin ]
+        , className: "lumi"
+        , onClick: capture_ $ onRowRemove' item
+        , role: "button"
+        , style: R.css { fontSize: "20px", lineHeight: "20px", textDecoration: "none" }
+        }
 
 component :: forall row. Component (EditableTableProps row)
 component = createComponent "EditableTableExample"
@@ -115,8 +116,8 @@ editableTable = makeStateless component render
         (cell item <$> columns)
           <> [ R.td_
                 [ if isRemovable
-                    then removeCell onRowRemove item
-                    else mempty
+                    then removeCell (Just onRowRemove) item
+                    else removeCell Nothing item
                 ]
               ]
 
