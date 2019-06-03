@@ -82,7 +82,7 @@ import Lumi.Components.Select as Select
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
-import Prim.Row (class Nub, class Union)
+import Prim.Row (class Nub, class Union, class Cons)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
 import React.Basic.DOM (css, unsafeCreateDOMComponent)
@@ -90,7 +90,6 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
 import Record (get)
-import Type.Row (class Cons)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.

@@ -23,7 +23,7 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)
 import React.Basic.Events as Events
 import Record (merge)
-import Type.Row (class Nub, class Union)
+import Prim.Row (class Nub, class Union)
 
 foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
 
