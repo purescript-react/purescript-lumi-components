@@ -6,11 +6,8 @@ module Lumi.Components.Color
   , colorNames
   ) where
 
-import Prelude
-
 import Color (rgb, rgba)
 import Color as C
-import Data.Maybe (fromMaybe)
 import Data.Newtype (class Newtype)
 
 type Color = C.Color
