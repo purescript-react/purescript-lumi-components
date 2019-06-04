@@ -8,17 +8,16 @@ import Data.Foldable (fold, foldMap, intercalate)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
-import Data.Nullable as Nullable
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import JSS (JSS, jss)
 import Lumi.Components.Button (button, secondary)
-import Lumi.Components.Color (colorNames, colors)
+import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Divider (divider_)
+import Lumi.Components.Icon as Icon
 import Lumi.Components.Link as Link
 import Lumi.Components.Text (p_)
-import Lumi.Components.Text as Text
 import Lumi.Components.ZIndex (ziDropdownButton)
 import Math as Math
 import React.Basic (Component, JSX, createComponent, element, fragment, make, makeStateless, readProps, readState)
@@ -244,13 +243,9 @@ type DropdownIconProps =
 
 dropdownIconDefaults :: DropdownIconProps
 dropdownIconDefaults =
-  { icon: Text.text
-      { children: [ R.text "···" ]
-      , className: Nullable.null
-      , color: Nullable.notNull colorNames.black1
-      , style: R.css { fontSize: "18px", fontWeight: "bold" }
-      , tag: "lumi-body"
-      , testId: Nullable.null
+  { icon: Icon.icon
+      { type_: Icon.Overflow
+      , style: R.css { color: cssStringHSLA colors.black1 }
       }
   , content: mempty
   , onOpen: pure unit
@@ -260,6 +255,8 @@ dropdownIconDefaults =
 dropdownIcon :: DropdownIconProps -> JSX
 dropdownIcon props =
   dropdownButton
+    -- this `unsafeCoerce` is a hack until Dropdown and Button
+    -- both support JSX labels instead of Strings
     { label: (unsafeCoerce :: JSX -> String) props.icon
     , content: props.content
     , className: "lumi-dropdown-icon"

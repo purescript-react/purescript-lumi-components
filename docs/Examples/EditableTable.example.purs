@@ -22,7 +22,7 @@ import Lumi.Components.Input (CheckboxState(..), alignToInput, input, switch)
 import Lumi.Components.Input as Input
 import Lumi.Components.Link as Link
 import Lumi.Components.Row (row_)
-import Lumi.Components.Spacing (Space(..), hspace, vspace)
+import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text (body, body_, nbsp, p_, text)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
