@@ -9,19 +9,20 @@ import Data.Foldable (sum, traverse_)
 import Data.Foldable as Array
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.NonEmpty ((:|))
-import Data.Nullable (toNullable)
+import Data.Nullable as Nullable
 import Data.Number (isNaN)
 import Data.Number.Format (fixed, toStringWith)
 import Effect.Console (log)
 import Global (readInt)
 import Lumi.Components.Column (column_)
-import Lumi.Components.DropdownButton (dropdownButton, dropdownButtonDefaults)
+import Lumi.Components.DropdownButton (dropdownIcon, dropdownIconDefaults)
 import Lumi.Components.EditableTable (editableTable, editableTableDefaults)
 import Lumi.Components.Example (example)
 import Lumi.Components.Input (CheckboxState(..), alignToInput, input, switch)
 import Lumi.Components.Input as Input
 import Lumi.Components.Link as Link
 import Lumi.Components.Row (row_)
+import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text (body, body_, nbsp, p_, text)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
@@ -149,24 +150,26 @@ docs = unit # make component
     removeCell self =
       if self.state.customRemoveCell
         then \onRemove row ->
-          dropdownButton dropdownButtonDefaults
-            { label = "..."
-            , alignment = toNullable (Just "right")
-            , content = R.div
-                { style: R.css { width: "328px", padding: "12px" }
-                , children:
-                    [ Link.link Link.defaults
-                        { className = pure "lumi-dropdown-menu-item"
-                        , text = p_ "Do something with this row"
-                        , navigate = pure $ log $ "Did something: " <> show row
-                        }
-                    , onRemove # Array.foldMap \onRemove' ->
-                        Link.link Link.defaults
-                          { className = pure "lumi-dropdown-menu-item"
-                          , text = p_ "Remove this row"
-                          , navigate = pure $ onRemove' row
-                          }
-                    ]
+          row_
+            [ hspace S16
+            , dropdownIcon dropdownIconDefaults
+                { alignment = Nullable.notNull "right"
+                , content = R.div
+                    { style: R.css { width: "328px", padding: "12px" }
+                    , children:
+                        [ Link.link Link.defaults
+                            { className = pure "lumi-dropdown-menu-item"
+                            , text = p_ "Do something with this row"
+                            , navigate = pure $ log $ "Did something: " <> show row
+                            }
+                        , onRemove # Array.foldMap \onRemove' ->
+                            Link.link Link.defaults
+                              { className = pure "lumi-dropdown-menu-item"
+                              , text = p_ "Remove this row"
+                              , navigate = pure $ onRemove' row
+                              }
+                        ]
+                    }
                 }
-            }
+            ]
         else editableTableDefaults.removeCell
