@@ -31,6 +31,7 @@ type EditableTableProps row =
   , onRowAdd :: Effect Unit
   , onRowRemove :: row -> Effect Unit
   , readonly :: Boolean
+  , removeCell :: Maybe (row -> Effect Unit) -> row -> JSX
   , rows :: Either (Array row) (NonEmptyArray row)
   , rowEq :: row -> row -> Boolean
   , summary :: JSX
@@ -44,10 +45,21 @@ editableTableDefaults =
   , onRowAdd: pure unit
   , onRowRemove: \_ -> pure unit
   , readonly: false
+  , removeCell
   , rows: Left []
   , rowEq: eq
   , summary: empty
   }
+  where
+  removeCell onRowRemove item =
+    onRowRemove # Array.foldMap \onRowRemove' ->
+      R.a
+        { children: [ icon_ Bin ]
+        , className: "lumi"
+        , onClick: capture_ $ onRowRemove' item
+        , role: "button"
+        , style: R.css { fontSize: "20px", lineHeight: "20px", textDecoration: "none" }
+        }
 
 component :: forall row. Component (EditableTableProps row)
 component = createComponent "EditableTableExample"
@@ -59,16 +71,14 @@ editableTable = makeStateless component render
       container
         [ header props.columns
         , body case props.rows of
-            Left rows -> map (row (not props.readonly) props.onRowRemove props.columns) rows
+            Left rows -> map (row_ (not props.readonly)) rows
             Right rows ->
               if NonEmptyArray.length rows == 1
                 then
-                  [ row false props.onRowRemove props.columns (NonEmptyArray.head rows)
+                  [ row_ false (NonEmptyArray.head rows)
                   ]
                 else
-                  map
-                    (row (not props.readonly) props.onRowRemove props.columns)
-                    (NonEmptyArray.toArray rows)
+                  map (row_ (not props.readonly)) (NonEmptyArray.toArray rows)
         , let
             lengthRows = case _ of
               Left arr -> Array.length arr
@@ -82,6 +92,9 @@ editableTable = makeStateless component render
               props.summary
               (Array.length props.columns + 1)
         ]
+      where
+        row_ = row props.columns props.onRowRemove props.removeCell
+
 
     container children =
       editableTableElement
@@ -98,26 +111,19 @@ editableTable = makeStateless component render
     body =
       R.tbody_
 
-    row isRemovable onRowRemove columns item =
+    row columns onRowRemove removeCell isRemovable item =
       R.tr_ $
         (cell item <$> columns)
-          <> [ removeCell isRemovable onRowRemove item ]
+          <> [ R.td_
+                [ if isRemovable
+                    then removeCell (Just onRowRemove) item
+                    else removeCell Nothing item
+                ]
+              ]
 
     cell item column =
       R.td_ [ column_ [ column.renderCell item ] ]
 
-    removeCell isRemovable onRowRemove item =
-      R.td_
-        [ if not isRemovable
-            then empty
-            else R.a
-              { children: [ icon_ Bin ]
-              , className: "lumi"
-              , onClick: capture_ $ onRowRemove item
-              , role: "button"
-              , style: R.css { fontSize: "20px", lineHeight: "20px", textDecoration: "none" }
-              }
-        ]
 
     footer canAddRows onRowAdd addLabel summary columnCount =
       R.tfoot_
