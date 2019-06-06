@@ -45,21 +45,22 @@ editableTableDefaults =
   , onRowAdd: pure unit
   , onRowRemove: \_ -> pure unit
   , readonly: false
-  , removeCell
+  , removeCell: defaultRemoveCell
   , rows: Left []
   , rowEq: eq
   , summary: empty
   }
-  where
-  removeCell onRowRemove item =
-    onRowRemove # Array.foldMap \onRowRemove' ->
-      R.a
-        { children: [ icon_ Bin ]
-        , className: "lumi"
-        , onClick: capture_ $ onRowRemove' item
-        , role: "button"
-        , style: R.css { fontSize: "20px", lineHeight: "20px", textDecoration: "none" }
-        }
+
+defaultRemoveCell :: forall row. Maybe (row -> Effect Unit) -> row -> JSX
+defaultRemoveCell onRowRemove item =
+  onRowRemove # Array.foldMap \onRowRemove' ->
+    R.a
+      { children: [ icon_ Bin ]
+      , className: "lumi"
+      , onClick: capture_ $ onRowRemove' item
+      , role: "button"
+      , style: R.css { fontSize: "20px", lineHeight: "20px", textDecoration: "none" }
+      }
 
 component :: forall row. Component (EditableTableProps row)
 component = createComponent "EditableTableExample"
