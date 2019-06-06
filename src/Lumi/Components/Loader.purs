@@ -30,6 +30,7 @@ styles :: JSS
 styles = jss
   { "@global":
       -- @TODO how to pass backgroundColor as prop down from LoaderProps?
+      -- we should also be passing the spinner color as we cannot assume it will be white (esp over a white background, such as a page)
       { "lumi-loader": spinnerMixin { radius: "3.8rem", borderWidth: "0.5rem" }
       , "@keyframes spin":
           { from: { transform: "rotate(0deg)" }
