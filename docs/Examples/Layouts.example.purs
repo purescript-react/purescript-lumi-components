@@ -220,6 +220,7 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
     overviewTable =
       table
         { name: "Items"
+        , dropdownMenu: true
         , sortable: true
         , sort: toNullable Nothing
         , sortBy: toNullable Nothing

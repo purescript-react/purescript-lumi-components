@@ -57,6 +57,7 @@ derive instance eqSortString :: Eq SortString
 
 type TableProps row =
   { name :: String
+  , dropdownMenu :: Boolean
   , sortable :: Boolean
   , sort :: Nullable SortString
   , sortBy :: Nullable ColumnName
@@ -264,7 +265,7 @@ table = make component
         renderLumiTable \tableRef ->
           [ if not self.state.showMenu
               then empty
-              else renderFilterDropdown
+              else guard (self.props.dropdownMenu) $ renderFilterDropdown
                 { close: closeMenu self
                 , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
                     { name: ColumnName name
