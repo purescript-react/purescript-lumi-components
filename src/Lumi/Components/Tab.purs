@@ -218,7 +218,7 @@ styles = jss
               { flex: "0 0 auto"
               , display: "flex"
               , alignItems: "center"
-              , fontSize: "14px"
+              , fontSize: "14px "
               , cursor: "pointer"
               , whiteSpace: "nowrap"
               , touchAction: "manipulation"
@@ -261,6 +261,13 @@ styles = jss
 
           , "& > lumi-tab:not(:first-child)": { marginLeft: "22px" }
           , "&[data-variant=\"full\"] lumi-tab": { marginLeft: "22px" }
+
+          -- hide the horizontal scrollbar, it overlaps the tab content
+          , "&::-webkit-scrollbar":
+              { height: "0 !important"
+              }
+          , scrollbarWidth: "none"
+          , "MsOverflowStyle": "none"
           }
 
       , "lumi-tab-content":
