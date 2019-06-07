@@ -17,6 +17,6 @@ docs =
     [ example $
         column {
           children: [ loader { style: R.css {}, testId: null } ]
-          , style: R.css { backgroundColor: cssStringHSLA colors.accent1 }
+          , style: R.css { backgroundColor: cssStringHSLA colors.primary }
         }
     ]
