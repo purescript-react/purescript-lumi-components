@@ -1,6 +1,7 @@
 # purescript-lumi-components [![Build Status](https://travis-ci.org/lumihq/purescript-lumi-components.svg?branch=master)](https://travis-ci.org/lumihq/purescript-lumi-components)
 
-[lumihq.github.io/purescript-lumi-components](https://lumihq.github.io/purescript-lumi-components/)
+- [lumihq.github.io/purescript-lumi-components](https://lumihq.github.io/purescript-lumi-components/)
+- [purescript-lumi-components on Pursuit](https://pursuit.purescript.org/packages/purescript-lumi-components/)
 
 This is a component library focused on Lumi's specific UI and UX needs. Available components are found in `src/components`.
 
@@ -32,7 +33,7 @@ You can run production builds (output minified, static files to `build/`) using 
 
 ```sh
 pulp version 0.x.y
-git push --follow-tags
+pulp publish
 npm run deploy
 ```
 

@@ -2,14 +2,11 @@ module Lumi.Components.Examples.Border where
 
 import Prelude
 
-import Data.Maybe (Maybe(..))
-import Lumi.Components.Border (border, borderSquare, borderRound, borderSquareTop, borderSquareBottom, borderTop, borderBottom)
+import Lumi.Components.Border (borderBottom, borderRound, borderSquare, borderSquareBottom, borderSquareTop, borderTop)
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
-import Lumi.Components.Spacing (Space(..))
 import Lumi.Components.Text (h2_)
-import React.Basic (Component, JSX, createComponent, makeStateless)
-import React.Basic.DOM (css)
+import React.Basic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX
