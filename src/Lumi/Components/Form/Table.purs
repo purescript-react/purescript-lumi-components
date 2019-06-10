@@ -161,7 +161,7 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, s
       }
 
 -- | Convert a `FormBuilder` into a column of a table form with the specified
--- | label where all fields are layout out horizontally.
+-- | label where all fields are laid out horizontally.
 column_
   :: forall props row
    . String
