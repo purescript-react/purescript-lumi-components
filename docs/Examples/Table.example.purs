@@ -73,6 +73,7 @@ docs = unit # make component { initialState, render }
               , children:
                   [ table
                       { name: "Items"
+                      , dropdownMenu: true
                       , sortable: true
                       , sort: toNullable (Just self.state.sort)
                       , sortBy: toNullable self.state.sortBy
@@ -146,6 +147,7 @@ docs = unit # make component { initialState, render }
               , children:
                   [ table
                       { name: "Items"
+                      , dropdownMenu: false
                       , sortable: true
                       , sort: notNull self.state.sort
                       , sortBy: toNullable self.state.sortBy
