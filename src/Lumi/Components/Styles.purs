@@ -112,8 +112,8 @@ globals = jss
           }
       , "react-basic-ref":
           { display: "block"
-          , minHeight: "100%"
-          , minWidth: "100%"
+          , minHeight: "0"
+          , minWidth: "0"
           }
       , "body":
           { color: cssStringHSLA colors.black
