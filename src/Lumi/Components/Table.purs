@@ -700,12 +700,6 @@ styles = jss
                           { color: cssStringHSLA colors.primary
                           }
                       }
-                  , "& input.lumi:not([type=\"checkbox\"]), & select.lumi":
-                      { border: "none"
-                      , paddingTop: "0"
-                      , paddingBottom: "0"
-                      , paddingLeft: "0"
-                      }
                   }
               , "& a.lumi":
                   { color: cssStringHSLA colors.black
