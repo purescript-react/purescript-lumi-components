@@ -434,7 +434,7 @@ table = make component
                   { children:
                       case maybeTableRef of
                         Nothing       -> []
-                        Just tableRef -> renderChildren tableRef :: Array JSX
+                        Just tableRef -> renderChildren tableRef
                   }
             ]
         }
