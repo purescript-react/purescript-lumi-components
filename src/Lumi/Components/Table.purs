@@ -616,6 +616,7 @@ styles = jss
           { width: "100%"
           , maxHeight: "100%"
           , display: "flex"
+          , flexFlow: "column"
           , position: "relative"
           }
 
