@@ -99,7 +99,7 @@ modalLink = make modalLinkComponent { initialState, didMount, render }
                       self.setState _ { modalOpen = false }
                       props.onChange value_
                   , actionButtonTitle: props.actionButtonTitle
-                  , actionButtonDisabled: false
+                  , actionButtonDisabled: Button.Enabled
                   , size: Medium
                   , variant: ""
                   , closeButton: true
@@ -124,7 +124,7 @@ type CommonProps rest =
   { modalOpen :: Boolean
   , onActionButtonClick :: Nullable (Effect Unit)
   , actionButtonTitle :: String
-  , actionButtonDisabled :: Boolean
+  , actionButtonDisabled :: Button.ButtonState
   , size :: Size
   , variant :: String
   , children :: JSX
@@ -166,7 +166,7 @@ dialog = makeStateless dialogComponent render
         , onRequestClose: props.onRequestClose
         , onActionButtonClick: props.onActionButtonClick
         , actionButtonTitle: props.actionButtonTitle
-        , actionButtonDisabled: false
+        , actionButtonDisabled: Button.Enabled
         , size: props.size
         , variant: "dialog"
         , children:
@@ -199,7 +199,7 @@ errorModal = makeStateless errorModalComponent render
         , onRequestClose: props.onRequestClose
         , onActionButtonClick: props.onActionButtonClick
         , actionButtonTitle: props.actionButtonTitle
-        , actionButtonDisabled: false
+        , actionButtonDisabled: Button.Enabled
         , size: Small
         , variant: ""
         , children: props.children
@@ -279,7 +279,7 @@ modalPortal = toReactComponent identity modalPortalComponent
                                     , toMaybe props.onActionButtonClick # foldMap \actionFn ->
                                         Button.button Button.primary
                                           { title = props.actionButtonTitle
-                                          , disabled = props.actionButtonDisabled
+                                          , buttonState = Just $ props.actionButtonDisabled
                                           , onPress = mkEffectFn1 \_ -> actionFn
                                           , style = R.css { marginLeft: "1.2rem" }
                                           }

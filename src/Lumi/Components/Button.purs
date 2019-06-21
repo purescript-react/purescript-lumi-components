@@ -22,17 +22,18 @@ import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.Events (EventHandler)
 
+data ButtonState = Enabled | Disabled | Loading
+
 type CommonButtonProps rest =
   { accessibilityLabel :: Nullable String
   , color :: Nullable ColorName
-  , disabled :: Boolean
   , onPress :: EventHandler
   , size :: Size
   , style :: CSS
   , testId :: Nullable String
   , title :: String
   , type :: String
-  , loading :: Boolean
+  , buttonState :: Maybe ButtonState
   | rest
   }
 
@@ -66,11 +67,21 @@ button = makeStateless component render
             , "data-color": props.color
             , "data-size": show props.size
             , "data-testid": props.testId
-            , disabled: props.disabled
+            , disabled:
+                case props.buttonState of
+                  Just Enabled -> false
+                  Just Disabled -> true
+                  Just Loading -> false
+                  Nothing -> false
+            , "data-loading":
+                case props.buttonState of
+                  Just Enabled -> false
+                  Just Disabled -> false
+                  Just Loading -> true
+                  Nothing -> false
             , onClick: props.onPress
             , style: props.style
             , type: props.type
-            , "data-loading": props.loading
             }
       where
         children =
@@ -82,14 +93,13 @@ defaults :: ButtonProps
 defaults =
   { accessibilityLabel: toNullable Nothing
   , color: toNullable Nothing
-  , disabled: false
   , onPress: mkEffectFn1 (const $ pure unit)
   , size: Medium
   , style: css {}
   , testId: toNullable Nothing
   , title: invisibleSpace
   , type: ""
-  , loading: false
+  , buttonState: Nothing
   }
 
 primary :: ButtonProps
@@ -130,11 +140,21 @@ iconButton = makeStateless iconComponent render
         , "data-color": props.color
         , "data-size": show props.size
         , "data-testid": props.testId
-        , disabled: props.disabled
         , onClick: props.onPress
         , style: props.style
         , type: props.type
-        , "data-loading": props.loading
+        , disabled:
+            case props.buttonState of
+              Just Enabled -> false
+              Just Disabled -> true
+              Just Loading -> true
+              Nothing -> false
+        , "data-loading":
+            case props.buttonState of
+              Just Enabled -> false
+              Just Disabled -> true
+              Just Loading -> true
+              Nothing -> false
         }
       where
         children =
@@ -156,16 +176,15 @@ iconButtonDefaults :: IconButtonProps
 iconButtonDefaults =
   { accessibilityLabel: toNullable Nothing
   , color: toNullable Nothing
-  , disabled: false
   , onPress: mkEffectFn1 (const $ pure unit)
   , size: Medium
   , style: css {}
   , testId: toNullable Nothing
   , title: invisibleSpace
   , type: ""
-  , loading: false
   , iconLeft: Nothing
   , iconRight: Nothing
+  , buttonState: Nothing
   }
 
 styles :: JSS

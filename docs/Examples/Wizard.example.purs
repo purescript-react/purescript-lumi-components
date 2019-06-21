@@ -87,7 +87,7 @@ docs = unit # make (createComponent "WizardExample") { initialState, render }
                             in
                               [ Button.button Button.secondary
                                   { title = "Back"
-                                  , disabled = isNothing previousStepM
+                                  , buttonState = Just $ if isNothing previousStepM then Button.Disabled else Button.Enabled
                                   , onPress = maybe (mkEffectFn1 mempty) (capture identity <<< const <<< send self <<< SetWizardStep) previousStepM
                                   }
                               , Button.button Button.primary
