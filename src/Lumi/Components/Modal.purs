@@ -279,7 +279,7 @@ modalPortal = toReactComponent identity modalPortalComponent
                                     , toMaybe props.onActionButtonClick # foldMap \actionFn ->
                                         Button.button Button.primary
                                           { title = props.actionButtonTitle
-                                          , buttonState = Just $ props.actionButtonDisabled
+                                          , buttonState = props.actionButtonDisabled
                                           , onPress = mkEffectFn1 \_ -> actionFn
                                           , style = R.css { marginLeft: "1.2rem" }
                                           }

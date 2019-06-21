@@ -33,7 +33,7 @@ type CommonButtonProps rest =
   , testId :: Nullable String
   , title :: String
   , type :: String
-  , buttonState :: Maybe ButtonState
+  , buttonState :: ButtonState
   | rest
   }
 
@@ -69,16 +69,14 @@ button = makeStateless component render
             , "data-testid": props.testId
             , disabled:
                 case props.buttonState of
-                  Just Enabled -> false
-                  Just Disabled -> true
-                  Just Loading -> false
-                  Nothing -> false
+                  Enabled -> false
+                  Disabled -> true
+                  Loading -> false
             , "data-loading":
                 case props.buttonState of
-                  Just Enabled -> false
-                  Just Disabled -> false
-                  Just Loading -> true
-                  Nothing -> false
+                  Enabled -> false
+                  Disabled -> false
+                  Loading -> true
             , onClick: props.onPress
             , style: props.style
             , type: props.type
@@ -99,7 +97,7 @@ defaults =
   , testId: toNullable Nothing
   , title: invisibleSpace
   , type: ""
-  , buttonState: Nothing
+  , buttonState: Enabled
   }
 
 primary :: ButtonProps
@@ -145,16 +143,14 @@ iconButton = makeStateless iconComponent render
         , type: props.type
         , disabled:
             case props.buttonState of
-              Just Enabled -> false
-              Just Disabled -> true
-              Just Loading -> true
-              Nothing -> false
+              Enabled -> false
+              Disabled -> true
+              Loading -> true
         , "data-loading":
             case props.buttonState of
-              Just Enabled -> false
-              Just Disabled -> true
-              Just Loading -> true
-              Nothing -> false
+              Enabled -> false
+              Disabled -> true
+              Loading -> true
         }
       where
         children =
@@ -184,7 +180,7 @@ iconButtonDefaults =
   , type: ""
   , iconLeft: Nothing
   , iconRight: Nothing
-  , buttonState: Nothing
+  , buttonState: Enabled
   }
 
 styles :: JSS

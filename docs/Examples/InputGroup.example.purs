@@ -23,13 +23,13 @@ docs =
             , addOnLeft:
                 toNullable $ Just $ R.div
                   { children:
-                    [ button defaults { title = "Button", buttonState = Just $ Enabled }
+                    [ button defaults { title = "Button", buttonState = Enabled }
                     ]
                   }
             , addOnRight:
                 toNullable $ Just $ R.div
                   { children:
-                    [ button defaults { title = "Button", buttonState = Just $ Enabled }
+                    [ button defaults { title = "Button", buttonState = Enabled }
                     ]
                   }
             , inputContent: toNullable $ Just $ input text_ { placeholder = "Placeholder..." }

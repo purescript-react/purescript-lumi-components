@@ -61,7 +61,7 @@ pagination = makeStateless (createComponent "Pagination") render
                 [ Button.button Button.secondary
                     { title = show (i + 1)
                     , onPress = handler_ $ props.onChange i
-                    , buttonState = Just $ if i == props.currentPage then Button.Disabled else Button.Enabled
+                    , buttonState = if i == props.currentPage then Button.Disabled else Button.Enabled
                     }
                 ]
 

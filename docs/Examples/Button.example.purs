@@ -27,7 +27,7 @@ docs =
 
       , [ h2_ "Disabled"
         , example
-            $ button defaults { title = "Button", buttonState = Just $ Disabled }
+            $ button defaults { title = "Button", buttonState = Disabled }
         ]
 
       , [ h2_ "Size"
@@ -56,7 +56,7 @@ docs =
         ]
       , [ h4_ "Primary + Disabled"
         , example
-            $ button primary { title = "Button", buttonState = Just $ Disabled }
+            $ button primary { title = "Button", buttonState = Disabled }
         ]
       , [ h4_ "Secondary Medium (default)"
         , example
@@ -76,7 +76,7 @@ docs =
         ]
       , [ h4_ "Secondary + Disabled"
         , example
-            $ button secondary { title = "Button", buttonState = Just $ Disabled }
+            $ button secondary { title = "Button", buttonState = Disabled }
         ]
       , [ h4_ "Icon button"
         , example
@@ -100,19 +100,19 @@ docs =
         ]
       , [ h4_ "Loading (Medium/default)"
         , example
-            $ button primary { buttonState = Just $ Loading }
+            $ button primary { buttonState = Loading }
         ]
       , [ h4_ "Loading (Small) "
         , example
-            $ button primary { buttonState = Just $ Loading, size = Small }
+            $ button primary { buttonState = Loading, size = Small }
         ]
       , [ h4_ "Loading (Large) "
         , example
-            $ button primary { buttonState = Just $ Loading, size = Large }
+            $ button primary { buttonState = Loading, size = Large }
         ]
       , [ h4_ "Loading (ExtraLarge) "
         , example
-            $ button primary { buttonState = Just $ Loading, size = ExtraLarge }
+            $ button primary { buttonState = Loading, size = ExtraLarge }
         ]
       ]
 
