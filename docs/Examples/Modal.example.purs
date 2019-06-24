@@ -54,7 +54,7 @@ docs = unit # make component
               , onRequestClose: self.setState _ { modalId = Nothing }
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
-              , actionButtonDisabled: Button.Enabled
+              , actionButtonState: Button.Enabled
               , size: Small
               , title: "Modal title -- Small"
               , variant: ""
@@ -79,7 +79,7 @@ docs = unit # make component
               , onRequestClose: self.setState _ { modalId = Nothing }
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
-              , actionButtonDisabled: Button.Disabled
+              , actionButtonState: Button.Disabled
               , size: Medium
               , title: "Modal title -- Medium"
               , variant: ""
@@ -101,7 +101,7 @@ docs = unit # make component
               , onRequestClose: self.setState _ { modalId = Nothing }
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
-              , actionButtonDisabled: Button.Enabled
+              , actionButtonState: Button.Enabled
               , size: Large
               , title: "Modal title -- Large"
               , variant: ""
@@ -130,7 +130,7 @@ docs = unit # make component
               , onRequestClose: self.setState _ { modalId = Nothing }
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
-              , actionButtonDisabled: Button.Enabled
+              , actionButtonState: Button.Enabled
               , size: ExtraLarge
               , title: "Modal title -- Extra Large"
               , variant: ""
@@ -176,7 +176,7 @@ docs = unit # make component
               , onRequestClose: self.setState _ { modalId = Nothing }
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
-              , actionButtonDisabled: Button.Enabled
+              , actionButtonState: Button.Enabled
               , size: Small
               , title: "Modal title -- Small"
               , variant: ""
@@ -201,7 +201,7 @@ docs = unit # make component
               , onRequestClose: self.setState _ { modalId = Nothing }
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
-              , actionButtonDisabled: Button.Enabled
+              , actionButtonState: Button.Enabled
               , size: Large
               , title: "Modal title -- Internall scrolling content"
               , variant: "internal-scrolling"
