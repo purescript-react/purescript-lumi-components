@@ -5,12 +5,14 @@ import Prelude
 import Color (cssStringHSLA)
 import Data.Nullable (Nullable)
 import JSS (JSS, jss)
-import Lumi.Components.Color (colors)
+import Lumi.Components.Color (ColorName(..), colors)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 
 type LoaderProps =
   { style :: CSS
+  , color :: ColorName
+  , bgColor :: ColorName
   , testId :: Nullable String
   }
 
@@ -24,14 +26,36 @@ loader = makeStateless component $ loaderElement <<< mapProps
     mapProps props =
       { style: props.style
       , "data-testid": props.testId
+      , "data-color": props.color
+      , "data-bg-color": props.bgColor
       }
 
 styles :: JSS
 styles = jss
   { "@global":
-      -- @TODO how to pass backgroundColor as prop down from LoaderProps?
-      -- we should also be passing the spinner color as we cannot assume it will be white (esp over a white background, such as a page)
-      { "lumi-loader": spinnerMixin { radius: "3.8rem", borderWidth: "0.5rem" }
+      { "lumi-loader":
+          -- @TODO add the rest of our possible colors
+          { "&[data-color=\"white\"]": spinnerMixin
+              { radius: "3.8rem"
+              , borderWidth: "0.5rem"
+              , color: cssStringHSLA colors.white
+              }
+          , "&[data-color=\"black\"]": spinnerMixin
+              { radius: "3.8rem"
+              , borderWidth: "0.5rem"
+              , color: cssStringHSLA colors.black
+              }
+          -- @TODO add the rest of our possible colors
+          , "&[data-bg-color=\"primary\"]::after":
+              { background: cssStringHSLA colors.primary
+              }
+          , "&[data-bg-color=\"white\"]::after":
+              { background: cssStringHSLA colors.white
+              }
+          , "&[data-bg-color=\"black\"]::after":
+              { background: cssStringHSLA colors.black
+              }
+          }
       , "@keyframes spin":
           { from: { transform: "rotate(0deg)" }
           , to: { transform: "rotate(360deg)" }
@@ -39,19 +63,19 @@ styles = jss
       }
   }
 
-spinnerMixin :: { radius :: String, borderWidth :: String } -> JSS
-spinnerMixin { radius, borderWidth } = jss
+spinnerMixin :: { radius :: String, borderWidth :: String, color :: String } -> JSS
+spinnerMixin { radius, borderWidth, color } = jss
   { width: radius
   , height: radius
   , borderRadius: "50%"
-  , background: "linear-gradient(to right, " <> cssStringHSLA colors.white <> " 10%, rgba(255, 255, 255, 0) 42%)"
+  , background: "linear-gradient(to right, " <> color <> " 10%, rgba(255, 255, 255, 0) 42%)"
   , position: "relative"
   , animation: "spin 1s infinite linear"
   , animationName: "spin"
   , "&::before":
       { width: "50%"
       , height: "50%"
-      , background: cssStringHSLA colors.white
+      , background: color
       , borderRadius: "100% 0 0 0"
       , position: "absolute"
       , top: "0"
@@ -59,11 +83,7 @@ spinnerMixin { radius, borderWidth } = jss
       , content: "\"\""
       }
   , "&::after":
-      -- @TODO this should be passed down from the loader
-      -- cannot use alpha/transparency because we need background in order to have the linear-gradient affect on the spinner
-      -- this solid background will cut the "hole" out of the center
-      { background: cssStringHSLA colors.accent1
-      , width: "75%"
+      { width: "75%"
       , height: "75%"
       , borderRadius: "50%"
       , content: "\"\""

@@ -253,7 +253,7 @@ select = makeStateless component render
       where
         renderSelectedValues =
           if props.loading
-            then loader { style: css { width: "20px", height: "20px", borderWidth: "2px" }, testId: toNullable Nothing }
+            then mempty --loader { style: css { width: "20px", height: "20px", borderWidth: "2px" }, testId: toNullable Nothing }
             else lumiSelectInputSelectedValuesElement
               { children:
                   let renderedSelectedValues =
@@ -317,7 +317,7 @@ select = makeStateless component render
                         [ lumiSelectMenuLoaderElement
                             { key: "loading-text"
                             , children:
-                                loader { style: css { width: "20px", height: "20px", borderWidth: "2px" }, testId: toNullable Nothing }
+                                mempty --loader { style: css { width: "20px", height: "20px", borderWidth: "2px" }, testId: toNullable Nothing }
                             }
                         ]
                       Failed error ->

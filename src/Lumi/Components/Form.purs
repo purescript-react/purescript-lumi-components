@@ -487,10 +487,11 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
               Nothing -> empty
               Just _  -> alignToInput
                 case data_ of
-                  Nothing     -> loader
-                    { style: css { width: "20px", height: "20px", borderWidth: "2px" }
-                    , testId: toNullable Nothing
-                    }
+                  Nothing     -> mempty
+                  -- loader
+                  --   { style: css { width: "20px", height: "20px", borderWidth: "2px" }
+                  --   , testId: toNullable Nothing
+                  --   }
                   Just data_' -> text body
                         { children = [ optionRenderer data_' ]
                         }

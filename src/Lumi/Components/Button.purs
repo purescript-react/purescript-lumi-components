@@ -218,20 +218,21 @@ styles = jss
                   , borderColor: cssStringHSLA colors.black3
                   }
               }
-          , "&[data-loading=\"true\"]":
-              { "&:after": spinnerMixin { radius: "16px", borderWidth: "2px" }
-              , "@media (min-width: $break-point-mobile)":
-                  { "&[data-size=\"small\"]":
-                      { "&:after": spinnerMixin { radius: "12px", borderWidth: "2px" }
-                      }
-                  , "&[data-size=\"large\"]":
-                      { "&:after": spinnerMixin { radius: "24px", borderWidth: "3px" }
-                      }
-                  , "&[data-size=\"extra-large\"]":
-                      { "&:after": spinnerMixin { radius: "34px", borderWidth: "4px" }
-                      }
-                  }
-              }
+          -- @TODO update spinnerMixin props
+          -- , "&[data-loading=\"true\"]":
+          --     { "&:after": spinnerMixin { radius: "16px", borderWidth: "2px" }
+          --     , "@media (min-width: $break-point-mobile)":
+          --         { "&[data-size=\"small\"]":
+          --             { "&:after": spinnerMixin { radius: "12px", borderWidth: "2px" }
+          --             }
+          --         , "&[data-size=\"large\"]":
+          --             { "&:after": spinnerMixin { radius: "24px", borderWidth: "3px" }
+          --             }
+          --         , "&[data-size=\"extra-large\"]":
+          --             { "&:after": spinnerMixin { radius: "34px", borderWidth: "4px" }
+          --             }
+          --         }
+          --     }
 
           , "&[data-color=\"black\"]": buttonColorHoverMixin colors.black
           , "&[data-color=\"black-1\"]": buttonColorHoverMixin colors.black1
