@@ -234,11 +234,8 @@ styles = jss
                   }
               }
 
+          -- @TODO confirm we don't need anything here
           , "&[data-loading=\"true\"]": {}
-              -- @TODO why isn't this working?
-              -- { "lumi-loader::after":
-              --     { background: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value }
-              -- }
 
           , "&[data-color=\"black\"]": buttonColorHoverMixin colors.black
           , "&[data-color=\"black-1\"]": buttonColorHoverMixin colors.black1
@@ -302,5 +299,6 @@ styles = jss
       , "&:disabled, &[data-loading=\"true\"]":
           { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
           -- @TODO get lumi-loader to reflect hover color background
+          , "lumi-loader::after": {}
           }
       }
