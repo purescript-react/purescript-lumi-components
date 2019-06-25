@@ -77,7 +77,7 @@ type TableProps row =
         , filterLabel :: Nullable String
         , sortBy :: Nullable ColumnName
         , style :: R.CSS
-        , getLink :: row -> URL
+        , getLink :: Nullable (row -> URL)
         , renderCell :: row -> JSX
         , sticky :: Boolean
         }
@@ -310,7 +310,27 @@ table = make component
       where
         selected = fromMaybe self.state.selected (toMaybe self.props.selected)
 
-        primaryColumn = toMaybe self.props.primaryColumn
+        primaryColumn = cleanUpNullables <$> toMaybe self.props.primaryColumn
+          where
+            cleanUpNullables
+              { name
+              , label
+              , filterLabel
+              , sortBy
+              , style
+              , getLink
+              , renderCell
+              , sticky
+              } =
+              { name
+              , label
+              , filterLabel
+              , sortBy
+              , style
+              , getLink: toMaybe getLink
+              , renderCell
+              , sticky
+              }
 
         renderTableHead columns tableRef =
           element (R.unsafeCreateDOMComponent "thead")
@@ -472,7 +492,7 @@ type TableRowProps row col_ pcol_ =
           { name :: ColumnName
           , renderCell :: row -> JSX
           , style :: R.CSS
-          , getLink :: row -> URL
+          , getLink :: Maybe (row -> URL)
           , sticky :: Boolean
           | pcol_
           }
@@ -502,14 +522,16 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
       R.tr
         { className: joinWith " "
             $  guard (tableProps.selectable && isSelected) [ "active" ]
-            <> guard (isJust tableProps.primaryColumn) [ "active-row" ]
+            <> guard (isJust $ _.getLink =<< tableProps.primaryColumn) [ "active-row" ]
         , onClick:
             case tableProps.primaryColumn of
-              Nothing  -> Events.handler_ (pure unit)
-              Just col -> Events.handler syntheticEvent \event -> do
-                s <- hasWindowSelection
-                when (not s) $
-                  runEffectFn1 tableProps.onNavigate (col.getLink row)
+              Just { getLink: Just getLink } ->
+                Events.handler syntheticEvent \event -> do
+                  s <- hasWindowSelection
+                  when (not s) $
+                    runEffectFn1 tableProps.onNavigate (getLink row)
+              _ ->
+                Events.handler_ (pure unit)
         , children:
             [ if not tableProps.selectable
                 then empty
@@ -554,11 +576,16 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
         , style: col.style
         , "data-required": true
         , children:
-            Link.link Link.defaults
-              { href = col.getLink row
-              , navigate = Just (runEffectFn1 onNavigate (col.getLink row))
-              , text = col.renderCell row
-              }
+            case col.getLink of
+              Nothing ->
+                col.renderCell row
+              Just getLink ->
+                Link.link Link.defaults
+                  { href = getLink row
+                  , navigate = Just (runEffectFn1 onNavigate (getLink row))
+                  , text = col.renderCell row
+                  , className = Just "primary-cell-link"
+                  }
         }
 
     renderBodyRowCell row col =
@@ -707,7 +734,7 @@ styles = jss
                       , textOverflow: "ellipsis"
                       , backgroundColor: cssStringHSLA colors.white
 
-                      , "&.primary-cell a":
+                      , "&.primary-cell a.lumi.primary-cell-link":
                           { color: cssStringHSLA colors.primary
                           }
                       }
