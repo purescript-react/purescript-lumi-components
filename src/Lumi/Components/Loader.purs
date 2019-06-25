@@ -5,7 +5,7 @@ import Prelude
 import Color (cssStringHSLA)
 import Data.Nullable (Nullable)
 import JSS (JSS, jss)
-import Lumi.Components.Color (ColorName(..), colors)
+import Lumi.Components.Color (ColorName, colors)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 

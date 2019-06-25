@@ -15,7 +15,7 @@ import Foreign (isNull, isUndefined, unsafeToForeign)
 import JSS (JSS, jss)
 import Lumi.Components.Color (ColorName, colorNames, colors)
 import Lumi.Components.Icon (IconType, icon)
-import Lumi.Components.Loader (spinnerMixin)
+import Lumi.Components.Loader (loader, spinnerMixin)
 import Lumi.Components.Size (Size(..))
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
@@ -74,9 +74,25 @@ button = makeStateless component render
             }
       where
         children =
-          if not null props.title && not (isNull || isUndefined) (unsafeToForeign props.title)
-            then props.title
-            else invisibleSpace -- preserves button size
+          if not props.loading
+            then
+              if not null props.title && not (isNull || isUndefined) (unsafeToForeign props.title)
+                then R.text props.title
+                else R.text invisibleSpace -- preserves button size
+            else
+              loader
+                  { style:
+                      case props.size of
+                        Small -> R.css { width: "12px", height: "12px" }
+                        Medium -> R.css { width: "18px", height: "18px" }
+                        Large -> R.css { width: "24px", height: "24px" }
+                        ExtraLarge -> R.css { width: "34px", height: "34px" }
+                  , testId: toNullable Nothing
+                  , color: colorNames.white
+                  -- @TODO get this to work with the lighten/darken HSLA rules
+                  , bgColor: colorNames.black
+                  }
+
 
 defaults :: ButtonProps
 defaults =
@@ -176,8 +192,7 @@ styles = jss
           , "&:hover": { backgroundColor: cssStringHSLA $ darken 0.1 colors.primary }
           , "&:active": { backgroundColor: cssStringHSLA $ darken 0.15 colors.primary }
           , "&:disabled, &[data-loading=\"true\"]":
-              { backgroundColor: cssStringHSLA colors.primary2
-              , cursor: "default"
+              { cursor: "default"
               }
           , "&:focus":
               { outline: 0
@@ -218,21 +233,12 @@ styles = jss
                   , borderColor: cssStringHSLA colors.black3
                   }
               }
-          -- @TODO update spinnerMixin props
-          -- , "&[data-loading=\"true\"]":
-          --     { "&:after": spinnerMixin { radius: "16px", borderWidth: "2px" }
-          --     , "@media (min-width: $break-point-mobile)":
-          --         { "&[data-size=\"small\"]":
-          --             { "&:after": spinnerMixin { radius: "12px", borderWidth: "2px" }
-          --             }
-          --         , "&[data-size=\"large\"]":
-          --             { "&:after": spinnerMixin { radius: "24px", borderWidth: "3px" }
-          --             }
-          --         , "&[data-size=\"extra-large\"]":
-          --             { "&:after": spinnerMixin { radius: "34px", borderWidth: "4px" }
-          --             }
-          --         }
-          --     }
+
+          , "&[data-loading=\"true\"]": {}
+              -- @TODO why isn't this working?
+              -- { "lumi-loader::after":
+              --     { background: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value }
+              -- }
 
           , "&[data-color=\"black\"]": buttonColorHoverMixin colors.black
           , "&[data-color=\"black-1\"]": buttonColorHoverMixin colors.black1
@@ -295,5 +301,6 @@ styles = jss
       , "&:active": { backgroundColor: cssStringHSLA $ darken 0.15 value }
       , "&:disabled, &[data-loading=\"true\"]":
           { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
+          -- @TODO get lumi-loader to reflect hover color background
           }
       }
