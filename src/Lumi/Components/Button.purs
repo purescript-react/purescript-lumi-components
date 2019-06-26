@@ -61,7 +61,7 @@ button = makeStateless component render
         else
           lumiButtonElement
             { "aria-label": props.accessibilityLabel
-            , children: children
+            , children: if props.loading then mempty else children
             , className: "lumi"
             , "data-color": props.color
             , "data-size": show props.size

@@ -114,6 +114,10 @@ docs =
         , example
             $ button primary { loading = true, size = ExtraLarge }
         ]
+      , [ h4_ "Secondary + Loading"
+        , example
+            $ button secondary { loading = true }
+        ]
       ]
 
 sections :: Array (Array JSX) -> Array JSX
