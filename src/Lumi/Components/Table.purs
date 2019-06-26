@@ -57,6 +57,7 @@ derive instance eqSortString :: Eq SortString
 
 type TableProps row =
   { name :: String
+  , dropdownMenu :: Boolean
   , sortable :: Boolean
   , sort :: Nullable SortString
   , sortBy :: Nullable ColumnName
@@ -261,24 +262,8 @@ table = make component
             then self.state.columns
             else self.props.columns
       in
-        renderLumiTable \tableRef ->
-          [ if not self.state.showMenu
-              then empty
-              else renderFilterDropdown
-                { close: closeMenu self
-                , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
-                    { name: ColumnName name
-                    , hidden
-                    }
-                , items: columns <#> \{ name, label, filterLabel, hidden } ->
-                    { name: un ColumnName name
-                    , label
-                    , filterLabel
-                    , hidden
-                    }
-                , style: R.css self.state.menuStyle
-                }
-          , element scrollObserver
+        renderLumiTable self columns \tableRef ->
+          [ element scrollObserver
               { node: tableRef
               , render: \{ hasScrolledY, hasScrolledX } ->
                   R.table
@@ -425,14 +410,34 @@ table = make component
                       ]
                   }
 
-    renderLumiTable renderChildren =
-      selectorRef (QuerySelector "lumi-table") \maybeTableRef ->
-        element (R.unsafeCreateDOMComponent "lumi-table")
-          { children:
-              case maybeTableRef of
-                Nothing       -> []
-                Just tableRef -> renderChildren tableRef :: Array JSX
-          }
+    renderLumiTable self columns renderChildren =
+      element (R.unsafeCreateDOMComponent "lumi-table")
+        { children:
+            [ if not self.state.showMenu
+                then empty
+                else guard (self.props.dropdownMenu) $ renderFilterDropdown
+                  { close: closeMenu self
+                  , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
+                      { name: ColumnName name
+                      , hidden
+                      }
+                  , items: columns <#> \{ name, label, filterLabel, hidden } ->
+                      { name: un ColumnName name
+                      , label
+                      , filterLabel
+                      , hidden
+                      }
+                  , style: R.css self.state.menuStyle
+                  }
+            , selectorRef (QuerySelector "lumi-table-inner") \maybeTableRef ->
+                element (R.unsafeCreateDOMComponent "lumi-table-inner")
+                  { children:
+                      case maybeTableRef of
+                        Nothing       -> []
+                        Just tableRef -> renderChildren tableRef
+                  }
+            ]
+        }
 
     renderFilterDropdown { close, reorderItems, items, style } =
       selectorRef (QuerySelector "lumi-filter-dropdown") \maybeMenuRef ->
@@ -610,9 +615,16 @@ styles = jss
       { "lumi-table":
           { width: "100%"
           , maxHeight: "100%"
+          , display: "flex"
+          , flexFlow: "column"
+          , position: "relative"
+          }
+
+      , "lumi-table-inner":
+          { width: "100%"
+          , maxHeight: "100%"
           , overflow: "auto"
           , backgroundColor: cssStringHSLA colors.white
-          , position: "relative"
           , display: "block"
           , whiteSpace: "nowrap"
 
@@ -698,12 +710,6 @@ styles = jss
                       , "&.primary-cell a":
                           { color: cssStringHSLA colors.primary
                           }
-                      }
-                  , "& input.lumi:not([type=\"checkbox\"]), & select.lumi":
-                      { border: "none"
-                      , paddingTop: "0"
-                      , paddingBottom: "0"
-                      , paddingLeft: "0"
                       }
                   }
               , "& a.lumi":

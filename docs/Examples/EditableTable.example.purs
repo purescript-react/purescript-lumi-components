@@ -5,22 +5,30 @@ import Prelude
 import Data.Array.NonEmpty (filter, fromArray, fromNonEmpty, length, snoc)
 import Data.BigInt (fromInt, fromString, toNumber, toString)
 import Data.Either (Either(..))
-import Data.Foldable (sum)
+import Data.Foldable (sum, traverse_)
+import Data.Foldable as Array
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.NonEmpty ((:|))
+import Data.Nullable as Nullable
 import Data.Number (isNaN)
 import Data.Number.Format (fixed, toStringWith)
+import Effect.Console (log)
 import Global (readInt)
 import Lumi.Components.Column (column_)
-import Lumi.Components.EditableTable (editableTable)
-import Lumi.Components.Input as Input
-import Lumi.Components.Row (row_)
-import Lumi.Components.Text (body, body_, nbsp, text)
+import Lumi.Components.DropdownButton (dropdownIcon, dropdownIconDefaults)
+import Lumi.Components.EditableTable (editableTable, editableTableDefaults)
 import Lumi.Components.Example (example)
+import Lumi.Components.Input (CheckboxState(..), alignToInput, input, switch)
+import Lumi.Components.Input as Input
+import Lumi.Components.Link as Link
+import Lumi.Components.Row (row_)
+import Lumi.Components.Spacing (Space(..), hspace)
+import Lumi.Components.Text (body, body_, nbsp, p_, text)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
-import React.Basic.DOM.Events (targetValue)
+import React.Basic.DOM.Events (stopPropagation, targetChecked, targetValue)
 import React.Basic.Events (handler)
+import React.Basic.Events (handler) as Events
 
 component :: Component Unit
 component = createComponent "EditableTableExample"
@@ -40,63 +48,72 @@ docs = unit # make component
               , price: 0.23
               }
             ]
+      , customRemoveCell: false
       }
 
   , render: \self ->
-      column_
-        [ example $
-            editableTable
-              { addLabel: "Add another row"
-              , columns:
-                  [ { label: "Description"
-                    , renderCell: \row -> Input.input Input.text_
-                        { value = row.description
-                        , onChange = handler targetValue \value ->
-                            updateRow self row { description = fromMaybe row.description value }
-                        , style = R.css { width: "100%" }
-                        }
-                    }
-                  , { label: "Quantity"
-                    , renderCell: \row -> Input.input Input.number
-                        { value = toString row.quantity
-                        , onChange = handler targetValue \value ->
-                            updateRow self row { quantity = fromMaybe row.quantity $ fromString =<< value }
-                        }
-                    }
-                  , { label: "Price"
-                    , renderCell: \row -> Input.input Input.number
-                        { value = show row.price
-                        , onChange = handler targetValue \value ->
-                            updateRow self $ fromMaybe row do
-                              value' <- readInt 10 <$> value
-                              pure if isNaN value'
-                                then row
-                                else row { price = value' }
-                        }
-                    }
-                  , { label: "Total"
-                    , renderCell: \row -> R.text $ toMoneyString (calculateTotal row)
-                    }
+      column_ $ pure $ example $ column_
+        [ row_
+            [ alignToInput $ body_ "Custom remove cell?"
+            , input switch
+                { checked = if self.state.customRemoveCell then On else Off
+                , onChange = Events.handler (stopPropagation >>> targetChecked)
+                               (traverse_ (\checked -> self.setState (_ { customRemoveCell = checked })))
+                }
+            ]
+        , editableTable
+            { addLabel: "Add another row"
+            , columns:
+                [ { label: "Description"
+                  , renderCell: \row -> Input.input Input.text_
+                      { value = row.description
+                      , onChange = handler targetValue \value ->
+                          updateRow self row { description = fromMaybe row.description value }
+                      , style = R.css { width: "100%" }
+                      }
+                  }
+                , { label: "Quantity"
+                  , renderCell: \row -> Input.input Input.number
+                      { value = toString row.quantity
+                      , onChange = handler targetValue \value ->
+                          updateRow self row { quantity = fromMaybe row.quantity $ fromString =<< value }
+                      }
+                  }
+                , { label: "Price"
+                  , renderCell: \row -> Input.input Input.number
+                      { value = show row.price
+                      , onChange = handler targetValue \value ->
+                          updateRow self $ fromMaybe row do
+                            value' <- readInt 10 <$> value
+                            pure if isNaN value'
+                              then row
+                              else row { price = value' }
+                      }
+                  }
+                , { label: "Total"
+                  , renderCell: \row -> R.text $ toMoneyString (calculateTotal row)
+                  }
+                ]
+            , maxRows: 5
+            , onRowAdd: addRow self
+            , onRowRemove: removeRow self
+            , removeCell: removeCell self
+            , readonly: false
+            , rowEq: eq
+            , rows: Right self.state.rows
+            , summary:
+                row_
+                  [ text body
+                      { children = [ R.text "Total:" ]
+                      , style = R.css { fontWeight: "bold" }
+                      }
+                  , body_ nbsp
+                  , body_ nbsp
+                  , body_ nbsp
+                  , body_ nbsp
+                  , body_ $ toMoneyString $ sum $ calculateTotal <$> self.state.rows
                   ]
-              , maxRows: 5
-              , onRowAdd: addRow self
-              , onRowRemove: removeRow self
-              , readonly: false
-              , rowEq: eq
-              , rows: Right self.state.rows
-              , summary:
-                  row_
-                    [ text body
-                        { children = [ R.text "Total:" ]
-                        , style = R.css { fontWeight: "bold" }
-                        }
-                    , body_ nbsp
-                    , body_ nbsp
-                    , body_ nbsp
-                    , body_ nbsp
-                    , body_ $ toMoneyString $ sum $ calculateTotal <$> self.state.rows
-                    ]
-              }
+            }
         ]
   }
   where
@@ -129,3 +146,30 @@ docs = unit # make component
 
     toMoneyString value =
       "$" <> toStringWith (fixed 2) value
+
+    removeCell self =
+      if self.state.customRemoveCell
+        then \onRemove row ->
+          row_
+            [ hspace S16
+            , dropdownIcon dropdownIconDefaults
+                { alignment = Nullable.notNull "right"
+                , content = R.div
+                    { style: R.css { width: "328px", padding: "12px" }
+                    , children:
+                        [ Link.link Link.defaults
+                            { className = pure "lumi-dropdown-menu-item"
+                            , text = p_ "Do something with this row"
+                            , navigate = pure $ log $ "Did something: " <> show row
+                            }
+                        , onRemove # Array.foldMap \onRemove' ->
+                            Link.link Link.defaults
+                              { className = pure "lumi-dropdown-menu-item"
+                              , text = p_ "Remove this row"
+                              , navigate = pure $ onRemove' row
+                              }
+                        ]
+                    }
+                }
+            ]
+        else editableTableDefaults.removeCell

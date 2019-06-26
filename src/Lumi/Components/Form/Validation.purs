@@ -22,7 +22,7 @@ import Data.Either (Either(..), either, hush, note)
 import Data.Eq (class Eq1)
 import Data.Foldable (foldMap)
 import Data.Int as Int
-import Data.Lens (Lens, Prism', lens, prism', review, view)
+import Data.Lens (Lens, Prism', lens, over, prism', review, view)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Newtype (un)
@@ -31,7 +31,7 @@ import Data.Number as Number
 import Data.Ord (class Ord1)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
-import Heterogeneous.Mapping (class HMap, class MapRecordWithIndex, class Mapping, ConstMapping, hmap)
+import Heterogeneous.Mapping (class HMap, class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Form.Internal (Forest, FormBuilder(..), Tree(..))
 import Lumi.Components.LabeledField (ValidationMessage(..))
@@ -161,13 +161,13 @@ setModified = hmap (ModifyValidated (Modified <<< view _Validated))
 -- | records containing `Validated` values.
 newtype ModifyValidated = ModifyValidated (Validated ~> Validated)
 
-instance modifyValidated :: Mapping ModifyValidated (Validated a) (Validated a) where
-  mapping (ModifyValidated f) = f
+instance modifyValidated :: Mapping ModifyValidated a a => Mapping ModifyValidated (Validated a) (Validated a) where
+  mapping m@(ModifyValidated f) = over _Validated (mapping m) <<< f
 else instance modifyValidatedRecord :: (RL.RowToList r xs, MapRecordWithIndex xs (ConstMapping ModifyValidated) r r) => Mapping ModifyValidated {| r} {| r} where
   mapping d = hmap d
-else instance modifyValidatedArray :: (RL.RowToList r xs, MapRecordWithIndex xs (ConstMapping ModifyValidated) r r) => Mapping ModifyValidated (Array {| r}) (Array {| r}) where
-  mapping d = map (hmap d)
-else instance modifyValidatedA :: Mapping ModifyValidated a a where
+else instance modifyValidatedArray :: Mapping ModifyValidated a a => Mapping ModifyValidated (Array a) (Array a) where
+  mapping d = map (mapping d)
+else instance modifyValidatedIdentity :: Mapping ModifyValidated a a where
   mapping _ = identity
 
 -- | Internal utility type class used to flatten repeated applications of

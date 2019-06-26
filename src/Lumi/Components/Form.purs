@@ -45,7 +45,7 @@ module Lumi.Components.Form
 import Prelude
 
 import Color (cssStringHSLA)
-import Data.Array (mapWithIndex, (:))
+import Data.Array ((:))
 import Data.Array as Array
 import Data.Either (Either(..))
 import Data.Foldable (fold, surround)
@@ -82,15 +82,13 @@ import Lumi.Components.Select as Select
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
-import Prim.Row (class Nub, class Union)
+import Prim.Row (class Nub, class Union, class Cons)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
-import React.Basic.DOM (css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
 import Record (get)
-import Type.Row (class Cons)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
@@ -149,10 +147,10 @@ build editor = makeStateless (createComponent "Form") render where
               , validationError: validationError
               , required: required
               , forceTopLabel: forceTopLabels
-              , style: css {}
+              , style: R.css {}
               }
 
-     in element (unsafeCreateDOMComponent "lumi-form")
+     in element (R.unsafeCreateDOMComponent "lumi-form")
           { "class": String.joinWith " " $ fold
                        [ guard inlineTable ["inline-table"]
                        , guard readonly ["readonly"]
@@ -190,7 +188,7 @@ inputBox inputProps = formBuilder_ \{ readonly } s onChange ->
     else Input.input inputProps
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = css { width: "100%" }
+           , style = R.css { width: "100%" }
            }
 
 -- | A simple text box makes a `FormBuilder` for strings
@@ -224,7 +222,7 @@ textarea = formBuilder_ \{ readonly } s onChange ->
     else Textarea.textarea Textarea.defaults
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = css { width: "100%" }
+           , style = R.css { width: "100%" }
            }
 
 -- | A `switch` is an editor for booleans which displays Yes or No.
@@ -442,7 +440,7 @@ asyncSelect l toSelectOption optionRenderer =
         , loadOptions: get l props
         , onChange: onChange
         , className: ""
-        , style: css {}
+        , style: R.css {}
         , searchable: true
         , id: ""
         , name: ""
@@ -489,7 +487,7 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
               Just _  -> alignToInput
                 case data_ of
                   Nothing     -> loader
-                    { style: css { width: "20px", height: "20px", borderWidth: "2px" }
+                    { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }
                     , testId: toNullable Nothing
                     }
                   Just data_' -> text body
@@ -501,7 +499,7 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
                 , loadOptions: get l props
                 , onChange: onChange <<< map (toId <<< _.value <<< toSelectOption)
                 , className: ""
-                , style: css {}
+                , style: R.css {}
                 , searchable: true
                 , id: ""
                 , name: ""
@@ -693,7 +691,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                                     , actionButtonTitle: addLabel
                                     , component
                                     , componentProps
-                                    , style: css {}
+                                    , style: R.css {}
                                     }
                       }
                   })
@@ -710,7 +708,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                             , actionButtonTitle: addLabel
                             , component
                             , componentProps
-                            , style: css {}
+                            , style: R.css {}
                             }
                     })
       , validate: pure xs
@@ -923,7 +921,7 @@ withKey
 withKey key editor = FormBuilder \props value ->
   let { edit, validate } = un FormBuilder editor props value
    in { edit: \onChange ->
-          edit onChange # mapWithIndex case _, _ of
+          edit onChange # Array.mapWithIndex case _, _ of
             i, Child a -> Child a { key = Just (key <> "--" <> show i) }
             i, Wrapper a -> Wrapper a { key = Just (key <> "--" <> show i) }
             i, Node  n -> Node  n { key = Just (key <> "--" <> show i) }
@@ -949,17 +947,6 @@ styles = jss
               { "&:first-child, &:last-child": { display: "none" }
               }
 
-            -- not InlineTable Form rules
-          , "&:not(.inline-table)":
-              { "& .labeled-field":
-                  { paddingBottom: "16px"
-
-                  , "&[data-force-top-label=\"true\"] lumi-align-to-input":
-                      { padding: "0 0 4px 0"
-                      }
-                  }
-              }
-
           , "&.readonly label.lumi":
               { cursor: "auto"
               , userSelect: "auto"
@@ -972,10 +959,25 @@ styles = jss
               , "&:hover": { textDecoration: "underline" }
               }
 
+            -- not InlineTable Form rules
+          , "& .labeled-field":
+              { paddingBottom: "16px"
+
+              , "&[data-force-top-label=\"true\"] lumi-align-to-input":
+                  { padding: "0 0 4px 0"
+                  }
+              }
+
           , "&.inline-table":
               { -- If necessary, override the not(.inline-table)
                 -- rule above (for nested forms)
-                "& .labeled-field": { paddingBottom: "0" }
+                "& .labeled-field":
+                  { paddingBottom: "0"
+
+                  , "&[data-force-top-label=\"true\"] lumi-align-to-input":
+                      { padding: "0"
+                      }
+                  }
 
               , "& hr.lumi.field-divider":
                   { height: "0.1rem"
@@ -1001,6 +1003,18 @@ styles = jss
           , "& .labeled-field--validation-warning":
               { extend: labeledFieldValidationWarningStyles
               , marginBottom: "calc(4 * 4px)"
+              }
+
+          , "& lumi-editable-table":
+              { "& table tr td:not(.lumi)":
+                  { verticalAlign: "top"
+                  , "& lumi-column":
+                      { flex: "1 1 auto"
+                      }
+                  }
+              , "& .labeled-field--validation-error, & .labeled-field--validation-warning":
+                  { marginBottom: "0"
+                  }
               }
           }
       }

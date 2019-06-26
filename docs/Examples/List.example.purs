@@ -8,7 +8,7 @@ import Lumi.Components.Color (colorNames)
 import Lumi.Components.Column (columnSelfStretch, column_)
 import Lumi.Components.Images (avatar, avatar_)
 import Lumi.Components.Link (link, defaults)
-import Lumi.Components.List (list, structuredColumnList, defaultList, compactList)
+import Lumi.Components.List (borderlessList, compactList, defaultList, list, structuredColumnList)
 import Lumi.Components.Lockup (lockup)
 import Lumi.Components.Row (row_)
 import Lumi.Components.Size (Size(..))
@@ -25,6 +25,14 @@ docs =
     , example
         $ columnSelfStretch
             [ list defaultList
+                { rows = simpleListData
+                }
+            ]
+
+    , h2_ "Basic List w/ no Borders"
+    , example
+        $ columnSelfStretch
+            [ borderlessList defaultList
                 { rows = simpleListData
                 }
             ]

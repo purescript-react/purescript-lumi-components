@@ -19,6 +19,8 @@ data RequiredField
   | Optional
   | Neither
 
+derive instance eqRequiredField :: Eq RequiredField
+
 data ValidationMessage = Error String | Warning String
 
 type LabeledFieldProps =

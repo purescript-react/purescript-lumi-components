@@ -23,7 +23,7 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)
 import React.Basic.Events as Events
 import Record (merge)
-import Type.Row (class Nub, class Union)
+import Prim.Row (class Nub, class Union)
 
 foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
 
@@ -99,7 +99,7 @@ modalLink = make modalLinkComponent { initialState, didMount, render }
                       self.setState _ { modalOpen = false }
                       props.onChange value_
                   , actionButtonTitle: props.actionButtonTitle
-                  , actionButtonDisabled: false
+                  , actionButtonState: Button.Enabled
                   , size: Medium
                   , variant: ""
                   , closeButton: true
@@ -124,7 +124,7 @@ type CommonProps rest =
   { modalOpen :: Boolean
   , onActionButtonClick :: Nullable (Effect Unit)
   , actionButtonTitle :: String
-  , actionButtonDisabled :: Boolean
+  , actionButtonState :: Button.ButtonState
   , size :: Size
   , variant :: String
   , children :: JSX
@@ -166,7 +166,7 @@ dialog = makeStateless dialogComponent render
         , onRequestClose: props.onRequestClose
         , onActionButtonClick: props.onActionButtonClick
         , actionButtonTitle: props.actionButtonTitle
-        , actionButtonDisabled: false
+        , actionButtonState: Button.Enabled
         , size: props.size
         , variant: "dialog"
         , children:
@@ -199,7 +199,7 @@ errorModal = makeStateless errorModalComponent render
         , onRequestClose: props.onRequestClose
         , onActionButtonClick: props.onActionButtonClick
         , actionButtonTitle: props.actionButtonTitle
-        , actionButtonDisabled: false
+        , actionButtonState: Button.Enabled
         , size: Small
         , variant: ""
         , children: props.children
@@ -279,7 +279,7 @@ modalPortal = toReactComponent identity modalPortalComponent
                                     , toMaybe props.onActionButtonClick # foldMap \actionFn ->
                                         Button.button Button.primary
                                           { title = props.actionButtonTitle
-                                          , disabled = props.actionButtonDisabled
+                                          , buttonState = props.actionButtonState
                                           , onPress = mkEffectFn1 \_ -> actionFn
                                           , style = R.css { marginLeft: "1.2rem" }
                                           }

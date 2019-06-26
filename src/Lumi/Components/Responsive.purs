@@ -4,29 +4,40 @@ import Prelude
 
 import JSS (JSS, jss)
 import React.Basic (JSX, element)
-import React.Basic.DOM (unsafeCreateDOMComponent)
+import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
-mobile :: JSX -> JSX
-mobile = lumiMobileElement <<< { children: _ }
-  where
-    lumiMobileElement = element (unsafeCreateDOMComponent "lumi-mobile")
+type ResponsiveProps =
+  { style :: CSS
+  , children :: Array JSX
+  }
 
-desktop :: JSX -> JSX
-desktop = lumiDesktopElement <<< { children: _ }
-  where
-    lumiDesktopElement = element (unsafeCreateDOMComponent "lumi-desktop")
+mobile :: ResponsiveProps -> JSX
+mobile = element (unsafeCreateDOMComponent "lumi-mobile")
+
+mobile_ :: Array JSX -> JSX
+mobile_ = mobile <<< { style: css {}, children: _ }
+
+desktop :: ResponsiveProps -> JSX
+desktop = element (unsafeCreateDOMComponent "lumi-desktop")
+
+desktop_ :: Array JSX -> JSX
+desktop_ = desktop <<< { style: css {}, children: _ }
 
 styles :: JSS
 styles = jss
   { "@global":
-      { "@media (max-width: 860px)":
-          { "lumi-desktop":
-              { "display": "none"
+      { "lumi-desktop":
+          { "display": "flex"
+          , "flex-shrink": "0"
+          , "@media (max-width: 860px)":
+              { "display": "none !important"
               }
           }
-      , "@media (min-width: 861px)":
-          { "lumi-mobile":
-              { "display": "none"
+      , "lumi-mobile":
+          { "display": "flex"
+          , "flex-shrink": "0"
+          , "@media (min-width: 861px)":
+              { "display": "none !important"
               }
           }
       }
