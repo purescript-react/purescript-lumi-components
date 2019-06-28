@@ -312,25 +312,7 @@ table = make component
 
         primaryColumn = cleanUpNullables <$> toMaybe self.props.primaryColumn
           where
-            cleanUpNullables
-              { name
-              , label
-              , filterLabel
-              , sortBy
-              , style
-              , getLink
-              , renderCell
-              , sticky
-              } =
-              { name
-              , label
-              , filterLabel
-              , sortBy
-              , style
-              , getLink: toMaybe getLink
-              , renderCell
-              , sticky
-              }
+            cleanUpNullables x = x { getLink = toMaybe x.getLink }
 
         renderTableHead columns tableRef =
           element (R.unsafeCreateDOMComponent "thead")
