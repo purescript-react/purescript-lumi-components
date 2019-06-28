@@ -5,7 +5,7 @@ import Prelude
 import Control.Monad.Except (runExcept)
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (un)
 import Data.Nullable (notNull, null, toMaybe, toNullable)
 import Effect.Console (log)
@@ -15,14 +15,18 @@ import Foreign.Index (readProp)
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Images (productThumb_)
+import Lumi.Components.Input (input, text_)
 import Lumi.Components.Link as Link
 import Lumi.Components.Lockup (lockup)
+import Lumi.Components.NativeSelect (defaults, nativeSelect)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Table (ColumnName(..), SortString(..), table)
 import Lumi.Components.Text (p_)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
+import React.Basic.DOM.Events (targetValue)
+import React.Basic.Events (handler)
 import Web.HTML.History (URL(..))
 
 component :: Component Unit
@@ -35,6 +39,7 @@ docs = unit # make component { initialState, render }
       { sort: SortString "asc"
       , sortBy: Just (ColumnName "createdDate")
       , selected: ["10cms9", "0mf7w"]
+      , selectedOption: ""
       , ex2Columns:
           [ { required: true
             , name: ColumnName "product-type"
@@ -61,12 +66,24 @@ docs = unit # make component { initialState, render }
             , renderCell: \rowData -> R.text rowData.createdDate
             }
           ]
+      , ex3Columns:
+          [ { required: true
+            , name: ColumnName "input"
+            , label: notNull "Input"
+            , filterLabel: null
+            , sortBy: null
+            , style: css {}
+            , hidden: false
+            , sticky: false
+            , renderCell: \rowData ->
+                input text_ { placeholder = "Placeholder..." }
+            }
+          ]
       }
 
     render self =
       column_
         [ p_ "*Right click on table header to see FilterDropdownMenu"
-
         , example $
             column
               { style: css { alignSelf: "stretch" , height: 150, width: 400 }
@@ -141,6 +158,7 @@ docs = unit # make component { initialState, render }
                   ]
               }
 
+        , p_ "*Does not include FilterDropdownMenu"
         , example $
             column
               { style: css { alignSelf: "stretch" }
@@ -179,6 +197,78 @@ docs = unit # make component { initialState, render }
                           , sticky: false
                           }
                       , columns: self.state.ex2Columns
+                      , onColumnChange: notNull $ mkEffectFn1 \columns ->
+                          self.setState _ { ex2Columns = columns }
+                      }
+                  ]
+              }
+
+        , p_ "*Non selectable variant w/ inputs & selects"
+        , example $
+            column
+              { style: css { alignSelf: "stretch" }
+              , children:
+                  [ table
+                      { name: "Items"
+                      , dropdownMenu: true
+                      , sortable: true
+                      , sort: notNull self.state.sort
+                      , sortBy: toNullable self.state.sortBy
+                      , updateSort: mkEffectFn2 \sort sortBy -> do
+                          self.setState _ { sort = sort, sortBy = toMaybe sortBy }
+                      , selectable: false
+                      , selected: null
+                      , onSelect: mkEffectFn1 \selected -> self.setState _ { selected = selected }
+                      , rows: (if self.state.sort == SortString "desc" then Array.reverse else identity)
+                          let tableFieldSort = comparing \row -> do
+                                ColumnName sortByCol <- self.state.sortBy
+                                case runExcept $ readString =<< readProp sortByCol (unsafeToForeign row) of
+                                  Right value -> Just value
+                                  _           -> Nothing
+                          in Array.sortBy tableFieldSort tableData
+                      , getRowKey: _.id
+                      , rowEq: eq
+                      , onNavigate: mkEffectFn1 \href ->
+                          log $ "navigate to: " <> un URL href
+                      , variant: notNull "compact"
+                      , primaryColumn: notNull
+                          { name: ColumnName "product-title"
+                          , label: notNull "Items"
+                          , filterLabel: notNull "Product title"
+                          , sortBy: null
+                          , style: css {}
+                          , getLink: notNull _.link
+                          , renderCell: R.text <<< _.title
+                          , sticky: false
+                          }
+                      , columns:
+                          Array.concat
+                            [ self.state.ex2Columns
+                            , self.state.ex3Columns
+                            , [ { required: true
+                                , name: ColumnName "select"
+                                , label: notNull "Select"
+                                , filterLabel: null
+                                , sortBy: null
+                                , style: css {}
+                                , hidden: false
+                                , sticky: false
+                                , renderCell: \rowData ->
+                                    nativeSelect defaults
+                                        { options =
+                                            [ { label: "Select your car...", value: "" }
+                                            , { label: "Volvo", value: "volvo" }
+                                            , { label: "Saab", value: "saab" }
+                                            , { label: "Mercedes", value: "mercedes" }
+                                            , { label: "Audi", value: "audi" }
+                                            ]
+                                        , onChange = handler targetValue \value ->
+                                                      self.setState _ { selectedOption = fromMaybe "" value }
+                                        , value = self.state.selectedOption
+                                        }
+                                }
+                              ]
+                            ]
                       , onColumnChange: notNull $ mkEffectFn1 \columns ->
                           self.setState _ { ex2Columns = columns }
                       }
