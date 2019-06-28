@@ -13,6 +13,7 @@ import Effect.Uncurried (mkEffectFn1, mkEffectFn2)
 import Foreign (readString, unsafeToForeign)
 import Foreign.Index (readProp)
 import Lumi.Components.Column (column, column_)
+import Lumi.Components.Example (example)
 import Lumi.Components.Images (productThumb_)
 import Lumi.Components.Input (input, text_)
 import Lumi.Components.Link as Link
@@ -21,7 +22,6 @@ import Lumi.Components.NativeSelect (defaults, nativeSelect)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Table (ColumnName(..), SortString(..), table)
 import Lumi.Components.Text (p_)
-import Lumi.Components.Example (example)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
@@ -117,7 +117,7 @@ docs = unit # make component { initialState, render }
                           , filterLabel: notNull "Product lockup"
                           , sortBy: null
                           , style: css {}
-                          , getLink: _.link
+                          , getLink: notNull _.link
                           , renderCell: \rowData ->
                               lockup
                                 { image: Just $ productThumb_ { image: R.img { src: rowData.imgSrc }, size: Small }
@@ -192,7 +192,7 @@ docs = unit # make component { initialState, render }
                           , filterLabel: notNull "Product title"
                           , sortBy: null
                           , style: css {}
-                          , getLink: _.link
+                          , getLink: null -- notNull _.link
                           , renderCell: R.text <<< _.title
                           , sticky: false
                           }
@@ -237,7 +237,7 @@ docs = unit # make component { initialState, render }
                           , filterLabel: notNull "Product title"
                           , sortBy: null
                           , style: css {}
-                          , getLink: _.link
+                          , getLink: notNull _.link
                           , renderCell: R.text <<< _.title
                           , sticky: false
                           }

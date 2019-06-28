@@ -6,7 +6,7 @@ import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Nullable (notNull, null)
 import Lumi.Components.Button as Button
-import Lumi.Components.Button (ButtonState(..), button, secondary)
+import Lumi.Components.Button (button, secondary)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Modal (dialog, errorModal, modal)
 import Lumi.Components.Size (Size(..))
