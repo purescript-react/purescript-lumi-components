@@ -82,13 +82,12 @@ import Lumi.Components.Select as Select
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
-import Prim.Row (class Nub, class Union, class Cons)
+import Prim.Row (class Nub, class Union)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
-import Record (get)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
@@ -394,38 +393,13 @@ multiSelect encode opts = formBuilder_ \{ readonly } selected onChange ->
 
 -- | An editor which uses an API call to populate a single-select
 -- | drop-down.
--- |
--- | The API call is made available in props using the `RowCons`
--- | constraint. Pass an `SProxy` to specify the label where the API
--- | call will be stored.
--- |
--- | For example:
--- |
--- | ```purescript
--- | asyncSelect (SProxy :: SProxy "foo")
--- |   :: forall props additionalData
--- |    . (Select.SelectOption additionalData -> JSX)
--- |   -> FormBuilder
--- |      { readonly :: Boolean
--- |      , foo :: String -> Aff (Either String
--- |                 (Array (Select.SelectOption additionalData)))
--- |      | props
--- |      }
--- |      (Maybe (Select.SelectOption))
--- | ```
 asyncSelect
-  :: forall l props rest a
-   . IsSymbol l
-  => Cons
-       l
-       (String -> Aff (Array a))
-       rest
-       (readonly :: Boolean | props)
-  => SProxy l
+  :: forall props a
+   . (String -> Aff (Array a))
   -> (a -> Select.SelectOption)
   -> (a -> JSX)
   -> FormBuilder { readonly :: Boolean | props } (Maybe a) (Maybe a)
-asyncSelect l toSelectOption optionRenderer =
+asyncSelect loadOptions toSelectOption optionRenderer =
   formBuilder_ \props@{ readonly } value onChange ->
     if readonly
       then case value of
@@ -437,7 +411,7 @@ asyncSelect l toSelectOption optionRenderer =
 
       else Select.asyncSingleSelect
         { value
-        , loadOptions: get l props
+        , loadOptions
         , onChange: onChange
         , className: ""
         , style: R.css {}
@@ -455,30 +429,18 @@ asyncSelect l toSelectOption optionRenderer =
 
 -- | Similar to `asyncSelect` but allows the current value to be specified using only its key.
 asyncSelectByKey
-  :: forall k l props rest1 rest2 id a
-   . IsSymbol k
-  => IsSymbol l
-  => Cons
-       k
-       (id -> Aff a)
-       rest1
-       (readonly :: Boolean | props)
-  => Cons
-       l
-       (String -> Aff (Array a))
-       rest2
-       (readonly :: Boolean | props)
-  => SProxy k
-  -> SProxy l
+  :: forall props id a
+   . (id -> Aff a)
+  -> (String -> Aff (Array a))
   -> (id -> String)
   -> (String -> id)
   -> (a -> Select.SelectOption)
   -> (a -> JSX)
   -> FormBuilder { readonly :: Boolean | props } (Maybe id) (Maybe id)
-asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
+asyncSelectByKey getData loadOptions fromId toId toSelectOption optionRenderer =
   formBuilder_ \props@{ readonly } value onChange ->
     FetchCache.single
-      { getData: \key -> get k props (toId key)
+      { getData: getData <<< toId
       , id: map fromId value
       , render: \data_ ->
           if readonly
@@ -496,7 +458,7 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
             else
               Select.asyncSingleSelect
                 { value: data_
-                , loadOptions: get l props
+                , loadOptions
                 , onChange: onChange <<< map (toId <<< _.value <<< toSelectOption)
                 , className: ""
                 , style: R.css {}

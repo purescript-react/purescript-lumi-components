@@ -17,7 +17,7 @@ import Data.String as String
 import Data.String.NonEmpty (NonEmptyString, appendString, length, toString)
 import Data.Symbol (SProxy(..))
 import Effect (Effect)
-import Effect.Aff (Aff, Milliseconds(..), delay, error, throwError)
+import Effect.Aff (Milliseconds(..), delay, error, throwError)
 import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
 import Lumi.Components.Button as Button
@@ -85,9 +85,8 @@ docs = unit # make component { initialState, render }
       SetUser update ->
         let
           formProps =
-            { loadColor: loadColor self.state.simulatePauses
-            , loadColors: loadColors self.state.simulatePauses
-            , readonly: self.state.readonly
+            { readonly: self.state.readonly
+            , simulatePauses: self.state.simulatePauses
             }
         in
           self.setState \s -> s
@@ -166,11 +165,10 @@ docs = unit # make component { initialState, render }
                       [ userComponent
                           { value: user
                           , onChange: send self <<< SetUser
-                          , loadColor: loadColor simulatePauses
-                          , loadColors: loadColors simulatePauses
                           , inlineTable
                           , forceTopLabels: forceTopLabels && not inlineTable
                           , readonly
+                          , simulatePauses
                           }
                       , row
                           { style: css { justifyContent: "flex-end" }
@@ -203,30 +201,6 @@ docs = unit # make component { initialState, render }
                       "Created user " <> toString firstName <> " " <> toString lastName <> "!"
                   }
           ]
-
-    loadColor simulatePauses c = do
-      when simulatePauses do
-        delay (Milliseconds 500.0)
-      case String.toLower c of
-        "red" -> pure { label: "Red", value: "red" }
-        "green" -> pure { label: "Green", value: "green" }
-        "blue" -> pure { label: "Blue", value: "blue" }
-        "brown" -> pure { label: "Brown", value: "brown" }
-        "black" -> pure { label: "Black", value: "black" }
-        "white" -> pure { label: "White", value: "white" }
-        _ -> throwError (error "No color")
-
-    loadColors simulatePauses search = do
-      when simulatePauses do
-        delay (Milliseconds 1000.0)
-      pure
-        [ { label: "Red", value: "red" }
-        , { label: "Green", value: "green" }
-        , { label: "Blue", value: "blue" }
-        , { label: "Brown", value: "brown" }
-        , { label: "Black", value: "black" }
-        , { label: "White", value: "white" }
-        ]
 
 data Country
   = BR
@@ -297,11 +271,10 @@ type ValidatedPet =
 userComponent
   :: { value :: User
      , onChange :: (User -> User) -> Effect Unit
-     , loadColor :: String -> Aff { label :: String, value :: String }
-     , loadColors :: String -> Aff (Array { label :: String, value :: String })
      , inlineTable :: Boolean
      , forceTopLabels :: Boolean
      , readonly :: Boolean
+     , simulatePauses :: Boolean
      }
   -> JSX
 userComponent = F.build userForm
@@ -309,9 +282,8 @@ userComponent = F.build userForm
 userForm
   :: forall props
    . FormBuilder
-      { loadColor :: String -> Aff { label :: String, value :: String }
-      , loadColors :: String -> Aff (Array { label :: String, value :: String })
-      , readonly :: Boolean
+      { readonly :: Boolean
+      , simulatePauses :: Boolean
       | props
       }
       User
@@ -448,14 +420,15 @@ userForm = ado
                   }
             color <-
               FT.column_ "Color"
-              $ F.focus (prop (SProxy :: SProxy "color"))
-              $ F.asyncSelectByKey
-                  (SProxy :: SProxy "loadColor")
-                  (SProxy :: SProxy "loadColors")
-                  identity
-                  identity
-                  identity
-                  (R.text <<< _.label)
+              $ F.withProps \props ->
+                  F.focus (prop (SProxy :: SProxy "color"))
+                  $ F.asyncSelectByKey
+                      (loadColor props.simulatePauses)
+                      (loadColors props.simulatePauses)
+                      identity
+                      identity
+                      identity
+                      (R.text <<< _.label)
             in
               { name
               , animal
@@ -506,6 +479,26 @@ userForm = ado
     randomPause = do
       interval <- liftEffect $ randomRange 100.0 700.0
       delay $ Milliseconds interval
+
+    loadColor simulatePauses c = do
+      when simulatePauses do
+        randomPause
+      case String.toLower c of
+        "red" -> pure { label: "Red", value: "red" }
+        "green" -> pure { label: "Green", value: "green" }
+        "blue" -> pure { label: "Blue", value: "blue" }
+        _ -> throwError (error "No color")
+
+    loadColors simulatePauses search = do
+      when simulatePauses do
+        randomPause
+        randomPause
+      pure
+        [ { label: "Red", value: "red" }
+        , { label: "Green", value: "green" }
+        , { label: "Blue", value: "blue" }
+        ]
+
 
 type Address =
   { name :: Validated String
