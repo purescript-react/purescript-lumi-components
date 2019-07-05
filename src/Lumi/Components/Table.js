@@ -10,8 +10,8 @@ exports.dataSize = function(data) {
 exports.getMouseEventPositionWithOffset = function(domNode, e) {
   var bounds = domNode.getBoundingClientRect();
   return {
-    x: e.pageX + domNode.scrollLeft - bounds.left,
-    y: e.pageY + domNode.scrollTop - bounds.top
+    x: e.pageX - bounds.left,
+    y: e.pageY - bounds.top
   };
 };
 

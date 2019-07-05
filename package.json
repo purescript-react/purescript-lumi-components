@@ -21,7 +21,6 @@
     "build:purs": "pulp build -I docs",
     "pscid": "pscid -I docs",
     "pscid:build": "run-s build:purs",
-    "postbuild": "pulp docs",
     "predeploy": "run-s build",
     "deploy": "gh-pages -d build",
     "clean": "rm -rf build output generated-docs .psa-stash .pulp-cache .psci-modules",

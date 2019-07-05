@@ -45,7 +45,7 @@ module Lumi.Components.Form
 import Prelude
 
 import Color (cssStringHSLA)
-import Data.Array (mapWithIndex, (:))
+import Data.Array ((:))
 import Data.Array as Array
 import Data.Either (Either(..))
 import Data.Foldable (fold, surround)
@@ -82,14 +82,12 @@ import Lumi.Components.Select as Select
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
-import Prim.Row (class Nub, class Union, class Cons)
+import Prim.Row (class Nub, class Union)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
-import React.Basic.DOM (css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
-import Record (get)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
@@ -148,10 +146,10 @@ build editor = makeStateless (createComponent "Form") render where
               , validationError: validationError
               , required: required
               , forceTopLabel: forceTopLabels
-              , style: css {}
+              , style: R.css {}
               }
 
-     in element (unsafeCreateDOMComponent "lumi-form")
+     in element (R.unsafeCreateDOMComponent "lumi-form")
           { "class": String.joinWith " " $ fold
                        [ guard inlineTable ["inline-table"]
                        , guard readonly ["readonly"]
@@ -189,7 +187,7 @@ inputBox inputProps = formBuilder_ \{ readonly } s onChange ->
     else Input.input inputProps
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = css { width: "100%" }
+           , style = R.css { width: "100%" }
            }
 
 -- | A simple text box makes a `FormBuilder` for strings
@@ -223,7 +221,7 @@ textarea = formBuilder_ \{ readonly } s onChange ->
     else Textarea.textarea Textarea.defaults
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = css { width: "100%" }
+           , style = R.css { width: "100%" }
            }
 
 -- | A `switch` is an editor for booleans which displays Yes or No.
@@ -395,38 +393,13 @@ multiSelect encode opts = formBuilder_ \{ readonly } selected onChange ->
 
 -- | An editor which uses an API call to populate a single-select
 -- | drop-down.
--- |
--- | The API call is made available in props using the `RowCons`
--- | constraint. Pass an `SProxy` to specify the label where the API
--- | call will be stored.
--- |
--- | For example:
--- |
--- | ```purescript
--- | asyncSelect (SProxy :: SProxy "foo")
--- |   :: forall props additionalData
--- |    . (Select.SelectOption additionalData -> JSX)
--- |   -> FormBuilder
--- |      { readonly :: Boolean
--- |      , foo :: String -> Aff (Either String
--- |                 (Array (Select.SelectOption additionalData)))
--- |      | props
--- |      }
--- |      (Maybe (Select.SelectOption))
--- | ```
 asyncSelect
-  :: forall l props rest a
-   . IsSymbol l
-  => Cons
-       l
-       (String -> Aff (Array a))
-       rest
-       (readonly :: Boolean | props)
-  => SProxy l
+  :: forall props a
+   . (String -> Aff (Array a))
   -> (a -> Select.SelectOption)
   -> (a -> JSX)
   -> FormBuilder { readonly :: Boolean | props } (Maybe a) (Maybe a)
-asyncSelect l toSelectOption optionRenderer =
+asyncSelect loadOptions toSelectOption optionRenderer =
   formBuilder_ \props@{ readonly } value onChange ->
     if readonly
       then case value of
@@ -438,10 +411,10 @@ asyncSelect l toSelectOption optionRenderer =
 
       else Select.asyncSingleSelect
         { value
-        , loadOptions: get l props
+        , loadOptions
         , onChange: onChange
         , className: ""
-        , style: css {}
+        , style: R.css {}
         , searchable: true
         , id: ""
         , name: ""
@@ -456,30 +429,18 @@ asyncSelect l toSelectOption optionRenderer =
 
 -- | Similar to `asyncSelect` but allows the current value to be specified using only its key.
 asyncSelectByKey
-  :: forall k l props rest1 rest2 id a
-   . IsSymbol k
-  => IsSymbol l
-  => Cons
-       k
-       (id -> Aff a)
-       rest1
-       (readonly :: Boolean | props)
-  => Cons
-       l
-       (String -> Aff (Array a))
-       rest2
-       (readonly :: Boolean | props)
-  => SProxy k
-  -> SProxy l
+  :: forall props id a
+   . (id -> Aff a)
+  -> (String -> Aff (Array a))
   -> (id -> String)
   -> (String -> id)
   -> (a -> Select.SelectOption)
   -> (a -> JSX)
   -> FormBuilder { readonly :: Boolean | props } (Maybe id) (Maybe id)
-asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
+asyncSelectByKey getData loadOptions fromId toId toSelectOption optionRenderer =
   formBuilder_ \props@{ readonly } value onChange ->
     FetchCache.single
-      { getData: \key -> get k props (toId key)
+      { getData: getData <<< toId
       , id: map fromId value
       , render: \data_ ->
           if readonly
@@ -498,10 +459,10 @@ asyncSelectByKey k l fromId toId toSelectOption optionRenderer =
             else
               Select.asyncSingleSelect
                 { value: data_
-                , loadOptions: get l props
+                , loadOptions
                 , onChange: onChange <<< map (toId <<< _.value <<< toSelectOption)
                 , className: ""
-                , style: css {}
+                , style: R.css {}
                 , searchable: true
                 , id: ""
                 , name: ""
@@ -693,7 +654,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                                     , actionButtonTitle: addLabel
                                     , component
                                     , componentProps
-                                    , style: css {}
+                                    , style: R.css {}
                                     }
                       }
                   })
@@ -710,7 +671,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                             , actionButtonTitle: addLabel
                             , component
                             , componentProps
-                            , style: css {}
+                            , style: R.css {}
                             }
                     })
       , validate: pure xs
@@ -923,7 +884,7 @@ withKey
 withKey key editor = FormBuilder \props value ->
   let { edit, validate } = un FormBuilder editor props value
    in { edit: \onChange ->
-          edit onChange # mapWithIndex case _, _ of
+          edit onChange # Array.mapWithIndex case _, _ of
             i, Child a -> Child a { key = Just (key <> "--" <> show i) }
             i, Wrapper a -> Wrapper a { key = Just (key <> "--" <> show i) }
             i, Node  n -> Node  n { key = Just (key <> "--" <> show i) }
@@ -1005,6 +966,18 @@ styles = jss
           , "& .labeled-field--validation-warning":
               { extend: labeledFieldValidationWarningStyles
               , marginBottom: "calc(4 * 4px)"
+              }
+
+          , "& lumi-editable-table":
+              { "& table tr td:not(.lumi)":
+                  { verticalAlign: "top"
+                  , "& lumi-column":
+                      { flex: "1 1 auto"
+                      }
+                  }
+              , "& .labeled-field--validation-error, & .labeled-field--validation-warning":
+                  { marginBottom: "0"
+                  }
               }
           }
       }

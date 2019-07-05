@@ -6,12 +6,13 @@ import Data.Array (index)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (un)
 import Data.NonEmpty ((:|))
-import Data.Nullable (toNullable)
+import Data.Nullable (notNull, toNullable)
 import Data.String (Pattern(..), split)
 import Effect.Console (log)
 import Effect.Uncurried (mkEffectFn1, mkEffectFn2, runEffectFn1)
 import Lumi.Components.Button (button, defaults)
 import Lumi.Components.Column (column_)
+import Lumi.Components.Example (example)
 import Lumi.Components.Images (avatar_, productThumb_)
 import Lumi.Components.Layouts.Centered as Centered
 import Lumi.Components.Layouts.OneColumnWithHeader as OneColumnWithHeader
@@ -24,7 +25,6 @@ import Lumi.Components.Tab (TabId(..), TabKey(..), urlParts)
 import Lumi.Components.Table (ColumnName(..), table)
 import Lumi.Components.Text (body_, h2_, p_, sectionHeader_)
 import Lumi.Components.Utility.ReactRouter (RouterProps, withRouter)
-import Lumi.Components.Example (example)
 import React.Basic (Component, JSX, createComponent, element, toReactComponent)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
@@ -220,6 +220,7 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
     overviewTable =
       table
         { name: "Items"
+        , dropdownMenu: true
         , sortable: true
         , sort: toNullable Nothing
         , sortBy: toNullable Nothing
@@ -240,7 +241,7 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
             , filterLabel: toNullable $ Just "Product title"
             , sortBy: toNullable Nothing
             , style: R.css {}
-            , getLink: _.link
+            , getLink: notNull _.link
             , sticky: false
             , renderCell: \rowData ->
                 lockup

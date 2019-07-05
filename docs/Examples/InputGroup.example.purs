@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
-import Lumi.Components.Button (button, defaults, secondary)
+import Lumi.Components.Button (ButtonState(..), button, defaults, secondary)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Input (input, text_)
 import Lumi.Components.InputGroup (inputGroup)
@@ -23,13 +23,13 @@ docs =
             , addOnLeft:
                 toNullable $ Just $ R.div
                   { children:
-                    [ button defaults { title = "Button", disabled = false }
+                    [ button defaults { title = "Button", buttonState = Enabled }
                     ]
                   }
             , addOnRight:
                 toNullable $ Just $ R.div
                   { children:
-                    [ button defaults { title = "Button", disabled = false }
+                    [ button defaults { title = "Button", buttonState = Enabled }
                     ]
                   }
             , inputContent: toNullable $ Just $ input text_ { placeholder = "Placeholder..." }
