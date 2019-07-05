@@ -5,15 +5,15 @@ import Prelude
 import Color (cssStringHSLA, darken, desaturate, lighten)
 import Data.Array as Array
 import Data.Char (fromCharCode)
-import Data.Foldable (fold)
+import Data.Foldable (fold, foldMap)
 import Data.Maybe (Maybe(..))
-import Data.Nullable (Nullable, toNullable)
+import Data.Nullable (Nullable, notNull, toMaybe, toNullable)
 import Data.String (null)
 import Data.String.CodeUnits (fromCharArray)
 import Effect.Uncurried (mkEffectFn1)
 import Foreign (isNull, isUndefined, unsafeToForeign)
 import JSS (JSS, jss)
-import Lumi.Components.Color (ColorName, colorNames, colors)
+import Lumi.Components.Color (ColorName(..), colorNames, colors)
 import Lumi.Components.Icon (IconType, icon)
 import Lumi.Components.Loader (loader, spinnerMixin)
 import Lumi.Components.Size (Size(..))
@@ -61,7 +61,7 @@ button = makeStateless component render
         else
           lumiButtonElement
             { "aria-label": props.accessibilityLabel
-            , children: if props.loading then mempty else children
+            , children: children
             , className: "lumi"
             , "data-color": props.color
             , "data-size": show props.size
@@ -89,8 +89,15 @@ button = makeStateless component render
                         ExtraLarge -> R.css { width: "34px", height: "34px" }
                   , testId: toNullable Nothing
                   , color: colorNames.white
-                  -- @TODO get this to work with the lighten/darken HSLA rules
-                  , bgColor: colorNames.black
+                      -- @TODO case of primary vs. secondary button
+                      -- case toMaybe props.color of
+                      --   Nothing -> colorNames.white
+                      --   ColorName "primary" -> colorNames.white
+                      --   ColorName "secondary" -> colorsNames.black
+                  , bgColor:
+                      case toMaybe props.color of
+                        Nothing -> colorNames.white
+                        Just c -> c
                   }
 
 
@@ -234,9 +241,6 @@ styles = jss
                   }
               }
 
-          -- @TODO confirm we don't need anything here
-          , "&[data-loading=\"true\"]": {}
-
           , "&[data-color=\"black\"]": buttonColorHoverMixin colors.black
           , "&[data-color=\"black-1\"]": buttonColorHoverMixin colors.black1
           , "&[data-color=\"black-2\"]": buttonColorHoverMixin colors.black2
@@ -298,7 +302,5 @@ styles = jss
       , "&:active": { backgroundColor: cssStringHSLA $ darken 0.15 value }
       , "&:disabled, &[data-loading=\"true\"]":
           { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
-          -- @TODO get lumi-loader to reflect hover color background
-          , "lumi-loader::after": {}
           }
       }
