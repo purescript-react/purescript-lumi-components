@@ -329,6 +329,7 @@ select = makeStateless component render
                       Ready options_ -> renderOptions options_
                 }
             ]
+        , onBlur: Events.handler_ selectState.closeSelect
         }
         where
           renderOptions [] =
