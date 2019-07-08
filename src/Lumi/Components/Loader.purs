@@ -2,7 +2,7 @@ module Lumi.Components.Loader where
 
 import Prelude
 
-import Color (cssStringHSLA, darken, desaturate, lighten)
+import Color (cssStringHSLA, desaturate, lighten)
 import Data.Nullable (Nullable)
 import JSS (JSS, jss)
 import Lumi.Components.Color (ColorName, colors)
@@ -35,25 +35,17 @@ styles = jss
   { "@global":
       { "lumi-loader":
           -- @TODO add the rest of our possible colors
-          { "&[data-color=\"white\"]": spinnerMixin
-              { radius: "3.8rem"
-              , borderWidth: "0.5rem"
-              , color: cssStringHSLA colors.white
-              }
-          , "&[data-color=\"black\"]": spinnerMixin
-              { radius: "3.8rem"
-              , borderWidth: "0.5rem"
-              , color: cssStringHSLA colors.black
-              }
+          { "&[data-color=\"white\"]": loaderColorMixin colors.white
+          , "&[data-color=\"black\"]": loaderColorMixin colors.black
+          , "&[data-color=\"black1\"]": loaderColorMixin colors.black1
+          , "&[data-color=\"black2\"]": loaderColorMixin colors.black2
           -- @TODO add the rest of our possible colors
           , "&[data-bg-color=\"primary\"]::after": buttonColorHoverMixin colors.primary
           , "&[data-bg-color=\"secondary\"]::after": buttonColorHoverMixin colors.secondary
-          , "&[data-bg-color=\"white\"]::after":
-              { background: cssStringHSLA colors.white
-              }
-          , "&[data-bg-color=\"black\"]::after":
-              { background: cssStringHSLA colors.black
-              }
+          , "&[data-bg-color=\"white\"]::after": loaderBgColorMixin colors.white
+          , "&[data-bg-color=\"black\"]::after": loaderBgColorMixin colors.black
+          , "&[data-bg-color=\"black1\"]::after": loaderBgColorMixin colors.black1
+          , "&[data-bg-color=\"black2\"]::after": loaderBgColorMixin colors.black2
           }
       , "@keyframes spin":
           { from: { transform: "rotate(0deg)" }
@@ -65,6 +57,16 @@ styles = jss
     -- @TODO should not be a duplicate, can I import from Lumi.Components.Button?
     buttonColorHoverMixin value =
       { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
+      }
+
+    loaderColorMixin value = spinnerMixin
+      { radius: "3.8rem"
+      , borderWidth: "0.5rem"
+      , color: cssStringHSLA value
+      }
+
+    loaderBgColorMixin value =
+      { background: cssStringHSLA value
       }
 
 spinnerMixin :: { radius :: String, borderWidth :: String, color :: String } -> JSS

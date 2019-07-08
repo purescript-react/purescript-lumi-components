@@ -99,7 +99,7 @@ docs = unit # make component { initialState, render }
                       , noResultsText: "No results"
                       , placeholder: "Select a value..."
                       , disabled
-                      , loading: false
+                      , loading: true --false
                       , optionRenderer: R.text <<< _.label
                       , toSelectOption: identity
                       }
@@ -124,7 +124,7 @@ docs = unit # make component { initialState, render }
                       , noResultsText: "No results"
                       , placeholder: "Select a value..."
                       , disabled
-                      , loading: false
+                      , loading: true --false
                       , optionRenderer: R.text <<< _.label
                       , toSelectOption: identity
                       }
@@ -154,7 +154,7 @@ docs = unit # make component { initialState, render }
                       , noResultsText: "No results"
                       , placeholder: "Select a value..."
                       , disabled
-                      , loading: false
+                      , loading: true --false
                       , optionRenderer: R.text <<< _.label
                       , toSelectOption: identity
                       }
@@ -184,7 +184,7 @@ docs = unit # make component { initialState, render }
                       , noResultsText: "No results"
                       , placeholder: "Select a value..."
                       , disabled
-                      , loading: false
+                      , loading: true --false
                       , optionRenderer: R.text <<< _.label
                       , toSelectOption: identity
                       }
