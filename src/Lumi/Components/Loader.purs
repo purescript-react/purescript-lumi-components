@@ -34,7 +34,7 @@ styles :: JSS
 styles = jss
   { "@global":
       { "lumi-loader":
-          -- @TODO add the rest of our possible colors
+          -- fading loader color
           { "&[data-color=\"primary\"]": loaderColorMixin colors.primary
           , "&[data-color=\"primary-1\"]": loaderColorMixin colors.primary1
           , "&[data-color=\"primary-2\"]": loaderColorMixin colors.primary2
@@ -55,7 +55,7 @@ styles = jss
           , "&[data-color=\"accent-2\"]": loaderColorMixin colors.accent2
           , "&[data-color=\"accent-3\"]": loaderColorMixin colors.accent3
           , "&[data-color=\"accent-33\"]": loaderColorMixin colors.accent33
-          -- @TODO add the rest of our possible colors
+          -- bg color (needed for fading loader center)
           , "&[data-bg-color=\"primary\"]::after": buttonColorHoverMixin colors.primary
           , "&[data-bg-color=\"primary-1\"]::after": buttonColorHoverMixin colors.primary1
           , "&[data-bg-color=\"primary-2\"]::after": buttonColorHoverMixin colors.primary2
@@ -84,7 +84,7 @@ styles = jss
       }
   }
   where
-    -- @TODO should not be a duplicate, can I import from Lumi.Components.Button?
+    -- @TODO should not be a duplicate from Lumi.Components.Button
     buttonColorHoverMixin value =
       { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
       }

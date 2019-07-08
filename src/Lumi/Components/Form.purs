@@ -62,7 +62,7 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import JSS (JSS, jss)
-import Lumi.Components.Color (colors)
+import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Column (column)
 import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
@@ -448,11 +448,13 @@ asyncSelectByKey getData loadOptions fromId toId toSelectOption optionRenderer =
               Nothing -> empty
               Just _  -> alignToInput
                 case data_ of
-                  Nothing     -> mempty
-                  -- loader
-                  --   { style: css { width: "20px", height: "20px", borderWidth: "2px" }
-                  --   , testId: toNullable Nothing
-                  --   }
+                  Nothing     ->
+                    loader
+                      { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }
+                      , testId: toNullable Nothing
+                      , color: colorNames.black2
+                      , bgColor: colorNames.white
+                      }
                   Just data_' -> text body
                         { children = [ optionRenderer data_' ]
                         }

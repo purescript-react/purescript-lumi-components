@@ -323,7 +323,12 @@ select = makeStateless component render
                         [ lumiSelectMenuLoaderElement
                             { key: "loading-text"
                             , children:
-                                mempty --loader { style: css { width: "20px", height: "20px", borderWidth: "2px" }, testId: toNullable Nothing }
+                                loader
+                                  { style: css { width: "20px", height: "20px", borderWidth: "2px" }
+                                  , testId: toNullable Nothing
+                                  , color: colorNames.black2
+                                  , bgColor: colorNames.white
+                                  }
                             }
                         ]
                       Failed error ->
