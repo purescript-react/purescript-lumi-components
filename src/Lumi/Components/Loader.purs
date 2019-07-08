@@ -35,17 +35,47 @@ styles = jss
   { "@global":
       { "lumi-loader":
           -- @TODO add the rest of our possible colors
-          { "&[data-color=\"white\"]": loaderColorMixin colors.white
+          { "&[data-color=\"primary\"]": loaderColorMixin colors.primary
+          , "&[data-color=\"primary-1\"]": loaderColorMixin colors.primary1
+          , "&[data-color=\"primary-2\"]": loaderColorMixin colors.primary2
+          , "&[data-color=\"primary-3\"]": loaderColorMixin colors.primary3
+          , "&[data-color=\"primary-4\"]": loaderColorMixin colors.primary4
+          , "&[data-color=\"secondary\"]": loaderColorMixin colors.secondary
+          , "&[data-color=\"white\"]": loaderColorMixin colors.white
           , "&[data-color=\"black\"]": loaderColorMixin colors.black
-          , "&[data-color=\"black1\"]": loaderColorMixin colors.black1
-          , "&[data-color=\"black2\"]": loaderColorMixin colors.black2
+          , "&[data-color=\"black-1\"]": loaderColorMixin colors.black1
+          , "&[data-color=\"black-2\"]": loaderColorMixin colors.black2
+          , "&[data-color=\"black-3\"]": loaderColorMixin colors.black3
+          , "&[data-color=\"black-4\"]": loaderColorMixin colors.black4
+          , "&[data-color=\"black-5\"]": loaderColorMixin colors.black5
+          , "&[data-color=\"black-6\"]": loaderColorMixin colors.black6
+          , "&[data-color=\"black-7\"]": loaderColorMixin colors.black7
+          , "&[data-color=\"black-8\"]": loaderColorMixin colors.black8
+          , "&[data-color=\"accent-1\"]": loaderColorMixin colors.accent1
+          , "&[data-color=\"accent-2\"]": loaderColorMixin colors.accent2
+          , "&[data-color=\"accent-3\"]": loaderColorMixin colors.accent3
+          , "&[data-color=\"accent-33\"]": loaderColorMixin colors.accent33
           -- @TODO add the rest of our possible colors
           , "&[data-bg-color=\"primary\"]::after": buttonColorHoverMixin colors.primary
+          , "&[data-bg-color=\"primary-1\"]::after": buttonColorHoverMixin colors.primary1
+          , "&[data-bg-color=\"primary-2\"]::after": buttonColorHoverMixin colors.primary2
+          , "&[data-bg-color=\"primary-3\"]::after": buttonColorHoverMixin colors.primary3
+          , "&[data-bg-color=\"primary-4\"]::after": buttonColorHoverMixin colors.primary4
           , "&[data-bg-color=\"secondary\"]::after": buttonColorHoverMixin colors.secondary
           , "&[data-bg-color=\"white\"]::after": loaderBgColorMixin colors.white
           , "&[data-bg-color=\"black\"]::after": loaderBgColorMixin colors.black
-          , "&[data-bg-color=\"black1\"]::after": loaderBgColorMixin colors.black1
-          , "&[data-bg-color=\"black2\"]::after": loaderBgColorMixin colors.black2
+          , "&[data-bg-color=\"black-1\"]::after": loaderBgColorMixin colors.black1
+          , "&[data-bg-color=\"black-2\"]::after": loaderBgColorMixin colors.black2
+          , "&[data-bg-color=\"black-3\"]::after": loaderBgColorMixin colors.black3
+          , "&[data-bg-color=\"black-4\"]::after": loaderBgColorMixin colors.black4
+          , "&[data-bg-color=\"black-5\"]::after": loaderBgColorMixin colors.black5
+          , "&[data-bg-color=\"black-6\"]::after": loaderBgColorMixin colors.black6
+          , "&[data-bg-color=\"black-7\"]::after": loaderBgColorMixin colors.black7
+          , "&[data-bg-color=\"black-8\"]::after": loaderBgColorMixin colors.black8
+          , "&[data-bg-color=\"accent-1\"]::after": loaderBgColorMixin colors.accent1
+          , "&[data-bg-color=\"accent-2\"]::after": loaderBgColorMixin colors.accent2
+          , "&[data-bg-color=\"accent-3\"]::after": loaderBgColorMixin colors.accent3
+          , "&[data-bg-color=\"accent-33\"]::after": loaderBgColorMixin colors.accent33
           }
       , "@keyframes spin":
           { from: { transform: "rotate(0deg)" }
