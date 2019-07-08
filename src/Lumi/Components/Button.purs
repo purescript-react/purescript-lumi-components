@@ -5,17 +5,17 @@ import Prelude
 import Color (cssStringHSLA, darken, desaturate, lighten)
 import Data.Array as Array
 import Data.Char (fromCharCode)
-import Data.Foldable (fold, foldMap)
+import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
-import Data.Nullable (Nullable, notNull, toMaybe, toNullable)
+import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (null)
 import Data.String.CodeUnits (fromCharArray)
 import Effect.Uncurried (mkEffectFn1)
 import Foreign (isNull, isUndefined, unsafeToForeign)
 import JSS (JSS, jss)
-import Lumi.Components.Color (ColorName(..), colorNames, colors)
+import Lumi.Components.Color (ColorName, colorNames, colors)
 import Lumi.Components.Icon (IconType, icon)
-import Lumi.Components.Loader (loader, spinnerMixin)
+import Lumi.Components.Loader (loader)
 import Lumi.Components.Size (Size(..))
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
@@ -83,12 +83,8 @@ button = makeStateless component render
             }
       where
         children =
-          if not props.loading
-            then
-              if not null props.title && not (isNull || isUndefined) (unsafeToForeign props.title)
-                then R.text props.title
-                else R.text invisibleSpace -- preserves button size
-            else
+          case props.buttonState of
+            Loading ->
               loader
                   { style:
                       case props.size of
@@ -108,6 +104,10 @@ button = makeStateless component render
                         Nothing -> colorNames.white
                         Just c -> c
                   }
+            _ ->
+              if not null props.title && not (isNull || isUndefined) (unsafeToForeign props.title)
+                then R.text props.title
+                else R.text invisibleSpace -- preserves button size
 
 
 defaults :: ButtonProps

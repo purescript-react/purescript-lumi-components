@@ -116,7 +116,7 @@ docs =
         ]
       , [ h4_ "Secondary + Loading"
         , example
-            $ button secondary { loading = true }
+            $ button secondary { buttonState = Loading }
         ]
       ]
 
