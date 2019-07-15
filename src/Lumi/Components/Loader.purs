@@ -56,12 +56,12 @@ styles = jss
           , "&[data-color=\"accent-3\"]": loaderColorMixin colors.accent3
           , "&[data-color=\"accent-33\"]": loaderColorMixin colors.accent33
           -- bg color (needed for fading loader center)
-          , "&[data-bg-color=\"primary\"]::after": buttonColorHoverMixin colors.primary
-          , "&[data-bg-color=\"primary-1\"]::after": buttonColorHoverMixin colors.primary1
-          , "&[data-bg-color=\"primary-2\"]::after": buttonColorHoverMixin colors.primary2
-          , "&[data-bg-color=\"primary-3\"]::after": buttonColorHoverMixin colors.primary3
-          , "&[data-bg-color=\"primary-4\"]::after": buttonColorHoverMixin colors.primary4
-          , "&[data-bg-color=\"secondary\"]::after": buttonColorHoverMixin colors.secondary
+          , "&[data-bg-color=\"primary\"]::after": loaderBgColorMixin colors.primary
+          , "&[data-bg-color=\"primary-1\"]::after": loaderBgColorMixin colors.primary1
+          , "&[data-bg-color=\"primary-2\"]::after": loaderBgColorMixin colors.primary2
+          , "&[data-bg-color=\"primary-3\"]::after": loaderBgColorMixin colors.primary3
+          , "&[data-bg-color=\"primary-4\"]::after": loaderBgColorMixin colors.primary4
+          , "&[data-bg-color=\"secondary\"]::after": loaderBgColorMixin colors.secondary
           , "&[data-bg-color=\"white\"]::after": loaderBgColorMixin colors.white
           , "&[data-bg-color=\"black\"]::after": loaderBgColorMixin colors.black
           , "&[data-bg-color=\"black-1\"]::after": loaderBgColorMixin colors.black1
@@ -84,11 +84,6 @@ styles = jss
       }
   }
   where
-    -- @TODO should not be a duplicate from Lumi.Components.Button
-    buttonColorHoverMixin value =
-      { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
-      }
-
     loaderColorMixin value = spinnerMixin
       { radius: "3.8rem"
       , borderWidth: "0.5rem"

@@ -24,7 +24,7 @@ docs =
                 , bgColor: colorNames.primary
                 }
             ]
-          , style: R.css { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ colors.primary }
+          , style: R.css { backgroundColor: cssStringHSLA $ colors.primary }
         }
     , example $
         column {

@@ -317,5 +317,8 @@ styles = jss
       , "&:active": { backgroundColor: cssStringHSLA $ darken 0.15 value }
       , "&:disabled, &[data-loading=\"true\"]":
           { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
+          , "& lumi-loader":
+              { "&::after": { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value }
+              }
           }
       }
