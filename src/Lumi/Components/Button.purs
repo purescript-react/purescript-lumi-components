@@ -98,7 +98,7 @@ button = makeStateless component render
                       -- case toMaybe props.color of
                       --   Nothing -> colorNames.white
                       --   ColorName "primary" -> colorNames.white
-                      --   ColorName "secondary" -> colorsNames.black
+                      --   ColorName "secondary" -> colorsNames.secondary
                   , bgColor:
                       case toMaybe props.color of
                         Nothing -> colorNames.white
@@ -253,6 +253,9 @@ styles = jss
               , "&:disabled, &[data-loading=\"true\"]":
                   { color: cssStringHSLA colors.black2
                   , borderColor: cssStringHSLA colors.black3
+                  , "& lumi-loader":
+                      { "&::after": { background: cssStringHSLA colors.white }
+                      }
                   }
               }
 
@@ -318,7 +321,7 @@ styles = jss
       , "&:disabled, &[data-loading=\"true\"]":
           { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
           , "& lumi-loader":
-              { "&::after": { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value }
+              { "&::after": { background: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value }
               }
           }
       }
