@@ -9,7 +9,7 @@ module Lumi.Components.Color
 import Color (rgb, rgba)
 import Color as C
 import Data.Newtype (class Newtype)
-import Foreign.Generic (class Decode, class Encode, Options, SumEncoding(..), genericDecode, genericEncode, decode, encode, defaultOptions)
+import Foreign.Generic (class Decode, class Encode)
 
 type Color = C.Color
 
