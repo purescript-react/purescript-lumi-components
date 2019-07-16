@@ -452,7 +452,7 @@ asyncSelectByKey getData loadOptions fromId toId toSelectOption optionRenderer =
                     loader
                       { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }
                       , testId: toNullable Nothing
-                      , color: colorNames.black2
+                      , color: colorNames.secondary
                       , bgColor: colorNames.white
                       }
                   Just data_' -> text body

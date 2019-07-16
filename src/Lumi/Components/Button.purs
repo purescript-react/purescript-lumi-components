@@ -7,13 +7,14 @@ import Data.Array as Array
 import Data.Char (fromCharCode)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
+import Data.Newtype (unwrap)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (null)
 import Data.String.CodeUnits (fromCharArray)
 import Effect.Uncurried (mkEffectFn1)
 import Foreign (isNull, isUndefined, unsafeToForeign)
 import JSS (JSS, jss)
-import Lumi.Components.Color (ColorName(..), colorNames, colors)
+import Lumi.Components.Color (ColorName, colorNames, colors)
 import Lumi.Components.Icon (IconType, icon)
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Size (Size(..))
@@ -93,11 +94,10 @@ button = makeStateless component render
                         Large -> R.css { width: "24px", height: "24px" }
                         ExtraLarge -> R.css { width: "34px", height: "34px" }
                   , testId: toNullable Nothing
-                  , color: -- colorNames.secondary
-                      -- @TODO case of primary vs. secondary button
-                      case toMaybe props.color of
-                        -- Just $ ColorName "primary"  -> colorNames.white
-                        -- Just $ ColorName "secondary" -> colorNames.secondary
+                  , color:
+                      case map unwrap $ toMaybe props.color of
+                        Just "primary" -> colorNames.white
+                        Just "secondary" -> colorNames.secondary
                         Just _ -> colorNames.secondary
                         Nothing -> colorNames.secondary
                   , bgColor:

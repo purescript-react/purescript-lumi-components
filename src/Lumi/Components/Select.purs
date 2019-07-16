@@ -257,7 +257,7 @@ select = makeStateless component render
               loader
                 { style: css { width: "20px", height: "20px", borderWidth: "2px" }
                 , testId: toNullable Nothing
-                , color: colorNames.black2
+                , color: colorNames.secondary
                 , bgColor: colorNames.white
                 }
             else lumiSelectInputSelectedValuesElement
@@ -326,7 +326,7 @@ select = makeStateless component render
                                 loader
                                   { style: css { width: "20px", height: "20px", borderWidth: "2px" }
                                   , testId: toNullable Nothing
-                                  , color: colorNames.black2
+                                  , color: colorNames.secondary
                                   , bgColor: colorNames.white
                                   }
                             }
