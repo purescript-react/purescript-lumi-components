@@ -63,6 +63,7 @@ const componentLoaders = [
   "Images",
   "Input",
   "InputGroup",
+  "KeyValueList",
   "LabeledField",
   "Layouts",
   "Link",
