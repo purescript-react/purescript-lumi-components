@@ -25,30 +25,33 @@ keyValueList
 keyValueList { rightAligned, rows, borders } =
   let
     lumiKeyValueListElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list")
+    lumiKeyValueListLabelElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list-label")
+    lumiKeyValueListValueElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list-value")
 
     toRows r =
       r <#> \{ label, value } ->
         [ row
             { style: R.css
                 { alignItems: "center"
+                , justifyContent: "space-between"
+                , width: "100%"
                 }
             , children:
-                [ T.text T.body
-                    { style = R.css
-                        { flex: "3 5 0%"
-                        , padding: "8px 0"
-                        }
-                    , color = notNull colorNames.black1
-                    , children = [ R.text label ]
+                [ lumiKeyValueListLabelElement
+                    { children:
+                        [ T.text T.body
+                            { style = R.css {}
+                            , color = notNull colorNames.black1
+                            , children = [ R.text label ]
+                            }
+                        ]
+                    , style: R.css {}
                     }
-                , row
-                    { style: R.css
-                        { alignItems: "center"
-                        , flex: "7 7 0%"
-                        , flexWrap: "wrap"
-                        , justifyContent: if rightAligned then "flex-end" else "flex-start"
+                , lumiKeyValueListValueElement
+                    { children: [ value ]
+                    , style: R.css
+                        { justifyContent: if rightAligned then "flex-end" else "flex-start"
                         }
-                    , children: [ value ]
                     }
                 ]
             }
@@ -71,7 +74,26 @@ styles :: JSS
 styles = jss
   { "@global":
       { "lumi-key-value-list":
-          {
+          { "& lumi-key-value-list-label":
+              { "flex": "3 5 0%"
+              , "padding": "8px 0"
+              }
+          , "& lumi-key-value-list-value":
+              { "display": "flex"
+              , "flexFlow": "row"
+              , "alignItems": "center"
+              , "flex": "7 7 0%"
+              , "flexWrap": "wrap"
+              }
+          , "@media (max-width: 860px)":
+              { "width": "100%"
+              , "& lumi-key-value-list-label":
+                  { "flex": "initial"
+                  }
+              , "& lumi-key-value-list-value":
+                  { "flex": "initial"
+                  }
+              }
           }
       }
   }

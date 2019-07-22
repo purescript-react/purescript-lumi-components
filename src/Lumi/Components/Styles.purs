@@ -23,6 +23,7 @@ import Lumi.Components.Icon as Icon
 import Lumi.Components.Images as Images
 import Lumi.Components.Input as Input
 import Lumi.Components.InputGroup as InputGroup
+import Lumi.Components.KeyValueList as KeyValueList
 import Lumi.Components.LabeledField as LabeledField
 import Lumi.Components.Layouts as Layouts
 import Lumi.Components.Link as Link
@@ -77,6 +78,7 @@ attachGlobalComponentStyles = do
     , Images.styles
     , Input.styles
     , InputGroup.styles
+    , KeyValueList.styles
     , LabeledField.styles
     , Layouts.styles
     , Link.styles
