@@ -14,27 +14,27 @@ import Effect.Exception (throwException)
 import Lumi.Components.LabeledField (RequiredField, ValidationMessage)
 import Prim.TypeError (class Warn, Above, Text)
 import React.Basic (JSX)
+import React.Basic.DOM as R
 
-data Tree a
+data Tree
   = Child
       { key :: Maybe String
-      , child :: a
+      , child :: JSX
       }
   | Wrapper
       { key :: Maybe String
-      , children :: Forest a
+      , wrap :: Array JSX -> JSX
+      , children :: Forest
       }
   | Node
-      { label :: a
+      { label :: JSX
       , key :: Maybe String
       , required :: RequiredField
       , validationError :: Maybe ValidationMessage
-      , children :: Forest a
+      , children :: Forest
       }
 
-derive instance functorTree :: Functor Tree
-
-type Forest a = Array (Tree a)
+type Forest = Array Tree
 
 -- | Traverse a tree bottom-up, removing all "internal" nodes (i.e. `Wrapper`
 -- | or `Node` constructors) which have empty `children` arrays. In the case
@@ -52,7 +52,7 @@ type Forest a = Array (Tree a)
 -- |
 -- | should be pruned, but a top-down operation would not be able to identify
 -- | such a subtree as prunable.
-pruneTree :: forall a. Tree a -> Maybe (Tree a)
+pruneTree :: Tree -> Maybe Tree
 pruneTree =
   case _ of
     t@(Child _) ->
@@ -77,7 +77,7 @@ newtype FormBuilder props unvalidated result = FormBuilder
   -- ^ additional props
   -> unvalidated
   -- ^ the current value
-  -> { edit :: ((unvalidated -> unvalidated) -> Effect Unit) -> Forest JSX
+  -> { edit :: ((unvalidated -> unvalidated) -> Effect Unit) -> Forest
      , validate :: Maybe result
      })
 
@@ -108,7 +108,13 @@ instance parallelFormBuilder
   => Parallel (FormBuilder props unvalidated) (SeqFormBuilder props unvalidated) where
   parallel (SeqFormBuilder (FormBuilder f)) = FormBuilder \props value ->
     let { edit, validate } = f props value
-     in { edit: \onChange -> [ Wrapper { key: Just "seq", children: edit onChange } ]
+     in { edit: \onChange ->
+            [ Wrapper
+                { key: Just "seq"
+                , wrap: R.div <<< { key: "seq", children: _ }
+                , children: edit onChange
+                }
+            ]
         , validate: validate
         }
   sequential = SeqFormBuilder
@@ -116,14 +122,26 @@ instance parallelFormBuilder
 parallel :: forall props value. String -> SeqFormBuilder props value ~> FormBuilder props value
 parallel key (SeqFormBuilder (FormBuilder f)) = FormBuilder \props value ->
   let { edit, validate } = f props value
-   in { edit: \onChange -> [ Wrapper { key: Just key, children: edit onChange } ]
+   in { edit: \onChange ->
+          [ Wrapper
+              { key: Just key
+              , wrap: R.div <<< { key, children: _ }
+              , children: edit onChange
+              }
+          ]
       , validate: validate
       }
 
 sequential :: forall props value. String -> FormBuilder props value ~> SeqFormBuilder props value
 sequential key (FormBuilder f) = SeqFormBuilder $ FormBuilder \props value ->
   let { edit, validate } = f props value
-   in { edit: \onChange -> [ Wrapper { key: Just key, children: edit onChange } ]
+   in { edit: \onChange ->
+          [ Wrapper
+              { key: Just key
+              , wrap: R.div <<< { key, children: _ }
+              , children: edit onChange
+              }
+          ]
       , validate: validate
       }
 

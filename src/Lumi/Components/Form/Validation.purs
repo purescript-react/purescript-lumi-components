@@ -204,7 +204,7 @@ validated runValidator editor = FormBuilder \props@{ readonly } v ->
 
       { edit, validate } = un FormBuilder editor props value
 
-      modify :: Maybe String -> Forest JSX -> Forest JSX
+      modify :: Maybe String -> Forest -> Forest
       modify message forest =
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]
@@ -263,7 +263,7 @@ warn
 warn warningValidator editor = FormBuilder \props@{ readonly } v ->
   let { edit, validate } = un FormBuilder editor props (fromValidated v)
 
-      modify :: Forest JSX -> Forest JSX
+      modify :: Forest -> Forest
       modify forest =
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]

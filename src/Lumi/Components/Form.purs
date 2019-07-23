@@ -37,6 +37,7 @@ module Lumi.Components.Form
   , withValue
   , mapProps
   , indent
+  , wrap
   , filterWithProps
   , withKey
   , styles
@@ -131,11 +132,11 @@ build editor = makeStateless (createComponent "Form") render where
         toRow = case _ of
           Child { key, child } ->
             maybe identity keyed key $ child
-          Wrapper { key, children } ->
-            R.div
-              { key: fromMaybe "" key
-              , children: [ intercalate fieldDivider (map toRow children) ]
-              }
+          Wrapper { key, wrap: f, children } ->
+            maybe identity keyed key
+              $ f
+              $ intercalate [fieldDivider]
+              $ map (pure <<< toRow) children
           Node { label, key, required, validationError, children } ->
             maybe identity keyed key $ labeledField
               { label: text body
@@ -518,7 +519,7 @@ array
   -> FormBuilder { readonly :: Boolean | props } (Array u) (Array a)
 array { label, addLabel, defaultValue, editor } = FormBuilder \props@{ readonly } xs ->
   let editAt i f xs' = fromMaybe xs' (Array.modifyAt i f xs')
-      wrapper children = Array.singleton $ Wrapper { key: Nothing, children }
+      wrapper children = Array.singleton $ Wrapper { key: Nothing, wrap: R.div_, children }
    in { edit: \onChange ->
           wrapper $ xs # Array.mapWithIndex (\i x ->
                 Node
@@ -620,7 +621,7 @@ arrayModal
   -> FormBuilder { readonly :: Boolean | props } (Array a) (Array a)
 arrayModal { label, addLabel, defaultValue, summary, component, componentProps } = FormBuilder \props@{ readonly } xs ->
   let editAt i f xs' = fromMaybe xs' (Array.modifyAt i f xs')
-      wrapper children = Array.singleton $ Wrapper { key: Nothing, children }
+      wrapper children = Array.singleton $ Wrapper { key: Nothing, wrap: R.div_, children }
    in { edit : \onChange ->
           wrapper $ xs # Array.mapWithIndex (\i x ->
                 Node
@@ -854,6 +855,25 @@ indent label required editor = FormBuilder \props val ->
             , key: Nothing
             , required: required
             , validationError: Nothing
+            , children: edit k
+            }
+      , validate
+      }
+
+wrap
+  :: forall props u a
+   . (Array JSX -> JSX)
+  -> FormBuilder props u a
+  -> FormBuilder props u a
+wrap f form =
+  FormBuilder \props value ->
+    let
+      { edit, validate } = un FormBuilder form props value
+    in
+      { edit: \k ->
+          pure $ Wrapper
+            { key: Nothing
+            , wrap: f
             , children: edit k
             }
       , validate
