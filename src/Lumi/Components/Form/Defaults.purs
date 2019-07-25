@@ -7,6 +7,7 @@ module Lumi.Components.Form.Defaults
 
 import Prelude
 
+import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, SProxy(..))
@@ -37,6 +38,9 @@ instance formDefaultsNumber :: FormDefaults Number where formDefaults = 0.0
 instance formDefaultsInt :: FormDefaults Int where formDefaults = 0
 instance formDefaultsString :: FormDefaults String where formDefaults = ""
 instance formDefaultsArray :: FormDefaults (Array a) where formDefaults = []
+
+instance formDefaultsNonEmptyArray :: FormDefaults a => FormDefaults (NonEmptyArray a) where
+  formDefaults = pure formDefaults
 
 instance formDefaultsMaybe :: FormDefaults (Maybe a) where
   formDefaults = Nothing
