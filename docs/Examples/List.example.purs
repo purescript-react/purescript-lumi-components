@@ -8,11 +8,12 @@ import Lumi.Components.Color (colorNames)
 import Lumi.Components.Column (columnSelfStretch, column_)
 import Lumi.Components.Images (avatar, avatar_)
 import Lumi.Components.Link (link, defaults)
-import Lumi.Components.List (borderlessList, compactList, defaultList, list, structuredColumnList)
+import Lumi.Components.List (borderlessList, compactList, defaultList, keyValueList, list, structuredColumnList)
 import Lumi.Components.Lockup (lockup)
 import Lumi.Components.Row (row_)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (text, subtext, h2_, body_)
+import Lumi.Components.Text as T
 import Lumi.Components.Example (example)
 import React.Basic (JSX, fragment)
 import React.Basic.DOM as R
@@ -111,6 +112,32 @@ docs =
                     ]
                 }
             ]
+
+    , h2_ "Key Value Lists"
+    , example
+        $ keyValueList
+            { rightAligned: true
+            , rows: r
+            , borders: true
+            }
+    , example
+        $ keyValueList
+            { rightAligned: false
+            , rows: r
+            , borders: true
+            }
+    , example
+        $ keyValueList
+            { rightAligned: true
+            , rows: r
+            , borders: false
+            }
+    , example
+        $ keyValueList
+            { rightAligned: false
+            , rows: r
+            , borders: false
+            }
     ]
   where
     simpleListData =
@@ -165,5 +192,27 @@ docs =
         , companyName: "Musician"
         , createdDate: "2018-09-02"
         , id: "789"
+        }
+      ]
+
+    r =
+      [ { label: "Name"
+        , value: T.body_ "Flexo"
+        }
+      , { label: "Email"
+        , value: T.body_ "flexo@lumi.com"
+        }
+      , { label: ""
+        , value: lockup
+            { title: R.text "Flexo R."
+            , subtitle: Just $ R.text "Lumi"
+            , image: Just $ avatar_
+                { size: Large
+                , image:
+                    R.img
+                      { src: "https://s3.amazonaws.com/lumi-flapjack-staging/mockups/9e7f08b801e6bb3a428ef72e93c49fe5.jpg"
+                      }
+                }
+            }
         }
       ]
