@@ -33,7 +33,7 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
 import Heterogeneous.Mapping (class HMap, class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column_)
-import Lumi.Components.Form.Internal (Forest, FormBuilder(..), Tree(..))
+import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Text (subtext, text)
 import Prim.RowList as RL

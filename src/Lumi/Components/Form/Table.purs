@@ -23,7 +23,7 @@ import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Lumi.Components.Column as Column
 import Lumi.Components.EditableTable as EditableTable
-import Lumi.Components.Form.Internal (FormBuilder(..), Tree(..), Forest, formBuilder)
+import Lumi.Components.Form.Internal (FormBuilder, FormBuilder'(..), Tree(..), Forest, formBuilder)
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Orientation (Orientation(..))
 import Lumi.Components.Row as Row

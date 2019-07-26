@@ -3,6 +3,8 @@ module Lumi.Components.Form
   , module Internal
   , module Validation
   , build
+  , build'
+  , defaultRenderForm
   , static
   , section
   , inputBox
@@ -67,8 +69,8 @@ import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
 import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
-import Lumi.Components.Form.Internal (FormBuilder(..), SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
-import Lumi.Components.Form.Internal (FormBuilder, SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
+import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
+import Lumi.Components.Form.Internal (Forest, FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, optional, setFresh, setModified, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
@@ -95,68 +97,117 @@ import Unsafe.Coerce (unsafeCoerce)
 -- |
 -- | _Note_: this function should be fully applied, to avoid remounting
 -- | the component on each render.
+
 build
   :: forall props unvalidated result
-   . FormBuilder { readonly :: Boolean | props } unvalidated result
+   . Union
+      ( forceTopLabels :: Boolean
+      , inlineTable :: Boolean
+      )
+      ( readonly :: Boolean
+      | props
+      )
+      ( forceTopLabels :: Boolean
+      , inlineTable :: Boolean
+      , readonly :: Boolean
+      | props
+      )
+  => FormBuilder { readonly :: Boolean | props } unvalidated result
   -> { value :: unvalidated
      , onChange :: (unvalidated -> unvalidated) -> Effect Unit
-     , inlineTable :: Boolean
      , forceTopLabels :: Boolean
+     , inlineTable :: Boolean
      , readonly :: Boolean
      | props
      }
   -> JSX
-build editor = makeStateless (createComponent "Form") render where
-  render props@{ value, onChange, inlineTable, forceTopLabels, readonly } =
+build = build' defaultRenderForm
 
-    let forest = Array.mapMaybe pruneTree $ edit onChange
-          where
-            props' = contractProps props
-            { edit } = un FormBuilder editor props' value
+-- | Create a React component for a form from a `FormBuilder'` and a custom
+-- | rendering function.
+-- |
+-- | _Note_: this function should be fully applied, to avoid remounting
+-- | the component on each render.
+build'
+  :: forall ui renderProps formProps props unvalidated result
+   . Union renderProps formProps props
+  => ({| props } -> ui -> JSX)
+  -> FormBuilder' ui {| formProps } unvalidated result
+  -> { value :: unvalidated
+     , onChange :: (unvalidated -> unvalidated) -> Effect Unit
+     | props
+     }
+  -> JSX
+build' render editor =
+  makeStateless (createComponent "Form") \props@{ value, onChange } ->
+    let
+      { edit } = un FormBuilder editor (contractFormProps props) value
+    in
+      render (contractProps props) (edit onChange)
+  where
+    contractFormProps
+      :: { value :: unvalidated
+         , onChange :: (unvalidated -> unvalidated) -> Effect Unit
+         | props
+         }
+      -> {| formProps }
+    contractFormProps = unsafeCoerce
 
-        contractProps
-          :: { value :: unvalidated
-             , onChange :: (unvalidated -> unvalidated) -> Effect Unit
-             , inlineTable :: Boolean
-             , forceTopLabels :: Boolean
-             , readonly :: Boolean
-             | props
-             }
-          -> { readonly :: Boolean
-             | props
-             }
-        contractProps = unsafeCoerce
+    contractProps
+      :: { value :: unvalidated
+         , onChange :: (unvalidated -> unvalidated) -> Effect Unit
+         | props
+         }
+      -> {| props }
+    contractProps = unsafeCoerce
 
-        fieldDivider = R.hr { className: "lumi field-divider" }
+-- | The default Lumi implementation for rendering a forest of JSX
+-- | form fields.
+defaultRenderForm
+  :: forall props
+   . { forceTopLabels :: Boolean
+     , inlineTable :: Boolean
+     , readonly :: Boolean
+     | props
+     }
+  -> Forest
+  -> JSX
+defaultRenderForm { inlineTable, forceTopLabels, readonly } forest =
+  element (R.unsafeCreateDOMComponent "lumi-form")
+    { class:
+        String.joinWith " " $ fold
+          [ guard inlineTable ["inline-table"]
+          , guard readonly ["readonly"]
+          ]
+    , children:
+        surround fieldDivider (map toRow (Array.mapMaybe pruneTree forest))
+    }
+  where
+    fieldDivider = R.hr { className: "lumi field-divider" }
 
-        toRow = case _ of
-          Child { key, child } ->
-            maybe identity keyed key $ child
-          Wrapper { key, wrap: f, children } ->
-            maybe identity keyed key
-              $ f
-              $ intercalate [fieldDivider]
-              $ map (pure <<< toRow) children
-          Node { label, key, required, validationError, children } ->
-            maybe identity keyed key $ labeledField
-              { label: text body
-                  { children = [ label ]
-                  , className = toNullable (pure "field-label")
-                  }
-              , value: intercalate fieldDivider (map toRow children)
-              , validationError: validationError
-              , required: required
-              , forceTopLabel: forceTopLabels
-              , style: R.css {}
-              }
-
-     in element (R.unsafeCreateDOMComponent "lumi-form")
-          { "class": String.joinWith " " $ fold
-                       [ guard inlineTable ["inline-table"]
-                       , guard readonly ["readonly"]
-                       ]
-          , children: surround fieldDivider (map toRow forest)
-          }
+    toRow :: Tree -> JSX
+    toRow = case _ of
+      Child { key, child } ->
+        maybe identity keyed key $ child
+      Wrapper { key, wrap: f, children } ->
+        maybe identity keyed key
+          $ f
+          $ intercalate [fieldDivider]
+          $ map (pure <<< toRow)
+          $ children
+      Node { label, key, required, validationError, children } ->
+        maybe identity keyed key $
+          labeledField
+            { label: text body
+                { children = [ label ]
+                , className = toNullable (pure "field-label")
+                }
+            , value: intercalate fieldDivider (map toRow children)
+            , validationError
+            , required
+            , forceTopLabel: forceTopLabels
+            , style: R.css {}
+            }
 
 -- | Create an always-valid `FormBuilder` that renders the supplied `JSX`.
 static :: forall props value. JSX -> FormBuilder props value Unit
@@ -767,10 +818,10 @@ initializer loader aff =
 -- | Caveat emptor, you get what you pay for if you pass in a dodgy
 -- | `Iso` here.
 via
-  :: forall props s a result
+  :: forall ui props s a result
    . Iso' s a
-  -> FormBuilder props a result
-  -> FormBuilder props s result
+  -> FormBuilder' ui props a result
+  -> FormBuilder' ui props s result
 via i e = FormBuilder \props s ->
   let { edit, validate } = un FormBuilder e props (view i s)
    -- TODO: make this point-free
@@ -780,10 +831,10 @@ via i e = FormBuilder \props s ->
 
 -- | Focus a `FormBuilder` on a smaller piece of state, using a `Lens`.
 focus
-  :: forall props s a result
+  :: forall ui props s a result
    . Lens' s a
-  -> FormBuilder props a result
-  -> FormBuilder props s result
+  -> FormBuilder' ui props a result
+  -> FormBuilder' ui props s result
 focus l e = FormBuilder \props s ->
   let { edit, validate } = un FormBuilder e props (view l s)
    in { edit: \k -> edit (k <<< l)
@@ -793,10 +844,11 @@ focus l e = FormBuilder \props s ->
 -- | Focus a `FormBuilder` on a possible type of state, using a `Prism`,
 -- | ignoring validation.
 match_
-  :: forall props s a
-   . Prism' s a
-  -> FormBuilder props a a
-  -> FormBuilder props s s
+  :: forall ui props s a
+   . Monoid ui
+  => Prism' s a
+  -> FormBuilder' ui props a a
+  -> FormBuilder' ui props s s
 match_ p = match p p
 
 -- | Focus a `FormBuilder` on a possible type of state, using a `Prism`.
@@ -804,11 +856,12 @@ match_ p = match p p
 -- | We need two `Prism`s in order to change the result type for
 -- | validation purposes.
 match
-  :: forall props result s t a
-   . Prism s s a a
+  :: forall ui props result s t a
+   . Monoid ui
+  => Prism s s a a
   -> Prism s t a result
-  -> FormBuilder props a result
-  -> FormBuilder props s t
+  -> FormBuilder' ui props a result
+  -> FormBuilder' ui props s t
 match p1 p2 e = FormBuilder \props s ->
   case matching p2 s of
     Left t -> { edit: mempty, validate: pure t }
@@ -820,24 +873,24 @@ match p1 p2 e = FormBuilder \props s ->
 
 -- | Change the props type.
 mapProps
-  :: forall p q u a
+  :: forall ui p q u a
   . (q -> p)
-  -> FormBuilder p u a
-  -> FormBuilder q u a
+  -> FormBuilder' ui p u a
+  -> FormBuilder' ui q u a
 mapProps f form = FormBuilder (un FormBuilder form <<< f)
 
 -- | Make the props available, for convenience.
 withProps
-  :: forall props unvalidated result
-   . (props -> FormBuilder props unvalidated result)
-  -> FormBuilder props unvalidated result
+  :: forall ui props unvalidated result
+   . (props -> FormBuilder' ui props unvalidated result)
+  -> FormBuilder' ui props unvalidated result
 withProps f = FormBuilder \props value -> un FormBuilder (f props) props value
 
 -- | Make the value available, for convenience.
 withValue
-  :: forall props unvalidated result
-   . (unvalidated -> FormBuilder props unvalidated result)
-  -> FormBuilder props unvalidated result
+  :: forall ui props unvalidated result
+   . (unvalidated -> FormBuilder' ui props unvalidated result)
+  -> FormBuilder' ui props unvalidated result
 withValue f = FormBuilder \props value -> un FormBuilder (f value) props value
 
 -- | Indent a `Forest` of editors by one level, providing a label.
@@ -881,16 +934,17 @@ wrap f form =
 
 -- | Filter parts of the form based on the current value (and the props).
 filterWithProps
-  :: forall props u a
-   . (props -> u -> Boolean)
-  -> FormBuilder props u a
-  -> FormBuilder props u a
+  :: forall ui props u a
+   . Monoid ui
+  => (props -> u -> Boolean)
+  -> FormBuilder' ui props u a
+  -> FormBuilder' ui props u a
 filterWithProps p editor = FormBuilder \props value ->
   let { edit, validate } = un FormBuilder editor props value
    in { edit: \onChange ->
           if p props value
             then edit onChange
-            else []
+            else mempty
       , validate
       }
 
