@@ -28,6 +28,7 @@ import { attachGlobalComponentStyles } from "purs/Lumi.Components.Styles";
 attachGlobalComponentStyles();
 
 const repoSourceBasePath = `https://github.com/lumihq/purescript-lumi-components/blob/${COMMITHASH}`;
+const pursuitBasePath = `https://pursuit.purescript.org/packages/purescript-lumi-components/${VERSION.replace('v', '')}`;
 
 const fromComponentPath = title => ({
   docs: Loadable({
@@ -42,7 +43,8 @@ const fromComponentPath = title => ({
   title,
   path: `/${changeCase.hyphen(title)}`,
   componentSource: `${repoSourceBasePath}/src/Lumi/Components/${title}.purs`,
-  exampleSource: `${repoSourceBasePath}/docs/Examples/${title}.example.purs`
+  exampleSource: `${repoSourceBasePath}/docs/Examples/${title}.example.purs`,
+  apiReference: `${pursuitBasePath}/docs/Lumi.Components.${title}`
 });
 
 const componentLoaders = [
@@ -179,10 +181,22 @@ const renderRoute = component => (
               target="_blank"
               href={component.exampleSource}
               style={{
-                marginLeft: "8px"
+                marginLeft: "8px",
+                marginRight: "8px"
               }}
             >
               Example Source
+            </a>,
+            "|",
+            <a
+              className="lumi"
+              target="_blank"
+              href={component.apiReference}
+            style={{
+                marginLeft: "8px"
+              }}
+            >
+              API Reference
             </a>,
             <div
               style={{
