@@ -31,7 +31,7 @@ import Data.Number as Number
 import Data.Ord (class Ord1)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
-import Heterogeneous.Mapping (class HMap, class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
+import Heterogeneous.Mapping (class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
 import Lumi.Components.LabeledField (ValidationMessage(..))
@@ -140,22 +140,20 @@ _Modified = prism' Modified $
 -- | Sets all `Validated` fields in a record to `Fresh`, hiding all validation
 -- | messages.
 setFresh
-  :: forall row xs row'
-   . RL.RowToList row xs
-  => HMap ModifyValidated {| row} {| row'}
-  => {| row}
-  -> {| row'}
-setFresh = hmap (ModifyValidated (Fresh <<< view _Validated))
+  :: forall value
+   . Mapping ModifyValidated value value
+  => value
+  -> value
+setFresh = mapping (ModifyValidated (Fresh <<< view _Validated))
 
 -- | Sets all `Validated` fields in a record to `Modified`, showing all
 -- | validation messages.
 setModified
-  :: forall row xs row'
-   . RL.RowToList row xs
-  => HMap ModifyValidated {| row} {| row'}
-  => {| row}
-  -> {| row'}
-setModified = hmap (ModifyValidated (Modified <<< view _Validated))
+  :: forall value
+   . Mapping ModifyValidated value value
+  => value
+  -> value
+setModified = mapping (ModifyValidated (Modified <<< view _Validated))
 
 -- | Internal utility type for modifying the validated state of fields in
 -- | records containing `Validated` values.
