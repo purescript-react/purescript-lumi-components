@@ -7,7 +7,7 @@ module Lumi.Components.Form.Validation
   , Validated(..)
   , _Validated, _Fresh, _Modified
   , setFresh, setModified
-  , ModifyValidated
+  , ModifyValidated(..)
   , class CanValidate, fresh, modified, fromValidated
   , validated
   , warn
