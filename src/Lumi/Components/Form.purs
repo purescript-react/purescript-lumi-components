@@ -38,6 +38,8 @@ module Lumi.Components.Form
   , withProps
   , withValue
   , mapProps
+  , mapUI
+  , mapUI_
   , indent
   , wrap
   , filterWithProps
@@ -878,6 +880,30 @@ mapProps
   -> FormBuilder' ui p u a
   -> FormBuilder' ui q u a
 mapProps f form = FormBuilder (un FormBuilder form <<< f)
+
+-- | Change the UI type of a form.
+mapUI_
+  :: forall ui ui' props value result
+   . (ui -> ui')
+  -> FormBuilder' ui props value result
+  -> FormBuilder' ui' props value result
+mapUI_ f = mapUI \_ _ _ -> f
+
+-- | Change the UI type of a form based on the props, the current value and the
+-- | validated result.
+mapUI
+  :: forall ui ui' props value result
+   . (props -> value -> Maybe result -> ui -> ui')
+  -> FormBuilder' ui props value result
+  -> FormBuilder' ui' props value result
+mapUI f form =
+  FormBuilder \props value ->
+    let
+      { edit, validate } = un FormBuilder form props value
+    in
+      { edit: f props value validate <<< edit
+      , validate
+      }
 
 -- | Make the props available, for convenience.
 withProps
