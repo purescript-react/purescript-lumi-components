@@ -12,10 +12,10 @@ import Data.String (Pattern(..), drop, indexOf, joinWith, null, split)
 import Effect (Effect)
 import Global.Unsafe (unsafeEncodeURIComponent)
 import JSS (JSS, jss)
+import Lumi.Components.Badge (badge)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Link as Link
-import Lumi.Components.Text (lumiSubtextFontSize)
 import React.Basic (Component, JSX, createComponent, element, empty, fragment, makeStateless)
 import React.Basic.DOM (CSS, mergeStyles)
 import React.Basic.DOM as R
@@ -38,7 +38,6 @@ tab :: TabProps -> JSX
 tab = makeStateless tabComponent render
   where
     lumiTabElement = element (R.unsafeCreateDOMComponent "lumi-tab")
-    lumiTabCountElement = element (R.unsafeCreateDOMComponent "lumi-tab-count")
 
     render props =
       lumiTabElement
@@ -51,9 +50,11 @@ tab = makeStateless tabComponent render
                     fragment
                       [ props.label
                       , props.count # maybe mempty \count ->
-                          lumiTabCountElement
+                          badge
                             { style: R.css { marginLeft: "8px" }
-                            , children: [ R.text (show count) ]
+                            , background: colors.black5
+                            , color: colors.secondary
+                            , text: show count
                             }
                       ]
                 }
@@ -213,11 +214,12 @@ styles = jss
       { "lumi-tab":
           { flex: "0 0 auto"
           , display: "flex"
+          , alignItems: "center"
           , boxSizing: "border-box"
           , "& > a.lumi":
               { flex: "0 0 auto"
               , display: "flex"
-              , alignItems: "center"
+              , alignItems: "baseline"
               , fontSize: "14px "
               , cursor: "pointer"
               , whiteSpace: "nowrap"
@@ -227,18 +229,6 @@ styles = jss
                   { color: cssStringHSLA colors.black1
                   , textDecoration: "none"
                   }
-              }
-
-          , "& lumi-tab-count":
-              { fontSize: lumiSubtextFontSize
-              , color: cssStringHSLA colors.secondary
-
-              , borderRadius: "9px"
-              , backgroundColor: cssStringHSLA colors.black5
-
-              , marginTop: "2px"
-              , padding: "0px 6px"
-              , lineHeight: "17px"
               }
 
           , "&[data-active=\"true\"]":
