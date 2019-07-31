@@ -48,6 +48,7 @@ const fromComponentPath = title => ({
 });
 
 const componentLoaders = [
+  "Badge",
   "Border",
   "Breadcrumb",
   "Button",
