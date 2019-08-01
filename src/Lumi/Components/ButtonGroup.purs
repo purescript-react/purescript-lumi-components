@@ -41,19 +41,19 @@ styles = jss
           , flexFlow: "row"
 
           , "&[data-joined=false] > lumi-button-group-child":
-              { marginRight: "10px"
-              , "&:last-child": { marginRight: "0" }
+              { marginRight: 10
+              , "&:last-child": { marginRight: 0 }
               }
 
           , "&[data-joined=true] > lumi-button-group-child":
-              { "&:not(:last-child)":
-                  { marginRight: "-1px"
-                  , borderTopRightRadius: "0"
-                  , borderBottomRightRadius: "0"
+              { "&:not(:last-child) button.lumi":
+                  { marginRight: -1
+                  , borderTopRightRadius: 0
+                  , borderBottomRightRadius: 0
                   }
-              , "&:not(:first-child)":
-                  { borderTopLeftRadius: "0"
-                  , borderBottomLeftRadius: "0"
+              , "&:not(:first-child) button.lumi":
+                  { borderTopLeftRadius: 0
+                  , borderBottomLeftRadius: 0
                   }
               , "&:focus": { zIndex: ziButtonGroup }
               , "&:hover": { zIndex: ziButtonGroup }
