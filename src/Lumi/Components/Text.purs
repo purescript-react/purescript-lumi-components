@@ -231,7 +231,7 @@ styles = jss
     lumiMainHeader =
       { fontSize: "25px"
       , lineHeight: "40px"
-      , fontWeight: "500"
+      , fontWeight: "600"
       }
 
     lumiTitle =
@@ -243,7 +243,7 @@ styles = jss
     lumiSectionHeader =
       { fontSize: "17px"
       , lineHeight: "24px"
-      , fontWeight: "500"
+      , fontWeight: "600"
       , display: "inline-block"
       }
 

@@ -34,6 +34,7 @@ class FormDefaults a where
 instance formDefaultsUnit :: FormDefaults Unit where formDefaults = unit
 instance formDefaultsBoolean :: FormDefaults Boolean where formDefaults = false
 instance formDefaultsNumber :: FormDefaults Number where formDefaults = 0.0
+instance formDefaultsInt :: FormDefaults Int where formDefaults = 0
 instance formDefaultsString :: FormDefaults String where formDefaults = ""
 instance formDefaultsArray :: FormDefaults (Array a) where formDefaults = []
 

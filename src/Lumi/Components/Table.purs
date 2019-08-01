@@ -77,7 +77,7 @@ type TableProps row =
         , filterLabel :: Nullable String
         , sortBy :: Nullable ColumnName
         , style :: R.CSS
-        , getLink :: row -> URL
+        , getLink :: Nullable (row -> URL)
         , renderCell :: row -> JSX
         , sticky :: Boolean
         }
@@ -262,24 +262,8 @@ table = make component
             then self.state.columns
             else self.props.columns
       in
-        renderLumiTable \tableRef ->
-          [ if not self.state.showMenu
-              then empty
-              else guard (self.props.dropdownMenu) $ renderFilterDropdown
-                { close: closeMenu self
-                , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
-                    { name: ColumnName name
-                    , hidden
-                    }
-                , items: columns <#> \{ name, label, filterLabel, hidden } ->
-                    { name: un ColumnName name
-                    , label
-                    , filterLabel
-                    , hidden
-                    }
-                , style: R.css self.state.menuStyle
-                }
-          , element scrollObserver
+        renderLumiTable self columns \tableRef ->
+          [ element scrollObserver
               { node: tableRef
               , render: \{ hasScrolledY, hasScrolledX } ->
                   R.table
@@ -326,7 +310,9 @@ table = make component
       where
         selected = fromMaybe self.state.selected (toMaybe self.props.selected)
 
-        primaryColumn = toMaybe self.props.primaryColumn
+        primaryColumn = cleanUpNullables <$> toMaybe self.props.primaryColumn
+          where
+            cleanUpNullables x = x { getLink = toMaybe x.getLink }
 
         renderTableHead columns tableRef =
           element (R.unsafeCreateDOMComponent "thead")
@@ -426,14 +412,34 @@ table = make component
                       ]
                   }
 
-    renderLumiTable renderChildren =
-      selectorRef (QuerySelector "lumi-table") \maybeTableRef ->
-        element (R.unsafeCreateDOMComponent "lumi-table")
-          { children:
-              case maybeTableRef of
-                Nothing       -> []
-                Just tableRef -> renderChildren tableRef :: Array JSX
-          }
+    renderLumiTable self columns renderChildren =
+      element (R.unsafeCreateDOMComponent "lumi-table")
+        { children:
+            [ if not self.state.showMenu
+                then empty
+                else guard (self.props.dropdownMenu) $ renderFilterDropdown
+                  { close: closeMenu self
+                  , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
+                      { name: ColumnName name
+                      , hidden
+                      }
+                  , items: columns <#> \{ name, label, filterLabel, hidden } ->
+                      { name: un ColumnName name
+                      , label
+                      , filterLabel
+                      , hidden
+                      }
+                  , style: R.css self.state.menuStyle
+                  }
+            , selectorRef (QuerySelector "lumi-table-inner") \maybeTableRef ->
+                element (R.unsafeCreateDOMComponent "lumi-table-inner")
+                  { children:
+                      case maybeTableRef of
+                        Nothing       -> []
+                        Just tableRef -> renderChildren tableRef
+                  }
+            ]
+        }
 
     renderFilterDropdown { close, reorderItems, items, style } =
       selectorRef (QuerySelector "lumi-filter-dropdown") \maybeMenuRef ->
@@ -468,7 +474,7 @@ type TableRowProps row col_ pcol_ =
           { name :: ColumnName
           , renderCell :: row -> JSX
           , style :: R.CSS
-          , getLink :: row -> URL
+          , getLink :: Maybe (row -> URL)
           , sticky :: Boolean
           | pcol_
           }
@@ -498,14 +504,16 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
       R.tr
         { className: joinWith " "
             $  guard (tableProps.selectable && isSelected) [ "active" ]
-            <> guard (isJust tableProps.primaryColumn) [ "active-row" ]
+            <> guard (isJust $ _.getLink =<< tableProps.primaryColumn) [ "active-row" ]
         , onClick:
             case tableProps.primaryColumn of
-              Nothing  -> Events.handler_ (pure unit)
-              Just col -> Events.handler syntheticEvent \event -> do
-                s <- hasWindowSelection
-                when (not s) $
-                  runEffectFn1 tableProps.onNavigate (col.getLink row)
+              Just { getLink: Just getLink } ->
+                Events.handler syntheticEvent \event -> do
+                  s <- hasWindowSelection
+                  when (not s) $
+                    runEffectFn1 tableProps.onNavigate (getLink row)
+              _ ->
+                Events.handler_ (pure unit)
         , children:
             [ if not tableProps.selectable
                 then empty
@@ -550,11 +558,16 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
         , style: col.style
         , "data-required": true
         , children:
-            Link.link Link.defaults
-              { href = col.getLink row
-              , navigate = Just (runEffectFn1 onNavigate (col.getLink row))
-              , text = col.renderCell row
-              }
+            case col.getLink of
+              Nothing ->
+                col.renderCell row
+              Just getLink ->
+                Link.link Link.defaults
+                  { href = getLink row
+                  , navigate = Just (runEffectFn1 onNavigate (getLink row))
+                  , text = col.renderCell row
+                  , className = Just "primary-cell-link"
+                  }
         }
 
     renderBodyRowCell row col =
@@ -611,9 +624,16 @@ styles = jss
       { "lumi-table":
           { width: "100%"
           , maxHeight: "100%"
+          , display: "flex"
+          , flexFlow: "column"
+          , position: "relative"
+          }
+
+      , "lumi-table-inner":
+          { width: "100%"
+          , maxHeight: "100%"
           , overflow: "auto"
           , backgroundColor: cssStringHSLA colors.white
-          , position: "relative"
           , display: "block"
           , whiteSpace: "nowrap"
 
@@ -696,15 +716,9 @@ styles = jss
                       , textOverflow: "ellipsis"
                       , backgroundColor: cssStringHSLA colors.white
 
-                      , "&.primary-cell a":
+                      , "&.primary-cell a.lumi.primary-cell-link":
                           { color: cssStringHSLA colors.primary
                           }
-                      }
-                  , "& input.lumi:not([type=\"checkbox\"]), & select.lumi":
-                      { border: "none"
-                      , paddingTop: "0"
-                      , paddingBottom: "0"
-                      , paddingLeft: "0"
                       }
                   }
               , "& a.lumi":
