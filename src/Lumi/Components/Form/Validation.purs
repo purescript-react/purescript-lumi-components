@@ -2,7 +2,7 @@ module Lumi.Components.Form.Validation
   ( Validator
   , nonEmpty, nonEmptyArray, nonNull
   , mustEqual, mustBe
-  , validNumber, validInt
+  , validNumber, validInt, validDate
   , optional
   , Validated(..)
   , _Validated, _Fresh, _Modified
@@ -18,7 +18,9 @@ import Prelude
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty (fromArray) as NEA
+import Data.Date as Date
 import Data.Either (Either(..), either, hush, note)
+import Data.Enum (toEnum)
 import Data.Eq (class Eq1)
 import Data.Foldable (foldMap)
 import Data.Int as Int
@@ -29,8 +31,11 @@ import Data.Newtype (un)
 import Data.Nullable (notNull)
 import Data.Number as Number
 import Data.Ord (class Ord1)
+import Data.String.Common (split)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
+import Data.String.Pattern (Pattern(..))
+import Data.Traversable (traverse)
 import Heterogeneous.Mapping (class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
@@ -80,6 +85,16 @@ validNumber name = note (name <> " must be a number.") <<< Number.fromString
 -- | A `Validator` which verifies that its input can be parsed as an integer.
 validInt :: String -> Validator String Int
 validInt name = note (name <> " must be a whole number.") <<< Int.fromString
+
+-- | A `Validator` which verifies that its input can be parsed as a date.
+-- | Dates are of the format "YYYY-MM-DD".
+validDate :: String -> Validator String Date.Date
+validDate name input =
+  note (name <> " must be a date.") result
+  where
+    result = case traverse Int.fromString $ split (Pattern "-") input of
+      Just [y, m, d] -> join $ Date.exactDate <$> toEnum y <*> toEnum m <*> toEnum d
+      _ -> Nothing
 
 -- | Modify a `Validator` to accept empty strings in addition to anything it
 -- | already accepts. The empty string is mapped to `Nothing`, and any other

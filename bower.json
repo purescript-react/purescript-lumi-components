@@ -42,6 +42,7 @@
     "purescript-js-timers": "^4.0.1",
     "purescript-heterogeneous": ">=0.3.0 <0.5.0",
     "purescript-free": "^5.1.0",
+    "purescript-react-basic-hooks": "^0.6.1",
     "purescript-colors": "^5.0.0"
   },
   "devDependencies": {
