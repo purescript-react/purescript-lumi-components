@@ -6,7 +6,7 @@ import Data.Maybe (Maybe(..))
 import Data.NonEmpty (NonEmpty, oneOf)
 import Effect (Effect)
 import Lumi.Components.Tab (TabId, TabKey)
-import Lumi.Components.Tab as Tabs
+import Lumi.Components.Tab as Tab
 import React.Basic (Component, JSX, createComponent, makeStateless)
 import React.Basic.DOM as R
 import Web.HTML.History (URL)
@@ -31,7 +31,7 @@ tabLayout :: TabLayoutProps -> JSX
 tabLayout = makeStateless component render
   where
     render { currentLocation, navigate, queryKey, tabs, useHash } =
-      Tabs.tabs
+      Tab.tabs
         { style: R.css { "paddingLeft": "24px" }
         , tabStyle: R.css {}
         , selectedTabStyle: R.css {}

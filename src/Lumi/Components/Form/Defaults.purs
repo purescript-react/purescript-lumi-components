@@ -7,6 +7,7 @@ module Lumi.Components.Form.Defaults
 
 import Prelude
 
+import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, SProxy(..))
@@ -15,7 +16,7 @@ import Prim.Row (class Cons, class Lacks)
 import Prim.RowList (class RowToList, Cons, Nil)
 import Record.Builder (Builder)
 import Record.Builder as Builder
-import Type.Row (RLProxy(..))
+import Type.Data.RowList (RLProxy(..))
 
 -- | Provides default values for primitive data types to be used as initial
 -- | values in form builders.
@@ -34,8 +35,12 @@ class FormDefaults a where
 instance formDefaultsUnit :: FormDefaults Unit where formDefaults = unit
 instance formDefaultsBoolean :: FormDefaults Boolean where formDefaults = false
 instance formDefaultsNumber :: FormDefaults Number where formDefaults = 0.0
+instance formDefaultsInt :: FormDefaults Int where formDefaults = 0
 instance formDefaultsString :: FormDefaults String where formDefaults = ""
 instance formDefaultsArray :: FormDefaults (Array a) where formDefaults = []
+
+instance formDefaultsNonEmptyArray :: FormDefaults a => FormDefaults (NonEmptyArray a) where
+  formDefaults = pure formDefaults
 
 instance formDefaultsMaybe :: FormDefaults (Maybe a) where
   formDefaults = Nothing

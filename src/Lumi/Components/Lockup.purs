@@ -126,18 +126,16 @@ styles = jss
                   { textDecoration: "none"
                   , display: "inline-block"
                   }
-              }
 
-          , "& > lumi-lockup-image":
-              { flex: "none"
-              }
-
-          , "& > lumi-lockup-description-body":
-              { "& > lumi-lockup-description-title > lumi-body, & > lumi-lockup-description-body > lumi-subtext":
+              , "& > lumi-lockup-description-title, & > lumi-lockup-description-body":
                   { whiteSpace: "nowrap"
                   , overflow: "hidden"
                   , textOverflow: "ellipsis"
                   }
+              }
+
+          , "& > lumi-lockup-image":
+              { flex: "none"
               }
 
           , "&[data-variant=\"product\"], &[data-variant=\"user\"]":

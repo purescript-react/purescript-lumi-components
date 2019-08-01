@@ -26,30 +26,35 @@ docs = flip element {} $ withRouter $ toReactComponent identity component { rend
       column_
         [ h2_ "Demo 1"
         , example $
-            tabs
-              { currentLocation: URL $ "#" <> props.location.pathname <> props.location.search <> props.location.hash
-              , useHash: true
-              , navigate: Just \url ->
-                  let
-                    parts = urlParts url
-                    newUrl = parts.path <> parts.query <> parts.hash.path <> parts.hash.query
-                    newUrlNoHash = fromMaybe "" $ flip index 1 $ split (Pattern "#") newUrl
-                  in
-                    runEffectFn1 props.history.push $ URL $ newUrlNoHash
-              , queryKey: TabKey "demo1"
-              , style: R.css {}
-              , tabStyle: R.css {}
-              , selectedTabStyle: R.css {}
-              , tabs: 1 .. 6 <#> \i ->
-                  let
-                    label = "Tab with a long title " <> show i
-                  in
-                    { content: \_ -> empty
-                    , id: TabId (toLower label)
-                    , label
-                    , count: (7*(i - 1) * (i - 1) `mod` 4) * 7 <$ guard (i `mod` 3 /= 1)
-                    , testId: Nothing
-                    }
+            R.div
+              { style: R.css { maxWidth: "800px" }
+              , children:
+                  [ tabs
+                      { currentLocation: URL $ "#" <> props.location.pathname <> props.location.search <> props.location.hash
+                      , useHash: true
+                      , navigate: Just \url ->
+                          let
+                            parts = urlParts url
+                            newUrl = parts.path <> parts.query <> parts.hash.path <> parts.hash.query
+                            newUrlNoHash = fromMaybe "" $ flip index 1 $ split (Pattern "#") newUrl
+                          in
+                            runEffectFn1 props.history.push $ URL $ newUrlNoHash
+                      , queryKey: TabKey "demo1"
+                      , style: R.css {}
+                      , tabStyle: R.css {}
+                      , selectedTabStyle: R.css {}
+                      , tabs: 1 .. 10 <#> \i ->
+                          let
+                            label = "Tab with a long title " <> show i
+                          in
+                            { content: \_ -> empty
+                            , id: TabId (toLower label)
+                            , label
+                            , count: (7*(i - 1) * (i - 1) `mod` 4) * 7 <$ guard (i `mod` 3 /= 1)
+                            , testId: Nothing
+                            }
+                      }
+                  ]
               }
 
         , h2_ "Demo 2"

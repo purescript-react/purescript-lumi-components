@@ -2,12 +2,12 @@ module Lumi.Components.Form.Validation
   ( Validator
   , nonEmpty, nonEmptyArray, nonNull
   , mustEqual, mustBe
-  , validNumber, validInt
+  , validNumber, validInt, validDate
   , optional
   , Validated(..)
   , _Validated, _Fresh, _Modified
   , setFresh, setModified
-  , ModifyValidated
+  , ModifyValidated(..)
   , class CanValidate, fresh, modified, fromValidated
   , validated
   , warn
@@ -18,22 +18,27 @@ import Prelude
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty (fromArray) as NEA
+import Data.Date as Date
 import Data.Either (Either(..), either, hush, note)
+import Data.Enum (toEnum)
 import Data.Eq (class Eq1)
 import Data.Foldable (foldMap)
 import Data.Int as Int
-import Data.Lens (Lens, Prism', lens, prism', review, view)
+import Data.Lens (Lens, Prism', lens, over, prism', review, view)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Newtype (un)
 import Data.Nullable (notNull)
 import Data.Number as Number
 import Data.Ord (class Ord1)
+import Data.String.Common (split)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
-import Heterogeneous.Mapping (class HMap, class MapRecordWithIndex, class Mapping, ConstMapping, hmap)
+import Data.String.Pattern (Pattern(..))
+import Data.Traversable (traverse)
+import Heterogeneous.Mapping (class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column_)
-import Lumi.Components.Form.Internal (Forest, FormBuilder(..), Tree(..))
+import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Text (subtext, text)
 import Prim.RowList as RL
@@ -80,6 +85,16 @@ validNumber name = note (name <> " must be a number.") <<< Number.fromString
 -- | A `Validator` which verifies that its input can be parsed as an integer.
 validInt :: String -> Validator String Int
 validInt name = note (name <> " must be a whole number.") <<< Int.fromString
+
+-- | A `Validator` which verifies that its input can be parsed as a date.
+-- | Dates are of the format "YYYY-MM-DD".
+validDate :: String -> Validator String Date.Date
+validDate name input =
+  note (name <> " must be a date.") result
+  where
+    result = case traverse Int.fromString $ split (Pattern "-") input of
+      Just [y, m, d] -> join $ Date.exactDate <$> toEnum y <*> toEnum m <*> toEnum d
+      _ -> Nothing
 
 -- | Modify a `Validator` to accept empty strings in addition to anything it
 -- | already accepts. The empty string is mapped to `Nothing`, and any other
@@ -140,34 +155,32 @@ _Modified = prism' Modified $
 -- | Sets all `Validated` fields in a record to `Fresh`, hiding all validation
 -- | messages.
 setFresh
-  :: forall row xs row'
-   . RL.RowToList row xs
-  => HMap ModifyValidated {| row} {| row'}
-  => {| row}
-  -> {| row'}
-setFresh = hmap (ModifyValidated (Fresh <<< view _Validated))
+  :: forall value
+   . Mapping ModifyValidated value value
+  => value
+  -> value
+setFresh = mapping (ModifyValidated (Fresh <<< view _Validated))
 
 -- | Sets all `Validated` fields in a record to `Modified`, showing all
 -- | validation messages.
 setModified
-  :: forall row xs row'
-   . RL.RowToList row xs
-  => HMap ModifyValidated {| row} {| row'}
-  => {| row}
-  -> {| row'}
-setModified = hmap (ModifyValidated (Modified <<< view _Validated))
+  :: forall value
+   . Mapping ModifyValidated value value
+  => value
+  -> value
+setModified = mapping (ModifyValidated (Modified <<< view _Validated))
 
 -- | Internal utility type for modifying the validated state of fields in
 -- | records containing `Validated` values.
 newtype ModifyValidated = ModifyValidated (Validated ~> Validated)
 
-instance modifyValidated :: Mapping ModifyValidated (Validated a) (Validated a) where
-  mapping (ModifyValidated f) = f
+instance modifyValidated :: Mapping ModifyValidated a a => Mapping ModifyValidated (Validated a) (Validated a) where
+  mapping m@(ModifyValidated f) = over _Validated (mapping m) <<< f
 else instance modifyValidatedRecord :: (RL.RowToList r xs, MapRecordWithIndex xs (ConstMapping ModifyValidated) r r) => Mapping ModifyValidated {| r} {| r} where
   mapping d = hmap d
-else instance modifyValidatedArray :: (RL.RowToList r xs, MapRecordWithIndex xs (ConstMapping ModifyValidated) r r) => Mapping ModifyValidated (Array {| r}) (Array {| r}) where
-  mapping d = map (hmap d)
-else instance modifyValidatedA :: Mapping ModifyValidated a a where
+else instance modifyValidatedArray :: Mapping ModifyValidated a a => Mapping ModifyValidated (Array a) (Array a) where
+  mapping d = map (mapping d)
+else instance modifyValidatedIdentity :: Mapping ModifyValidated a a where
   mapping _ = identity
 
 -- | Internal utility type class used to flatten repeated applications of
@@ -204,7 +217,7 @@ validated runValidator editor = FormBuilder \props@{ readonly } v ->
 
       { edit, validate } = un FormBuilder editor props value
 
-      modify :: Maybe String -> Forest JSX -> Forest JSX
+      modify :: Maybe String -> Forest -> Forest
       modify message forest =
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]
@@ -263,7 +276,7 @@ warn
 warn warningValidator editor = FormBuilder \props@{ readonly } v ->
   let { edit, validate } = un FormBuilder editor props (fromValidated v)
 
-      modify :: Forest JSX -> Forest JSX
+      modify :: Forest -> Forest
       modify forest =
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]

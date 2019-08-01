@@ -9,12 +9,12 @@ import Effect.Console (log)
 import Lumi.Components.Button (button, defaults, secondary)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column, column_)
-import Lumi.Components.DropdownButton (dropdownButton, dropdownMenu, dropdownButtonDefaults, dropdownMenuDefaults)
+import Lumi.Components.DropdownButton (dropdownButton, dropdownButtonDefaults, dropdownIcon, dropdownIconDefaults, dropdownMenu, dropdownMenuDefaults)
+import Lumi.Components.Example (example)
 import Lumi.Components.Input (input, text_)
 import Lumi.Components.InputGroup (inputGroup)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (body_, h2_)
-import Lumi.Components.Example (example)
 import React.Basic (JSX)
 import React.Basic.DOM as R
 
@@ -197,4 +197,27 @@ docs =
                   """
               ]
           }
+
+    , h2_ "using an arbitrary icon in place of the button"
+    , example $
+        dropdownIcon dropdownIconDefaults
+          { content = R.div
+              { style: R.css { width: "328px", padding: "12px" }
+              , children:
+                [ button secondary
+                  { title = "I can be any element"
+                  , style = R.css { width: "100%", marginBottom: "8px" }
+                  }
+                , button secondary
+                  { title = "I can be any element"
+                  , style = R.css { width: "100%", marginBottom: "8px" }
+                  }
+                , button defaults
+                  { title = "I can be any element"
+                  , style = R.css { width: "100%" }
+                  }
+                ]
+              }
+          }
+
     ]

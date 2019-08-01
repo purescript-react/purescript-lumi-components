@@ -2,26 +2,27 @@ module Lumi.Components.List where
 
 import Prelude
 
+import Data.Nullable (notNull)
 import Color (cssStringHSLA)
 import Data.Array (mapMaybe)
 import Data.Maybe (Maybe(..))
 import JSS (JSS, jss)
-import Lumi.Components.Color (colors)
+import Lumi.Components.Color (colors, colorNames)
+import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
+import Lumi.Components.Text as T
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 
-type ListProps =
+type ListProps r =
   { size :: Maybe Size
   , rightAligned :: Boolean
   , rows :: Array (Array JSX)
+  | r
   }
 
-component :: Component ListProps
-component = createComponent "List"
-
-list :: ListProps -> JSX
-list = makeStateless component $ lumiList <<< mapProps
+listComponent :: ListProps (borders :: Boolean) -> JSX
+listComponent = makeStateless (createComponent "List") $ lumiList <<< mapProps
   where
     mapProps props =
       { className: "lumi"
@@ -30,6 +31,7 @@ list = makeStateless component $ lumiList <<< mapProps
             Just size -> show size
             Nothing -> show Medium
       , "data-right-aligned": props.rightAligned
+      , "data-borders": props.borders
       , children: map renderRow props.rows
       }
       where
@@ -43,14 +45,32 @@ list = makeStateless component $ lumiList <<< mapProps
     lumiListRow = element (R.unsafeCreateDOMComponent "lumi-list-row")
     lumiListRowCell = element (R.unsafeCreateDOMComponent "lumi-list-row-cell")
 
-defaultList :: ListProps
+list :: ListProps () -> JSX
+list props =
+  listComponent
+    { size: props.size
+    , rightAligned: props.rightAligned
+    , rows: props.rows
+    , borders: true
+    }
+
+borderlessList :: ListProps () -> JSX
+borderlessList props =
+  listComponent
+    { size: props.size
+    , rightAligned: props.rightAligned
+    , rows: props.rows
+    , borders: false
+    }
+
+defaultList :: ListProps ()
 defaultList =
   { size: Just $ Medium
   , rightAligned: false
   , rows: []
   }
 
-compactList :: ListProps
+compactList :: ListProps ()
 compactList =
   { size: Just $ Small
   , rightAligned: false
@@ -85,6 +105,64 @@ structuredColumnList = makeStateless structuredColumnListComponent render
         renderRowCell row col =
           col.renderCell row
 
+keyValueList
+  :: { rightAligned :: Boolean
+     , rows ::
+         Array
+           { label :: String
+           , value :: JSX
+           }
+     , borders :: Boolean
+     }
+  -> JSX
+keyValueList { rightAligned, rows, borders } =
+  let
+    lumiKeyValueListElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list")
+    lumiKeyValueListLabelElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list-label")
+    lumiKeyValueListValueElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list-value")
+
+    toRows r =
+      r <#> \{ label, value } ->
+        [ row
+            { style: R.css
+                { alignItems: "center"
+                , justifyContent: "space-between"
+                , width: "100%"
+                }
+            , children:
+                [ lumiKeyValueListLabelElement
+                    { children:
+                        [ T.text T.body
+                            { style = R.css {}
+                            , color = notNull colorNames.black1
+                            , children = [ R.text label ]
+                            }
+                        ]
+                    , style: R.css {}
+                    }
+                , lumiKeyValueListValueElement
+                    { children: [ value ]
+                    , style: R.css
+                        { justifyContent: if rightAligned then "flex-end" else "flex-start"
+                        }
+                    }
+                ]
+            }
+        ]
+  in
+    lumiKeyValueListElement
+      { children:
+          [ if borders
+              then list compactList
+                { rows = toRows rows
+                }
+              else borderlessList compactList
+                { rows = toRows rows
+                }
+          ]
+      , style: R.css { width: "100%" }
+      }
+
 styles :: JSS
 styles = jss
   { "@global":
@@ -94,16 +172,14 @@ styles = jss
           , flexFlow: "column"
           , listStyleType: "none"
           , borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
-
           , "& > lumi-list-row":
               { boxSizing: "border-box"
               , display: "flex"
               , flexFlow: "row wrap"
               , justifyContent: "space-between"
-              , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
               , minHeight: "calc(48px + 1px)"
               , padding: "6px 0"
-
+              , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
               , "& > lumi-list-row-cell":
                   { boxSizing: "border-box"
                   , display: "flex"
@@ -113,7 +189,12 @@ styles = jss
                   , maxWidth: "100%"
                   }
               }
-
+            , "&[data-borders=\"false\"]":
+                { border: "0"
+                , "& > lumi-list-row":
+                  { border: "0"
+                  }
+                }
             , "&[data-size=\"small\"] > lumi-list-row":
                 { minHeight: "calc(40px + 1px)"
                 , padding: "2px 0"
@@ -128,13 +209,33 @@ styles = jss
                 , justifyContent: "flex-end"
                 , alignItems: "center"
                 }
-
             , "@media (max-width: 448px)":
                 { "& > lumi-list-row > lumi-list-row-cell":
                     { alignItems: "flex-end"
                     }
                 }
             }
-
+      , "lumi-key-value-list":
+          { "& lumi-key-value-list-label":
+              { "flex": "3 5 0%"
+              , "padding": "8px 0"
+              }
+          , "& lumi-key-value-list-value":
+              { "display": "flex"
+              , "flexFlow": "row"
+              , "alignItems": "center"
+              , "flex": "7 7 0%"
+              , "flexWrap": "wrap"
+              }
+          , "@media (max-width: 860px)":
+              { "width": "100%"
+              , "& lumi-key-value-list-label":
+                  { "flex": "initial"
+                  }
+              , "& lumi-key-value-list-value":
+                  { "flex": "initial"
+                  }
+              }
+          }
       }
   }

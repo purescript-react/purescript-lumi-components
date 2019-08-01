@@ -6,7 +6,7 @@ import Data.Array (intercalate)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
 import Lumi.Components.Size (Size(..))
-import Lumi.Components.Button (button, defaults, primary, secondary, linkStyle, iconButton, iconButtonDefaults)
+import Lumi.Components.Button (ButtonState(..), button, defaults, primary, secondary, linkStyle, iconButton, iconButtonDefaults)
 import Lumi.Components.Color (colorNames)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Icon (IconType(..))
@@ -27,7 +27,7 @@ docs =
 
       , [ h2_ "Disabled"
         , example
-            $ button defaults { title = "Button", disabled = true }
+            $ button defaults { title = "Button", buttonState = Disabled }
         ]
 
       , [ h2_ "Size"
@@ -56,7 +56,7 @@ docs =
         ]
       , [ h4_ "Primary + Disabled"
         , example
-            $ button primary { title = "Button", disabled = true }
+            $ button primary { title = "Button", buttonState = Disabled }
         ]
       , [ h4_ "Secondary Medium (default)"
         , example
@@ -76,7 +76,7 @@ docs =
         ]
       , [ h4_ "Secondary + Disabled"
         , example
-            $ button secondary { title = "Button", disabled = true }
+            $ button secondary { title = "Button", buttonState = Disabled }
         ]
       , [ h4_ "Icon button"
         , example
@@ -100,19 +100,19 @@ docs =
         ]
       , [ h4_ "Loading (Medium/default)"
         , example
-            $ button primary { loading = true }
+            $ button primary { buttonState = Loading }
         ]
       , [ h4_ "Loading (Small) "
         , example
-            $ button primary { loading = true, size = Small }
+            $ button primary { buttonState = Loading, size = Small }
         ]
       , [ h4_ "Loading (Large) "
         , example
-            $ button primary { loading = true, size = Large }
+            $ button primary { buttonState = Loading, size = Large }
         ]
       , [ h4_ "Loading (ExtraLarge) "
         , example
-            $ button primary { loading = true, size = ExtraLarge }
+            $ button primary { buttonState = Loading, size = ExtraLarge }
         ]
       ]
 

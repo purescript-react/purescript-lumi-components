@@ -7,6 +7,7 @@ import Data.Traversable (traverse_)
 import Effect (Effect)
 import JSS (JSS, jss)
 import JSS as JSS
+import Lumi.Components.Badge as Badge
 import Lumi.Components.Border as Border
 import Lumi.Components.Breadcrumb as Breadcrumb
 import Lumi.Components.Button (styles) as Button
@@ -15,6 +16,7 @@ import Lumi.Components.Card as Card
 import Lumi.Components.CardGrid as CardGrid
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column as Column
+import Lumi.Components.Details as Details
 import Lumi.Components.Divider as Divider
 import Lumi.Components.DropdownButton as DropdownButton
 import Lumi.Components.EditableTable as EditableTable
@@ -62,6 +64,7 @@ attachGlobalComponentStyles = do
   jssInstance <- JSS.createInstance JSS.preset
   traverse_ (JSS.globalAttachStyleSheet <=< JSS.createStyleSheet jssInstance)
     [ globals
+    , Badge.styles
     , Border.styles
     , Breadcrumb.styles
     , Button.styles
@@ -69,6 +72,7 @@ attachGlobalComponentStyles = do
     , Card.styles
     , CardGrid.styles
     , Column.styles
+    , Details.styles
     , Divider.styles
     , DropdownButton.styles
     , EditableTable.styles
@@ -112,8 +116,8 @@ globals = jss
           }
       , "react-basic-ref":
           { display: "block"
-          , minHeight: "100%"
-          , minWidth: "100%"
+          , minHeight: "0"
+          , minWidth: "0"
           }
       , "body":
           { color: cssStringHSLA colors.black
