@@ -57,6 +57,7 @@ const componentLoaders = [
   "CardGrid",
   "Color",
   "Column",
+  "Details",
   "Divider",
   "DropdownButton",
   "EditableTable",
