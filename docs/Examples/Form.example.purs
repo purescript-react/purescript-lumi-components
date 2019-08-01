@@ -57,7 +57,7 @@ docs = flip element {} $ unsafePerformEffect do
 
     pure $ column_
       [ column
-          { style: css { maxWidth: "50rem", padding: "2rem 0" }
+          { style: css { width: "100%", maxWidth: 300, padding: "2rem 0" }
           , children: [ form ]
           }
 
@@ -91,7 +91,7 @@ metaForm = ado
     $ F.focus (prop (SProxy :: SProxy "readonly"))
     $ F.switch
   simulatePauses <-
-    F.indent "Simulate pauses" Neither
+    F.indent "Simulate pauses (pet color picker)" Neither
     $ F.focus (prop (SProxy :: SProxy "simulatePauses"))
     $ F.switch
   in unit

@@ -94,14 +94,14 @@ import Lumi.Components.Select as Select
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
-import Prim.Row (class Nub, class Union)
-import Prim.RowList (class RowToList)
+import Prim.Row (class Lacks, class Nub, class Union)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
 import React.Basic.Hooks as Hooks
+import Record as Record
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
@@ -220,29 +220,29 @@ defaultRenderForm { inlineTable, forceTopLabels, readonly } forest =
             , forceTopLabel: forceTopLabels
             , style: R.css {}
             }
+
 -- | Render a form with state managed automatically.
 useForm
-  :: forall props unvalidated result xs
-   . RowToList unvalidated xs
-  => Mapping ModifyValidated { | unvalidated } { | unvalidated }
+  :: forall props unvalidated result
+   . Mapping ModifyValidated unvalidated unvalidated
   => FormBuilder
-       { initialState :: { | unvalidated }
+       { initialState :: unvalidated
        , readonly :: Boolean
        , inlineTable :: Boolean
        , forceTopLabels :: Boolean
        | props
        }
-       { | unvalidated }
+       unvalidated
        result
-  -> { initialState :: { | unvalidated }
+  -> { initialState :: unvalidated
      , readonly :: Boolean
      , inlineTable :: Boolean
      , forceTopLabels :: Boolean
      | props
      }
-  -> Hooks.Hook (Hooks.UseState { | unvalidated })
-      { formData :: { | unvalidated }
-      , setFormData :: ({ | unvalidated } -> { | unvalidated }) -> Effect Unit
+  -> Hooks.Hook (Hooks.UseState unvalidated)
+      { formData :: unvalidated
+      , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
       , setModified :: Effect Unit
       , reset :: Effect Unit
       , validated :: Maybe result
@@ -262,22 +262,21 @@ useForm editor props = React.do
 -- | Like `useForm`, but allows an alternative render implementation
 -- | to be provided as an additional argument.
 useForm'
-  :: forall props unvalidated unvalidated_ result
-   . RowToList unvalidated unvalidated_
-  => Mapping ModifyValidated { | unvalidated } { | unvalidated }
+  :: forall props unvalidated result
+   . Mapping ModifyValidated unvalidated unvalidated
   => FormBuilder
-       { initialState :: { | unvalidated }
+       { initialState :: unvalidated
        | props
        }
-       { | unvalidated }
+       unvalidated
        result
-  -> { initialState :: { | unvalidated }
+  -> { initialState :: unvalidated
      | props
      }
   -> (Forest -> JSX)
-  -> Hooks.Hook (Hooks.UseState { | unvalidated })
-      { formData :: { | unvalidated }
-      , setFormData :: ({ | unvalidated } -> { | unvalidated }) -> Effect Unit
+  -> Hooks.Hook (Hooks.UseState unvalidated)
+      { formData :: unvalidated
+      , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
       , setModified :: Effect Unit
       , reset :: Effect Unit
       , validated :: Maybe result
@@ -307,23 +306,26 @@ useForm' editor props renderer = Hooks.do
 -- | _Note_: this function should be fully applied, to avoid remounting
 -- | the component on each render.
 formState
-  :: forall props unvalidated result xs
-   . RowToList unvalidated xs
-  => Mapping ModifyValidated { | unvalidated } { | unvalidated }
+  :: forall props unvalidated result
+   . Lacks "render" props
+  => Mapping ModifyValidated unvalidated unvalidated
   => FormBuilder
-       { initialState :: { | unvalidated }
+       { initialState :: unvalidated
        , readonly :: Boolean
        , inlineTable :: Boolean
        , forceTopLabels :: Boolean
        | props
        }
-       { | unvalidated }
+       unvalidated
        result
   -> Hooks.ReactComponent
-      { initialState :: { | unvalidated }
+      { initialState :: unvalidated
+      , readonly :: Boolean
+      , inlineTable :: Boolean
+      , forceTopLabels :: Boolean
       , render
-          :: { formData :: { | unvalidated }
-             , setFormData :: ({ | unvalidated } -> { | unvalidated }) -> Effect Unit
+          :: { formData :: unvalidated
+             , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
              , setModified :: Effect Unit
              , reset :: Effect Unit
              , validated :: Maybe result
@@ -334,7 +336,7 @@ formState
       }
 formState editor = unsafePerformEffect do
   Hooks.component "FormState" \props -> Hooks.do
-    state <- useForm editor (unsafeCoerce props)
+    state <- useForm editor (Record.delete (SProxy :: SProxy "render") props)
     pure (props.render state)
 
 
