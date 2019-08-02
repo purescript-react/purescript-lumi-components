@@ -50,9 +50,9 @@ docs = flip element {} $ unsafePerformEffect do
   component "FormExample" \_ -> React.do
     { formData, form } <- F.useForm metaForm
         { initialState: formDefaults
-        , readonly: false
         , inlineTable: false
         , forceTopLabels: false
+        , formProps: { readonly: false }
         }
 
     pure $ column_
@@ -109,10 +109,12 @@ mkUserFormExample = do
 
     { setModified, reset, validated, form } <- F.useForm userForm
         { initialState: formDefaults
-        , readonly: props.readonly
         , inlineTable: props.inlineTable
         , forceTopLabels: props.forceTopLabels && not props.inlineTable
-        , simulatePauses: props.simulatePauses
+        , formProps:
+            { readonly: props.readonly
+            , simulatePauses: props.simulatePauses
+            }
         }
 
     pure $ R.form -- Forms should be enclosed in a single "<form>" element to enable
