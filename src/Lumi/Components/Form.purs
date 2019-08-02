@@ -5,6 +5,9 @@ module Lumi.Components.Form
   , build
   , build'
   , defaultRenderForm
+  , useForm
+  , useForm'
+  , formState
   , static
   , section
   , inputBox
@@ -63,9 +66,12 @@ import Data.Nullable (notNull, null, toNullable)
 import Data.String as String
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Traversable (intercalate, traverse, traverse_)
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
+import Effect.Unsafe (unsafePerformEffect)
+import Heterogeneous.Mapping (class Mapping)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
@@ -73,6 +79,7 @@ import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
 import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (Forest, FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
+import Lumi.Components.Form.Validation (ModifyValidated, setModified)
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, validDate, optional, setFresh, setModified, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
@@ -87,12 +94,14 @@ import Lumi.Components.Select as Select
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
-import Prim.Row (class Nub, class Union)
+import Prim.Row (class Lacks, class Nub, class Union)
 import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
 import React.Basic.Components.Async (async, asyncWithLoader)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
+import React.Basic.Hooks as Hooks
+import Record as Record
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
@@ -163,6 +172,7 @@ build' render editor =
       -> {| props }
     contractProps = unsafeCoerce
 
+
 -- | The default Lumi implementation for rendering a forest of JSX
 -- | form fields.
 defaultRenderForm
@@ -210,6 +220,125 @@ defaultRenderForm { inlineTable, forceTopLabels, readonly } forest =
             , forceTopLabel: forceTopLabels
             , style: R.css {}
             }
+
+-- | Render a form with state managed automatically.
+useForm
+  :: forall props unvalidated result
+   . Mapping ModifyValidated unvalidated unvalidated
+  => FormBuilder
+       { initialState :: unvalidated
+       , readonly :: Boolean
+       , inlineTable :: Boolean
+       , forceTopLabels :: Boolean
+       | props
+       }
+       unvalidated
+       result
+  -> { initialState :: unvalidated
+     , readonly :: Boolean
+     , inlineTable :: Boolean
+     , forceTopLabels :: Boolean
+     | props
+     }
+  -> Hooks.Hook (Hooks.UseState unvalidated)
+      { formData :: unvalidated
+      , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
+      , setModified :: Effect Unit
+      , reset :: Effect Unit
+      , validated :: Maybe result
+      , form :: JSX
+      }
+useForm editor props = React.do
+  let
+    renderer = defaultRenderForm
+      { readonly: props.readonly
+      , inlineTable: props.inlineTable
+      , forceTopLabels: props.forceTopLabels
+      }
+
+  useForm' editor props renderer
+
+
+-- | Like `useForm`, but allows an alternative render implementation
+-- | to be provided as an additional argument.
+useForm'
+  :: forall props unvalidated result
+   . Mapping ModifyValidated unvalidated unvalidated
+  => FormBuilder
+       { initialState :: unvalidated
+       | props
+       }
+       unvalidated
+       result
+  -> { initialState :: unvalidated
+     | props
+     }
+  -> (Forest -> JSX)
+  -> Hooks.Hook (Hooks.UseState unvalidated)
+      { formData :: unvalidated
+      , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
+      , setModified :: Effect Unit
+      , reset :: Effect Unit
+      , validated :: Maybe result
+      , form :: JSX
+      }
+useForm' editor props renderer = Hooks.do
+  formData /\ setFormData <- Hooks.useState props.initialState
+
+  let
+    { edit, validate: validated } = un FormBuilder editor props formData
+    forest = Array.mapMaybe pruneTree $ edit setFormData
+
+  pure
+    { formData
+    , setFormData
+    , setModified: setFormData setModified
+    , reset: setFormData \_ -> props.initialState
+    , validated
+    , form: renderer forest
+    }
+
+
+-- | Consume `useForm` as a render-prop component. Useful when `useForm`
+-- | would be preferred but you don't want to migrate an entire component
+-- | to React's hooks API.
+-- |
+-- | _Note_: this function should be fully applied, to avoid remounting
+-- | the component on each render.
+formState
+  :: forall props unvalidated result
+   . Lacks "render" props
+  => Mapping ModifyValidated unvalidated unvalidated
+  => FormBuilder
+       { initialState :: unvalidated
+       , readonly :: Boolean
+       , inlineTable :: Boolean
+       , forceTopLabels :: Boolean
+       | props
+       }
+       unvalidated
+       result
+  -> Hooks.ReactComponent
+      { initialState :: unvalidated
+      , readonly :: Boolean
+      , inlineTable :: Boolean
+      , forceTopLabels :: Boolean
+      , render
+          :: { formData :: unvalidated
+             , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
+             , setModified :: Effect Unit
+             , reset :: Effect Unit
+             , validated :: Maybe result
+             , form :: JSX
+             }
+          -> JSX
+      | props
+      }
+formState editor = unsafePerformEffect do
+  Hooks.component "FormState" \props -> Hooks.do
+    state <- useForm editor (Record.delete (SProxy :: SProxy "render") props)
+    pure (props.render state)
+
 
 -- | Create an always-valid `FormBuilder` that renders the supplied `JSX`.
 static :: forall props value. JSX -> FormBuilder props value Unit
@@ -1031,9 +1160,9 @@ styles = jss
               }
 
           , "&.inline-table":
-              { -- If necessary, override the not(.inline-table)
+                -- If necessary, override the not(.inline-table)
                 -- rule above (for nested forms)
-                "& .labeled-field":
+              { "& .labeled-field":
                   { paddingBottom: "0"
 
                   , "&[data-force-top-label=\"true\"] lumi-align-to-input":

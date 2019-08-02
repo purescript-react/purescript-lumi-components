@@ -30,6 +30,7 @@
     "purescript-profunctor-lenses": ">=4.0.0 <7.0.0",
     "purescript-random": "^4.0.0",
     "purescript-react-basic": ">= 8.0.0 < 10.0.0",
+    "purescript-react-basic-hooks": "^0.6.1",
     "purescript-react-dnd-basic": "^6.0.0",
     "purescript-record": ">= 1.0.0 < 3.0.0",
     "purescript-simple-json": ">=4.0.0 <7.0.0",
@@ -42,7 +43,6 @@
     "purescript-js-timers": "^4.0.1",
     "purescript-heterogeneous": ">=0.3.0 <0.5.0",
     "purescript-free": "^5.1.0",
-    "purescript-react-basic-hooks": "^0.6.1",
     "purescript-colors": "^5.0.0"
   },
   "devDependencies": {
