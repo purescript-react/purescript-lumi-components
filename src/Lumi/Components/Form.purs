@@ -226,10 +226,7 @@ useForm
   :: forall props unvalidated result
    . Mapping ModifyValidated unvalidated unvalidated
   => FormBuilder
-       { initialState :: unvalidated
-       , readonly :: Boolean
-       , inlineTable :: Boolean
-       , forceTopLabels :: Boolean
+       { readonly :: Boolean
        | props
        }
        unvalidated
@@ -256,8 +253,21 @@ useForm editor props = Hooks.do
       , forceTopLabels: props.forceTopLabels
       }
 
-  f <- useForm' editor props
+  f <- useForm' editor (contractProps props)
   pure f { form = renderer f.form }
+  where
+    contractProps
+      :: { initialState :: unvalidated
+         , readonly :: Boolean
+         , inlineTable :: Boolean
+         , forceTopLabels :: Boolean
+         | props
+         }
+      -> { initialState :: unvalidated
+         , readonly :: Boolean
+         | props
+         }
+    contractProps = unsafeCoerce
 
 
 -- | Like `useForm`, but allows an alternative render implementation
@@ -265,13 +275,7 @@ useForm editor props = Hooks.do
 useForm'
   :: forall ui props unvalidated result
    . Mapping ModifyValidated unvalidated unvalidated
-  => FormBuilder'
-       ui
-       { initialState :: unvalidated
-       | props
-       }
-       unvalidated
-       result
+  => FormBuilder' ui { | props } unvalidated result
   -> { initialState :: unvalidated
      | props
      }
@@ -287,7 +291,7 @@ useForm' editor props = Hooks.do
   formData /\ setFormData <- Hooks.useState props.initialState
 
   let
-    { edit, validate: validated } = un FormBuilder editor props formData
+    { edit, validate: validated } = un FormBuilder editor (contractProps props) formData
     ui = edit setFormData
 
   pure
@@ -298,6 +302,9 @@ useForm' editor props = Hooks.do
     , validated
     , form: ui
     }
+  where
+    contractProps :: { initialState :: unvalidated | props } -> { | props }
+    contractProps = unsafeCoerce
 
 
 -- | Consume `useForm` as a render-prop component. Useful when `useForm`
@@ -310,15 +317,7 @@ formState
   :: forall props unvalidated result
    . Lacks "render" props
   => Mapping ModifyValidated unvalidated unvalidated
-  => FormBuilder
-       { initialState :: unvalidated
-       , readonly :: Boolean
-       , inlineTable :: Boolean
-       , forceTopLabels :: Boolean
-       | props
-       }
-       unvalidated
-       result
+  => FormBuilder { readonly :: Boolean | props } unvalidated result
   -> Hooks.ReactComponent
       { initialState :: unvalidated
       , readonly :: Boolean
