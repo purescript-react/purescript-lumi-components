@@ -248,7 +248,7 @@ useForm
       , validated :: Maybe result
       , form :: JSX
       }
-useForm editor props = React.do
+useForm editor props = Hooks.do
   let
     renderer = defaultRenderForm
       { readonly: props.readonly
@@ -256,15 +256,17 @@ useForm editor props = React.do
       , forceTopLabels: props.forceTopLabels
       }
 
-  useForm' editor props renderer
+  f <- useForm' editor props
+  pure f { form = renderer f.form }
 
 
 -- | Like `useForm`, but allows an alternative render implementation
 -- | to be provided as an additional argument.
 useForm'
-  :: forall props unvalidated result
+  :: forall ui props unvalidated result
    . Mapping ModifyValidated unvalidated unvalidated
-  => FormBuilder
+  => FormBuilder'
+       ui
        { initialState :: unvalidated
        | props
        }
@@ -273,21 +275,20 @@ useForm'
   -> { initialState :: unvalidated
      | props
      }
-  -> (Forest -> JSX)
   -> Hooks.Hook (Hooks.UseState unvalidated)
       { formData :: unvalidated
       , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
       , setModified :: Effect Unit
       , reset :: Effect Unit
       , validated :: Maybe result
-      , form :: JSX
+      , form :: ui
       }
-useForm' editor props renderer = Hooks.do
+useForm' editor props = Hooks.do
   formData /\ setFormData <- Hooks.useState props.initialState
 
   let
     { edit, validate: validated } = un FormBuilder editor props formData
-    forest = Array.mapMaybe pruneTree $ edit setFormData
+    ui = edit setFormData
 
   pure
     { formData
@@ -295,7 +296,7 @@ useForm' editor props renderer = Hooks.do
     , setModified: setFormData setModified
     , reset: setFormData \_ -> props.initialState
     , validated
-    , form: renderer forest
+    , form: ui
     }
 
 
