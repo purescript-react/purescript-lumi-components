@@ -71,7 +71,6 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Unsafe (unsafePerformEffect)
-import Heterogeneous.Mapping (class Mapping)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
@@ -79,7 +78,7 @@ import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
 import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (Forest, FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
-import Lumi.Components.Form.Validation (ModifyValidated, setModified)
+import Lumi.Components.Form.Validation (setModified)
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, validDate, optional, setFresh, setModified, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
@@ -101,7 +100,6 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
 import React.Basic.Hooks as Hooks
-import Record as Record
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
@@ -205,8 +203,7 @@ defaultRenderForm { inlineTable, forceTopLabels } { readonly } forest =
 -- | Render a form with state managed automatically.
 useForm
   :: forall props unvalidated result
-   . Mapping ModifyValidated unvalidated unvalidated
-  => FormBuilder
+   . FormBuilder
        { readonly :: Boolean
        | props
        }
@@ -241,8 +238,7 @@ useForm editor props = Hooks.do
 -- | to be provided as an additional argument.
 useForm'
   :: forall ui props unvalidated result
-   . Mapping ModifyValidated unvalidated unvalidated
-  => FormBuilder' ui props unvalidated result
+   . FormBuilder' ui props unvalidated result
   -> unvalidated
   -> props
   -> Hooks.Hook (Hooks.UseState unvalidated)
@@ -278,10 +274,9 @@ useForm' editor initialState props = Hooks.do
 -- | the component on each render.
 formState
   :: forall props unvalidated result
-   . Mapping ModifyValidated unvalidated unvalidated
-  => FormBuilder { readonly :: Boolean | props } unvalidated result
-  -> Hooks.ReactComponent
+   . Hooks.ReactComponent
       { initialState :: unvalidated
+      , form :: FormBuilder { readonly :: Boolean | props } unvalidated result
       , inlineTable :: Boolean
       , forceTopLabels :: Boolean
       , formProps :: { readonly :: Boolean | props }
@@ -295,9 +290,14 @@ formState
              }
           -> JSX
       }
-formState editor = unsafePerformEffect do
+formState = unsafePerformEffect do
   Hooks.component "FormState" \props -> Hooks.do
-    state <- useForm editor (Record.delete (SProxy :: SProxy "render") props)
+    state <- useForm props.form
+      { initialState: props.initialState
+      , inlineTable: props.inlineTable
+      , forceTopLabels: props.forceTopLabels
+      , formProps: props.formProps
+      }
     pure (props.render state)
 
 
