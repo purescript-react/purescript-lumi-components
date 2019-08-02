@@ -7,7 +7,7 @@ module Lumi.Components.Form.Validation
   , Validated(..)
   , _Validated, _Fresh, _Modified
   , setFresh, setModified
-  , ModifyValidated
+  , ModifyValidated(..)
   , class CanValidate, fresh, modified, fromValidated
   , validated
   , warn
@@ -36,9 +36,9 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
 import Data.String.Pattern (Pattern(..))
 import Data.Traversable (traverse)
-import Heterogeneous.Mapping (class HMap, class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
+import Heterogeneous.Mapping (class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column_)
-import Lumi.Components.Form.Internal (Forest, FormBuilder(..), Tree(..))
+import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Text (subtext, text)
 import Prim.RowList as RL
@@ -155,22 +155,20 @@ _Modified = prism' Modified $
 -- | Sets all `Validated` fields in a record to `Fresh`, hiding all validation
 -- | messages.
 setFresh
-  :: forall row xs row'
-   . RL.RowToList row xs
-  => HMap ModifyValidated {| row} {| row'}
-  => {| row}
-  -> {| row'}
-setFresh = hmap (ModifyValidated (Fresh <<< view _Validated))
+  :: forall value
+   . Mapping ModifyValidated value value
+  => value
+  -> value
+setFresh = mapping (ModifyValidated (Fresh <<< view _Validated))
 
 -- | Sets all `Validated` fields in a record to `Modified`, showing all
 -- | validation messages.
 setModified
-  :: forall row xs row'
-   . RL.RowToList row xs
-  => HMap ModifyValidated {| row} {| row'}
-  => {| row}
-  -> {| row'}
-setModified = hmap (ModifyValidated (Modified <<< view _Validated))
+  :: forall value
+   . Mapping ModifyValidated value value
+  => value
+  -> value
+setModified = mapping (ModifyValidated (Modified <<< view _Validated))
 
 -- | Internal utility type for modifying the validated state of fields in
 -- | records containing `Validated` values.
@@ -219,7 +217,7 @@ validated runValidator editor = FormBuilder \props@{ readonly } v ->
 
       { edit, validate } = un FormBuilder editor props value
 
-      modify :: Maybe String -> Forest JSX -> Forest JSX
+      modify :: Maybe String -> Forest -> Forest
       modify message forest =
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]
@@ -278,7 +276,7 @@ warn
 warn warningValidator editor = FormBuilder \props@{ readonly } v ->
   let { edit, validate } = un FormBuilder editor props (fromValidated v)
 
-      modify :: Forest JSX -> Forest JSX
+      modify :: Forest -> Forest
       modify forest =
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]

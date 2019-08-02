@@ -112,6 +112,10 @@ styles = jss
 
           , "&[data-force-top-label=\"true\"]":
               { flexFlow: "column nowrap"
+
+              , "& .labeled-field--left":
+                  { whiteSpace: "normal"
+                  }
               }
 
           , "@media (max-width: 448px)":

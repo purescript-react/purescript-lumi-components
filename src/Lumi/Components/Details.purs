@@ -4,7 +4,6 @@ import Prelude
 
 import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
-import Lumi.Components.Icon (icon_)
 import Lumi.Components.Text (body_)
 import React.Basic.DOM as R
 import React.Basic.Hooks (JSX, component, element)

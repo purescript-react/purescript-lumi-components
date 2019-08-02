@@ -23,7 +23,7 @@ import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Lumi.Components.Column as Column
 import Lumi.Components.EditableTable as EditableTable
-import Lumi.Components.Form.Internal (FormBuilder(..), Tree(..), Forest, formBuilder)
+import Lumi.Components.Form.Internal (FormBuilder, FormBuilder'(..), Tree(..), Forest, formBuilder)
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Orientation (Orientation(..))
 import Lumi.Components.Row as Row
@@ -197,13 +197,13 @@ column label orientation (FormBuilder f) =
           (f props row).validate
       }
   where
-    horizontalRenderer :: Boolean -> Forest JSX -> JSX
+    horizontalRenderer :: Boolean -> Forest -> JSX
     horizontalRenderer readonly forest =
       Row.row_
         [ intercalate (hspace S12) (map (toColumn readonly) forest)
         ]
 
-    toColumn :: Boolean -> Tree JSX -> JSX
+    toColumn :: Boolean -> Tree -> JSX
     toColumn readonly =
       case _ of
         Child { key, child } ->
@@ -228,13 +228,13 @@ column label orientation (FormBuilder f) =
                   foldMap errLine validationError
               ]
 
-    verticalRenderer :: Boolean -> Forest JSX -> JSX
+    verticalRenderer :: Boolean -> Forest -> JSX
     verticalRenderer readonly forest =
       Column.column_
         [ intercalate (vspace S8) (map (toRow readonly) forest)
         ]
 
-    toRow :: Boolean -> Tree JSX -> JSX
+    toRow :: Boolean -> Tree -> JSX
     toRow readonly =
       case _ of
         Child { key, child } ->

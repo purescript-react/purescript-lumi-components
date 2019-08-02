@@ -14,27 +14,27 @@ import Effect.Exception (throwException)
 import Lumi.Components.LabeledField (RequiredField, ValidationMessage)
 import Prim.TypeError (class Warn, Above, Text)
 import React.Basic (JSX)
+import React.Basic.DOM as R
 
-data Tree a
+data Tree
   = Child
       { key :: Maybe String
-      , child :: a
+      , child :: JSX
       }
   | Wrapper
       { key :: Maybe String
-      , children :: Forest a
+      , wrap :: Array JSX -> JSX
+      , children :: Forest
       }
   | Node
-      { label :: a
+      { label :: JSX
       , key :: Maybe String
       , required :: RequiredField
       , validationError :: Maybe ValidationMessage
-      , children :: Forest a
+      , children :: Forest
       }
 
-derive instance functorTree :: Functor Tree
-
-type Forest a = Array (Tree a)
+type Forest = Array Tree
 
 -- | Traverse a tree bottom-up, removing all "internal" nodes (i.e. `Wrapper`
 -- | or `Node` constructors) which have empty `children` arrays. In the case
@@ -52,7 +52,7 @@ type Forest a = Array (Tree a)
 -- |
 -- | should be pruned, but a top-down operation would not be able to identify
 -- | such a subtree as prunable.
-pruneTree :: forall a. Tree a -> Maybe (Tree a)
+pruneTree :: Tree -> Maybe Tree
 pruneTree =
   case _ of
     t@(Child _) ->
@@ -72,20 +72,22 @@ pruneTree =
 
 -- | An applicative functor which can be used to build forms.
 -- | Forms can be turned into components using the `build` function.
-newtype FormBuilder props unvalidated result = FormBuilder
+newtype FormBuilder' ui props unvalidated result = FormBuilder
   (props
   -- ^ additional props
   -> unvalidated
   -- ^ the current value
-  -> { edit :: ((unvalidated -> unvalidated) -> Effect Unit) -> Forest JSX
+  -> { edit :: ((unvalidated -> unvalidated) -> Effect Unit) -> ui
      , validate :: Maybe result
      })
 
-derive instance newtypeFormBuilder :: Newtype (FormBuilder props unvalidated result) _
+type FormBuilder props unvalidated result = FormBuilder' Forest props unvalidated result
 
-derive instance functorFormBuilder :: Functor (FormBuilder props unvalidated)
+derive instance newtypeFormBuilder :: Newtype (FormBuilder' ui props unvalidated result) _
 
-instance applyFormBuilder :: Apply (FormBuilder props unvalidated) where
+derive instance functorFormBuilder :: Functor (FormBuilder' ui props unvalidated)
+
+instance applyFormBuilder :: Semigroup ui => Apply (FormBuilder' ui props unvalidated) where
   apply (FormBuilder f) (FormBuilder x) = FormBuilder \props unvalidated ->
     let { edit: editF, validate: validateF } = f props unvalidated
         { edit: editX, validate: validateX } = x props unvalidated
@@ -93,7 +95,7 @@ instance applyFormBuilder :: Apply (FormBuilder props unvalidated) where
         , validate: validateF <*> validateX
         }
 
-instance applicativeFormBuilder :: Applicative (FormBuilder props unvalidated) where
+instance applicativeFormBuilder :: Monoid ui => Applicative (FormBuilder' ui props unvalidated) where
   pure a = FormBuilder \_ _ ->
     { edit: mempty
     , validate: pure a
@@ -105,10 +107,16 @@ instance parallelFormBuilder
           (Text "The `Parallel` instance to `FormBuilder` is deprecated.")
           (Text "Prefer using `Form.parallel` and `Form.sequential` instead.")
       )
-  => Parallel (FormBuilder props unvalidated) (SeqFormBuilder props unvalidated) where
+  => Parallel (FormBuilder' (Array Tree) props unvalidated) (SeqFormBuilder' (Array Tree) props unvalidated) where
   parallel (SeqFormBuilder (FormBuilder f)) = FormBuilder \props value ->
     let { edit, validate } = f props value
-     in { edit: \onChange -> [ Wrapper { key: Just "seq", children: edit onChange } ]
+     in { edit: \onChange ->
+            [ Wrapper
+                { key: Just "seq"
+                , wrap: R.div <<< { key: "seq", children: _ }
+                , children: edit onChange
+                }
+            ]
         , validate: validate
         }
   sequential = SeqFormBuilder
@@ -116,32 +124,46 @@ instance parallelFormBuilder
 parallel :: forall props value. String -> SeqFormBuilder props value ~> FormBuilder props value
 parallel key (SeqFormBuilder (FormBuilder f)) = FormBuilder \props value ->
   let { edit, validate } = f props value
-   in { edit: \onChange -> [ Wrapper { key: Just key, children: edit onChange } ]
+   in { edit: \onChange ->
+          [ Wrapper
+              { key: Just key
+              , wrap: R.div <<< { key, children: _ }
+              , children: edit onChange
+              }
+          ]
       , validate: validate
       }
 
 sequential :: forall props value. String -> FormBuilder props value ~> SeqFormBuilder props value
 sequential key (FormBuilder f) = SeqFormBuilder $ FormBuilder \props value ->
   let { edit, validate } = f props value
-   in { edit: \onChange -> [ Wrapper { key: Just key, children: edit onChange } ]
+   in { edit: \onChange ->
+          [ Wrapper
+              { key: Just key
+              , wrap: R.div <<< { key, children: _ }
+              , children: edit onChange
+              }
+          ]
       , validate: validate
       }
 
 -- | A form builder where each field depends on the validity of the previous ones.
 -- | That is, every field is only displayed if all the previous ones are valid.
 -- | Forms can be turned into components using the `build` function.
-newtype SeqFormBuilder props unvalidated result =
-  SeqFormBuilder (FormBuilder props unvalidated result)
+newtype SeqFormBuilder' ui props unvalidated result =
+  SeqFormBuilder (FormBuilder' ui props unvalidated result)
 
-derive instance newtypeSeqFormBuilder :: Newtype (SeqFormBuilder props unvalidated result) _
-derive newtype instance functorSeqFormBuilder :: Functor (SeqFormBuilder props unvalidated)
+type SeqFormBuilder props unvalidated result = SeqFormBuilder' Forest props unvalidated result
 
-instance applySeqFormBuilder :: Apply (SeqFormBuilder props unvalidated) where
+derive instance newtypeSeqFormBuilder :: Newtype (SeqFormBuilder' ui props unvalidated result) _
+derive newtype instance functorSeqFormBuilder :: Functor (SeqFormBuilder' ui props unvalidated)
+
+instance applySeqFormBuilder :: Monoid ui => Apply (SeqFormBuilder' ui props unvalidated) where
   apply = ap
 
-derive newtype instance applicativeSeqFormBuilder :: Applicative (SeqFormBuilder props unvalidated)
+derive newtype instance applicativeSeqFormBuilder :: Monoid ui => Applicative (SeqFormBuilder' ui props unvalidated)
 
-instance bindSeqFormBuilder :: Bind (SeqFormBuilder props unvalidated) where
+instance bindSeqFormBuilder :: Monoid ui => Bind (SeqFormBuilder' ui props unvalidated) where
   bind (SeqFormBuilder f) g =
     SeqFormBuilder $ FormBuilder \props unvalidated ->
       let { edit: editF, validate: validateF } = (un FormBuilder f) props unvalidated
@@ -155,9 +177,9 @@ instance bindSeqFormBuilder :: Bind (SeqFormBuilder props unvalidated) where
                  , validate: validateX
                  }
 
-instance monadSeqFormBuilder :: Monad (SeqFormBuilder props unvalidated)
+instance monadSeqFormBuilder :: Monoid ui => Monad (SeqFormBuilder' ui props unvalidated)
 
-instance altSeqFormBuilder :: Alt (SeqFormBuilder props unvalidated) where
+instance altSeqFormBuilder :: Monoid ui => Alt (SeqFormBuilder' ui props unvalidated) where
   alt (SeqFormBuilder f) (SeqFormBuilder g) =
     SeqFormBuilder $ FormBuilder \props unvalidated ->
       let rf@{ edit: editF, validate: validateF } = un FormBuilder f props unvalidated
@@ -166,11 +188,11 @@ instance altSeqFormBuilder :: Alt (SeqFormBuilder props unvalidated) where
             Just _, _ -> rf
             _, _ -> rg
 
-instance plusSeqFormBuilder :: Plus (SeqFormBuilder props unvalidated) where
+instance plusSeqFormBuilder :: Monoid ui => Plus (SeqFormBuilder' ui props unvalidated) where
   empty = SeqFormBuilder $ FormBuilder \_ _ -> { edit: mempty, validate:  Nothing }
 
-instance alternativeSeqFormBuilder :: Alternative (SeqFormBuilder props unvalidated)
-instance monadZeroSeqFormBuilder :: MonadZero (SeqFormBuilder props unvalidated)
+instance alternativeSeqFormBuilder :: Monoid ui => Alternative (SeqFormBuilder' ui props unvalidated)
+instance monadZeroSeqFormBuilder :: Monoid ui => MonadZero (SeqFormBuilder' ui props unvalidated)
 
 -- | Create a `FormBuilder` from a function which produces a form
 -- | element as `JSX` and a validated result.
@@ -203,7 +225,7 @@ formBuilder_ f = formBuilder \props value ->
 
 -- | Invalidate a form, keeping its user interface but discarding the result
 -- | and possibly changing its type.
-invalidate :: forall props unvalidated a b. FormBuilder props unvalidated a -> FormBuilder props unvalidated b
+invalidate :: forall ui props unvalidated a b. FormBuilder' ui props unvalidated a -> FormBuilder' ui props unvalidated b
 invalidate (FormBuilder f) = FormBuilder \props value ->
   { edit: (f props value).edit
   , validate: Nothing
@@ -212,8 +234,8 @@ invalidate (FormBuilder f) = FormBuilder \props value ->
 -- | Revalidate the form, in order to display error messages or create
 -- | a validated result.
 revalidate
-  :: forall props unvalidated result
-   . FormBuilder props unvalidated result
+  :: forall ui props unvalidated result
+   . FormBuilder' ui props unvalidated result
   -> props
   -> unvalidated
   -> Maybe result
@@ -222,10 +244,10 @@ revalidate editor props value = (un FormBuilder editor props value).validate
 -- | Listens for changes in a form's value and allows for performing
 -- | asynchronous effects and additional value changes.
 listen
-  :: forall props unvalidated result
+  :: forall ui props unvalidated result
    . (unvalidated -> Aff (unvalidated -> unvalidated))
-  -> FormBuilder props unvalidated result
-  -> FormBuilder props unvalidated result
+  -> FormBuilder' ui props unvalidated result
+  -> FormBuilder' ui props unvalidated result
 listen cb (FormBuilder f) = FormBuilder \props unvalidated ->
   let { edit, validate } = f props unvalidated
    in { edit: \onChange ->
