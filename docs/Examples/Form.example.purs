@@ -9,7 +9,7 @@ import Data.Foldable (foldMap)
 import Data.Int as Int
 import Data.Lens (iso)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..), isJust, maybe)
+import Data.Maybe (Maybe(..), maybe)
 import Data.Monoid as Monoid
 import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
@@ -38,7 +38,7 @@ import React.Basic.DOM (css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (preventDefault)
 import React.Basic.Events (handler, handler_)
-import React.Basic.Hooks (JSX, CreateComponent, component, element, useEffect, useState, (/\))
+import React.Basic.Hooks (JSX, CreateComponent, component, element, useState, (/\))
 import React.Basic.Hooks as React
 import Web.File.File as File
 
@@ -105,7 +105,7 @@ mkUserFormExample
        }
 mkUserFormExample = do
   component "UserFormExample" \props -> React.do
-    modalOpen /\ setModalOpen <- useState false
+    userDialog /\ setUserDialog <- useState Nothing
 
     { setModified, reset, validated, form } <- F.useForm userForm
         { initialState: formDefaults
@@ -115,16 +115,16 @@ mkUserFormExample = do
         , simulatePauses: props.simulatePauses
         }
 
-    let hasResult = isJust validated
-    useEffect hasResult do
-      setModalOpen $ const hasResult
-      mempty
-
     pure $ R.form -- Forms should be enclosed in a single "<form>" element to enable
                   -- default browser behavior, such as the enter key. Use "type=submit"
                   -- on the form's submit button and `preventDefault` to keep the browser
                   -- from reloading the page on submission.
-      { onSubmit: handler preventDefault \_ -> setModified
+      { onSubmit: handler preventDefault \_ ->
+          case validated of
+            Nothing ->
+              setModified
+            Just { firstName, lastName } ->
+              setUserDialog \_ -> Just { firstName, lastName }
       , style: R.css { alignSelf: "stretch" }
       , children:
           [ form
@@ -142,13 +142,15 @@ mkUserFormExample = do
                       }
                   ]
               }
-          , case validated of
+          , case userDialog of
               Nothing ->
                 mempty
               Just { firstName, lastName } ->
                 dialog
-                  { modalOpen
-                  , onRequestClose: reset
+                  { modalOpen: true
+                  , onRequestClose: do
+                      reset
+                      setUserDialog \_ -> Nothing
                   , onActionButtonClick: Nullable.null
                   , actionButtonTitle: ""
                   , size: Medium
