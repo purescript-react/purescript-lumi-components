@@ -90,7 +90,7 @@ sidebarLayout = makeStateless sidebarLayoutComponent render where
       [ R.div
          { style: R.css { "flex": "0 0 30%" }
          , className: "column bl view-scroll"
-         , maxLength: "400px"
+         , maxLength: 400
          , children: [
            R.div { className: "ppa", children: [ content ]}
            ]
