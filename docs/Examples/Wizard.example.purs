@@ -70,7 +70,7 @@ docs = unit # make (createComponent "WizardExample") { initialState, render }
                         , onChange: send self <<< OnChange
                         , forceTopLabels: false
                         , inlineTable: false
-                        , readonly: false
+                        , formProps: { readonly: false }
                         }
                     , row
                         { style: R.css { justifyContent: "flex-end" }

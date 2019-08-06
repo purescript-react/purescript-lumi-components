@@ -22,8 +22,6 @@ import Effect (Effect)
 import Lumi.Components.Form (FormBuilder)
 import Lumi.Components.Form as F
 import React.Basic (JSX)
-import Record.Unsafe.Union (unsafeUnion)
-import Unsafe.Coerce (unsafeCoerce)
 
 -- | `Form` is the base functor for the `Wizard` language.  It represents a
 -- | form as a step of the wizard, taking a parametrized identifier for the
@@ -68,15 +66,16 @@ step s f =
     Wizard $ liftF $ Form
       { step: s
       , run:
-          \props value ->
+          \formProps value ->
             { form: \{ forceTopLabels, inlineTable } onChange ->
-                form $ unsafeUnion props
+                form
                   { value
-                  , onChange: \_ -> onChange
+                  , onChange
                   , forceTopLabels
                   , inlineTable
+                  , formProps
                   }
-            , result: F.revalidate f props value
+            , result: F.revalidate f formProps value
             }
       }
 
@@ -181,31 +180,20 @@ gotoStep s w props value = go (liftStep w)
 -- | A component that renders a `WizardStep` (a suspended `Wizard`).
 wizard
   :: forall step props value a
-   . { step :: WizardStep step {| props } value a
+   . { step :: WizardStep step props value a
      , value :: value
      , onChange :: (value -> value) -> Effect Unit
      , forceTopLabels :: Boolean
      , inlineTable :: Boolean
-     | props
+     , formProps :: props
      }
   -> JSX
-wizard props@{ value, onChange, forceTopLabels, inlineTable } =
+wizard props@{ value, onChange, forceTopLabels, inlineTable, formProps } =
   case (un WizardStep props.step).current of
     Right a ->
       mempty
     Left (Form form') ->
       let
-        { form } = form'.run (contractProps props) value
+        { form } = form'.run formProps value
       in
         form { forceTopLabels, inlineTable } onChange
-  where
-    contractProps
-      :: { step :: WizardStep step {| props } value a
-         , value :: value
-         , onChange :: (value -> value) -> Effect Unit
-         , forceTopLabels :: Boolean
-         , inlineTable :: Boolean
-         | props
-         }
-      -> {| props }
-    contractProps = unsafeCoerce
