@@ -114,6 +114,10 @@ docs =
         , example
             $ button primary { buttonState = Loading, size = ExtraLarge }
         ]
+      , [ h4_ "Secondary + Loading"
+        , example
+            $ button secondary { buttonState = Loading }
+        ]
       ]
 
 sections :: Array (Array JSX) -> Array JSX

@@ -9,12 +9,15 @@ module Lumi.Components.Color
 import Color (rgb, rgba)
 import Color as C
 import Data.Newtype (class Newtype)
+import Foreign.Generic (class Decode, class Encode)
 
 type Color = C.Color
 
 newtype ColorName = ColorName String
 
 derive instance newtypeColorName :: Newtype ColorName _
+derive newtype instance decodeColorName :: Decode ColorName
+derive newtype instance encodeColorName :: Encode ColorName
 
 type ColorMap a =
   { black :: a
@@ -89,4 +92,3 @@ colorNames =
   , white: ColorName "white"
   , transparent: ColorName "transparent"
   }
-

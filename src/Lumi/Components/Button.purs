@@ -7,7 +7,8 @@ import Data.Array as Array
 import Data.Char (fromCharCode)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
-import Data.Nullable (Nullable, toNullable)
+import Data.Newtype (unwrap)
+import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (null)
 import Data.String.CodeUnits (fromCharArray)
 import Effect.Uncurried (mkEffectFn1)
@@ -15,7 +16,7 @@ import Foreign (isNull, isUndefined, unsafeToForeign)
 import JSS (JSS, jss)
 import Lumi.Components.Color (ColorName, colorNames, colors)
 import Lumi.Components.Icon (IconType, icon)
-import Lumi.Components.Loader (spinnerMixin)
+import Lumi.Components.Loader (loader)
 import Lumi.Components.Size (Size(..))
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
@@ -83,9 +84,32 @@ button = makeStateless component render
             }
       where
         children =
-          if not null props.title && not (isNull || isUndefined) (unsafeToForeign props.title)
-            then props.title
-            else invisibleSpace -- preserves button size
+          case props.buttonState of
+            Loading ->
+              loader
+                  { style:
+                      case props.size of
+                        Small -> R.css { width: "12px", height: "12px" }
+                        Medium -> R.css { width: "18px", height: "18px" }
+                        Large -> R.css { width: "24px", height: "24px" }
+                        ExtraLarge -> R.css { width: "34px", height: "34px" }
+                  , testId: toNullable Nothing
+                  , color:
+                      case map unwrap $ toMaybe props.color of
+                        Just "primary" -> colorNames.white
+                        Just "secondary" -> colorNames.secondary
+                        Just _ -> colorNames.secondary
+                        Nothing -> colorNames.secondary
+                  , bgColor:
+                      case toMaybe props.color of
+                        Nothing -> colorNames.white
+                        Just c -> c
+                  }
+            _ ->
+              if not null props.title && not (isNull || isUndefined) (unsafeToForeign props.title)
+                then R.text props.title
+                else R.text invisibleSpace -- preserves button size
+
 
 defaults :: ButtonProps
 defaults =
@@ -191,8 +215,7 @@ styles = jss
           , "&:hover": { backgroundColor: cssStringHSLA $ darken 0.1 colors.primary }
           , "&:active": { backgroundColor: cssStringHSLA $ darken 0.15 colors.primary }
           , "&:disabled, &[data-loading=\"true\"]":
-              { backgroundColor: cssStringHSLA colors.primary2
-              , cursor: "default"
+              { cursor: "default"
               }
           , "&:focus":
               { outline: 0
@@ -231,19 +254,8 @@ styles = jss
               , "&:disabled, &[data-loading=\"true\"]":
                   { color: cssStringHSLA colors.black2
                   , borderColor: cssStringHSLA colors.black3
-                  }
-              }
-          , "&[data-loading=\"true\"]":
-              { "&:after": spinnerMixin { radius: "16px", borderWidth: "2px" }
-              , "@media (min-width: $break-point-mobile)":
-                  { "&[data-size=\"small\"]":
-                      { "&:after": spinnerMixin { radius: "12px", borderWidth: "2px" }
-                      }
-                  , "&[data-size=\"large\"]":
-                      { "&:after": spinnerMixin { radius: "24px", borderWidth: "3px" }
-                      }
-                  , "&[data-size=\"extra-large\"]":
-                      { "&:after": spinnerMixin { radius: "34px", borderWidth: "4px" }
+                  , "& lumi-loader":
+                      { "&::after": { background: cssStringHSLA colors.white }
                       }
                   }
               }
@@ -309,5 +321,8 @@ styles = jss
       , "&:active": { backgroundColor: cssStringHSLA $ darken 0.15 value }
       , "&:disabled, &[data-loading=\"true\"]":
           { backgroundColor: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value
+          , "& lumi-loader":
+              { "&::after": { background: cssStringHSLA $ lighten 0.4137 $ desaturate 0.1972 $ value }
+              }
           }
       }

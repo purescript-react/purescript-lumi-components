@@ -26,7 +26,7 @@ import Data.String as String
 import Effect (Effect)
 import Effect.Aff (Aff)
 import JSS (JSS, jss)
-import Lumi.Components.Color (colors)
+import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputStyles)
 import Lumi.Components.Loader (loader)
@@ -253,7 +253,13 @@ select = makeStateless component render
       where
         renderSelectedValues =
           if props.loading
-            then loader { style: css { width: "20px", height: "20px", borderWidth: "2px" }, testId: toNullable Nothing }
+            then
+              loader
+                { style: css { width: "20px", height: "20px", borderWidth: "2px" }
+                , testId: toNullable Nothing
+                , color: colorNames.secondary
+                , bgColor: colorNames.white
+                }
             else lumiSelectInputSelectedValuesElement
               { children:
                   let renderedSelectedValues =
@@ -317,7 +323,12 @@ select = makeStateless component render
                         [ lumiSelectMenuLoaderElement
                             { key: "loading-text"
                             , children:
-                                loader { style: css { width: "20px", height: "20px", borderWidth: "2px" }, testId: toNullable Nothing }
+                                loader
+                                  { style: css { width: "20px", height: "20px", borderWidth: "2px" }
+                                  , testId: toNullable Nothing
+                                  , color: colorNames.secondary
+                                  , bgColor: colorNames.white
+                                  }
                             }
                         ]
                       Failed error ->
