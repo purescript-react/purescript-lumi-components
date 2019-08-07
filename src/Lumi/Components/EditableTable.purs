@@ -7,7 +7,6 @@ import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Either (Either(..))
-import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import JSS (JSS, jss)
@@ -151,7 +150,7 @@ editableTable = makeStateless component render
                             }
                         }
                     ]
-                , colSpan: toNumber columnCount
+                , colSpan: columnCount
                 }
             ]
         ]
