@@ -37,7 +37,7 @@ docs = unit # make component
   , render: \self ->
       column_
         [ column
-            { style: R.css { maxWidth: "50rem", padding: "2rem 0" }
+            { style: R.css { maxWidth: "500px", padding: "20px 0" }
             , children:
                 [ labeledField
                     { label: R.text "Adjust progress:"

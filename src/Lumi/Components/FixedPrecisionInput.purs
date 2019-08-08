@@ -110,7 +110,7 @@ fixedPrecisionInput = makeStateless component render
             [ css { "WebkitAppearance": "none"
                   , "MozAppearance": "none"
                   , margin: 0
-                  , width: "16rem"
+                  , width: 160
                   }
             , props.style
             ]

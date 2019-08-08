@@ -196,7 +196,7 @@ styles = jss
               }
           , "&:focus":
               { outline: 0
-              , boxShadow: [ "0", "0", "0", "0.3rem", cssStringHSLA colors.primary3 ]
+              , boxShadow: [ "0", "0", "0", "3px", cssStringHSLA colors.primary3 ]
               }
           , "@media (min-width: 860px)":
               { padding: "6px 16px"

@@ -65,7 +65,7 @@ docs = unit # make component { initialState, render }
     render self@{ state: { disabled, example1, example2, example3, example4 } } =
       column_
         [ column
-            { style: css { maxWidth: "50rem", padding: "2rem 0" }
+            { style: css { maxWidth: 500, padding: "20px 0" }
             , children:
                 [ labeledField
                     { label: R.text "Disabled"

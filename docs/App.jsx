@@ -28,7 +28,10 @@ import { attachGlobalComponentStyles } from "purs/Lumi.Components.Styles";
 attachGlobalComponentStyles();
 
 const repoSourceBasePath = `https://github.com/lumihq/purescript-lumi-components/blob/${COMMITHASH}`;
-const pursuitBasePath = `https://pursuit.purescript.org/packages/purescript-lumi-components/${VERSION.replace('v', '')}`;
+const pursuitBasePath = `https://pursuit.purescript.org/packages/purescript-lumi-components/${VERSION.replace(
+  "v",
+  ""
+)}`;
 
 const fromComponentPath = title => ({
   docs: Loadable({
@@ -194,7 +197,7 @@ const renderRoute = component => (
               className="lumi"
               target="_blank"
               href={component.apiReference}
-            style={{
+              style={{
                 marginLeft: "8px"
               }}
             >
@@ -250,7 +253,7 @@ const MenuLink = ({ toggleMenu }) =>
       onClick={toggleMenu}
       style={{
         color: cssStringHSLA(colors.black1),
-        marginRight: "1rem",
+        marginRight: "10px",
         display: "flex",
         justifyContent: "center",
         cursor: "pointer",
@@ -330,7 +333,7 @@ const SideNav = ({ children, isMobile, menuOpen }) => {
     borderRightStyle: "solid"
   };
   const navMobileInner = {
-    padding: "1em",
+    padding: "10px",
     height: "100%",
     overflowY: "auto",
     WebkitOverflowScrolling: "touch"
@@ -353,9 +356,9 @@ const NavSubtitle = ({ children }) =>
     ...sectionHeader,
     children: children,
     style: {
-      fontSize: "1.6em",
-      marginBottom: "1em",
-      marginTop: "1em"
+      fontSize: "16px",
+      marginBottom: "10px",
+      marginTop: "10px"
     }
   });
 
@@ -364,7 +367,7 @@ const ExampleArea = ({ children }) =>
     children: children,
     style: {
       width: "100%",
-      padding: "2em"
+      padding: "20px"
     }
   });
 
@@ -400,7 +403,7 @@ class ErrorBoundary extends Component {
             </pre>
           )
         ],
-        style: { padding: "1rem" }
+        style: { padding: "10px" }
       });
     }
     return this.props.children;

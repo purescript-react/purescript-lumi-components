@@ -1085,12 +1085,12 @@ styles = jss
   { "@global":
       { "lumi-form":
           { "& hr.lumi.field-divider":
-              { margin: "0.8rem 0"
+              { margin: "8px 0"
               , height: "0"
               , display: "none"
 
               , "@media (max-width: 860px)":
-                  { margin: "0.4rem 0"
+                  { margin: "4px 0"
                   }
               }
 
@@ -1132,7 +1132,7 @@ styles = jss
                   }
 
               , "& hr.lumi.field-divider":
-                  { height: "0.1rem"
+                  { height: "1px"
                   , display: "block"
                   }
 

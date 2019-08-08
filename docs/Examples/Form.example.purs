@@ -57,7 +57,7 @@ docs = flip element {} $ unsafePerformEffect do
 
     pure $ column_
       [ column
-          { style: css { width: "100%", maxWidth: 300, padding: "2rem 0" }
+          { style: css { width: "100%", maxWidth: 300, padding: "20px 0" }
           , children: [ form ]
           }
 

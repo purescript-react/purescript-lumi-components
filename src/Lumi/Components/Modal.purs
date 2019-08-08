@@ -281,7 +281,7 @@ modalPortal = toReactComponent identity modalPortalComponent
                                           { title = props.actionButtonTitle
                                           , buttonState = props.actionButtonState
                                           , onPress = mkEffectFn1 \_ -> actionFn
-                                          , style = R.css { marginLeft: "1.2rem" }
+                                          , style = R.css { marginLeft: "12px" }
                                           }
                                     ]
                                 }
@@ -327,7 +327,7 @@ styles = jss
               { boxSizing: "border-box"
               , display: "flex"
               , flexFlow: "column"
-              , padding: "6.4rem 0"
+              , padding: "64px 0"
               , "@media (max-width: 860px)": { padding: "0" }
               , flex: "0 0 auto" -- expand to encompass large modals with scrolling
               , minHeight: "100%" -- vertical centering of small modals
@@ -339,37 +339,37 @@ styles = jss
                   , display: "flex"
                   , flexFlow: "column"
                   , position: "relative"
-                  , padding: "2.4rem 0"
+                  , padding: "24px 0"
                   , "&[data-size=\"small\"]":
-                      { width: "40rem"
+                      { width: "400px"
                       }
                   , "&[data-size=\"medium\"]":
-                      { width: "50.4rem"
+                      { width: "504px"
                       }
                   , "&[data-size=\"large\"]":
-                      { width: "60rem"
+                      { width: "600px"
                       }
                   , "&[data-size=\"extra-large\"]":
-                      { width: "84.8rem"
+                      { width: "848px"
                       }
-                  , maxWidth: "calc(100vw - (2.4rem * 2))"
+                  , maxWidth: "calc(100vw - (24px * 2))"
                   , background: "rgba(255, 255, 255, 1)"
-                  , borderRadius: "0.4rem"
+                  , borderRadius: "4px"
 
                   , "& lumi-modal-close":
                       { boxSizing: "border-box"
                       , position: "absolute"
-                      , top: "2.2rem"
-                      , right: "2.4rem"
+                      , top: "22px"
+                      , right: "24px"
                       , display: "flex"
                       , flexFlow: "column"
-                      , fontSize: "1.4rem"
+                      , fontSize: "14px"
                       , color: cssStringHSLA colors.black2
                       , cursor: "pointer"
                       , "@media (max-width: 860px)":
                           { "& lumi-font-icon":
-                              { fontSize: "1.6rem"
-                              , lineHeight: "2.4rem"
+                              { fontSize: "16px"
+                              , lineHeight: "24px"
                               }
                           }
                       }
@@ -378,12 +378,12 @@ styles = jss
                       , flex: "0 0 auto"
                       , display: "flex"
                       , flexFlow: "column"
-                      , paddingLeft: "2.4rem"
-                      , paddingRight: "4.8rem" -- avoid colliding with the close "X"
+                      , paddingLeft: "24px"
+                      , paddingRight: "48px" -- avoid colliding with the close "X"
                       , "@media (max-width: 860px)":
-                          { paddingLeft: "1.6rem"
+                          { paddingLeft: "16px"
                           }
-                      , padding: "0 4.8rem 0 2.4rem"
+                      , padding: "0 48px 0 24px"
                       , "& > lumi-section-header":
                           { paddingTop: "0"
                           , marginTop: "0"
@@ -392,21 +392,21 @@ styles = jss
                       }
                   , "& lumi-modal-content":
                       { boxSizing: "border-box"
-                      , margin: "2.4rem 0"
+                      , margin: "24px 0"
                       , flex: "1 0 auto"
                       , display: "flex"
                       , flexFlow: "column"
-                      , paddingLeft: "2.4rem"
-                      , paddingRight: "2.4rem"
+                      , paddingLeft: "24px"
+                      , paddingRight: "24px"
                       , "@media (max-width: 860px)":
-                          { paddingLeft: "1.6rem"
-                          , paddingRight: "1.6rem"
+                          { paddingLeft: "16px"
+                          , paddingRight: "16px"
                           }
                       , "&[data-internal-borders=\"true\"]":
-                          { borderTop: [ "0.1rem", "solid", cssStringHSLA colors.black4 ]
-                          , borderBottom: [ "0.1rem", "solid", cssStringHSLA colors.black4 ]
-                          , paddingTop: "0.8rem"
-                          , paddingBottom: "0.8rem"
+                          { borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
+                          , borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
+                          , paddingTop: "8px"
+                          , paddingBottom: "8px"
                           }
                       }
                   , "& lumi-modal-footer":
@@ -415,15 +415,15 @@ styles = jss
                       , display: "flex"
                       , flexFlow: "row"
                       , justifyContent: "flex-end"
-                      , paddingLeft: "2.4rem"
-                      , paddingRight: "2.4rem"
+                      , paddingLeft: "24px"
+                      , paddingRight: "24px"
                       , "@media (max-width: 860px)":
-                          { paddingLeft: "1.6rem"
-                          , paddingRight: "1.6rem"
+                          { paddingLeft: "16px"
+                          , paddingRight: "16px"
                           , "& button.lumi":
-                              { fontSize: "1.6rem"
-                              , lineHeight: "2.4rem"
-                              , padding: "1rem 2.1rem 1rem"
+                              { fontSize: "16px"
+                              , lineHeight: "24px"
+                              , padding: "10px 21px 10px"
                               }
                           }
                       }
@@ -444,7 +444,7 @@ styles = jss
                   }
 
               , "&[data-variant=\"dialog\"] lumi-modal lumi-modal-content":
-                  { margin: "0 0 1.6rem"
+                  { margin: "0 0 16px"
                   }
 
                 -- constrain total height while making the intenal content area flexible and scrollable
