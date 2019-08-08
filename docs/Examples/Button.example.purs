@@ -119,4 +119,4 @@ docs =
 sections :: Array (Array JSX) -> Array JSX
 sections children = intercalate [ spacer ] children
   where
-    spacer = R.div { style: css { display: "flex", height: 1, paddingBottom: "2em" } }
+    spacer = R.div { style: css { display: "flex", height: 1, paddingBottom: "20px" } }

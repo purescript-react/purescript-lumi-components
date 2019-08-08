@@ -57,7 +57,7 @@ docs =
               [ body_ "Hello, world see"
               , tooltip
                   { variant: "top"
-                  , style: R.css { padding: "0 0.2rem", textDecoration: "underline" }
+                  , style: R.css { padding: "0 2px", textDecoration: "underline" }
                   , text: "Lorem ipsum"
                   , content: body_ "here"
                   , size: toNullable Nothing
@@ -70,7 +70,7 @@ docs =
               [ body_ "Hello, world see"
               , tooltip
                   { variant: "top"
-                  , style: R.css { padding: "0 0.2rem", textDecoration: "underline" }
+                  , style: R.css { padding: "0 2px", textDecoration: "underline" }
                   , text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis auctor libero non libero consequat, at iaculis diam venenatis. Donec nec porttitor tellus."
                   , content: body_ "here"
                   , size: toNullable $ Just $ Large

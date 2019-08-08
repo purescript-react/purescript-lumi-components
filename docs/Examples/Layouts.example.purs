@@ -66,7 +66,7 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
                   , content: \_ ->
                       R.div
                         { children: [ p_ "lorem ipsum"]
-                        , style: R.css { padding: "0.5em" }
+                        , style: R.css { padding: "5px" }
                         }
                   } :|
                   [ { id: TabId "shipment"
@@ -75,7 +75,7 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
                     , content: \_ ->
                         R.div
                           { children: [ p_ "dolor sit amet"]
-                          , style: R.css { padding: "0.5em" }
+                          , style: R.css { padding: "5px" }
                           }
                     }
                   ]

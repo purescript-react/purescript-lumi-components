@@ -338,7 +338,7 @@ table = make component
             if not self.props.selectable
               then empty
               else R.th
-                { style: R.css { width: "2rem" }
+                { style: R.css { width: "20px" }
                 , onClick: Events.handler (stopPropagation) (const (pure unit))
                 , children:
                     [ input checkbox
@@ -392,12 +392,12 @@ table = make component
                               , onClick: Events.handler_ (runEffectFn2 self.props.updateSort flippedSort col.sortBy)
                               , children:
                                   [ R.span
-                                      { style: R.css { marginRight: "0.5rem" }
+                                      { style: R.css { marginRight: "5px" }
                                       , children: [ subtext_ label ]
                                       }
                                   , R.span
                                       { style: R.css
-                                          { fontSize: "1rem"
+                                          { fontSize: "10px"
                                             , visibility:
                                                 if sortBy == Just colSortBy
                                                   then "visible"
@@ -537,7 +537,7 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
     renderBodyRowCheckbox { checked, onChange } =
       R.td
         { key: "_checkbox"
-        , style: R.css { width: "2rem" }
+        , style: R.css { width: "20px" }
         , onClick: Events.handler stopPropagation (const (pure unit))
         , children:
             [ input checkbox
@@ -748,7 +748,7 @@ styles = jss
           , borderRadius: "3px"
           , display: "flex"
           , flexFlow: "column nowrap"
-          , fontSize: "1rem"
+          , fontSize: "10px"
           , maxWidth: "300px"
           , minWidth: "200px"
           }

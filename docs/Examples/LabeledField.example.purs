@@ -55,9 +55,9 @@ docs =
     ]
   where
 
-    simpleDivider = divider { style: css { margin: "0.6rem 0", visibility: "hidden" } }
+    simpleDivider = divider { style: css { margin: "6px 0", visibility: "hidden" } }
 
-    inlineTableDivider = divider { style: css { margin: "0.6rem 0" } }
+    inlineTableDivider = divider { style: css { margin: "6px 0" } }
 
     makeLabeledFieldExamples forceTopLabel =
       [ labeledField defaults

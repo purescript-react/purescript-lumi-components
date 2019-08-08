@@ -107,16 +107,16 @@ filterItem_ = makeStateless filterItemComponent render
                     element (unsafeCreateDOMComponent "lumi-row")
                       { className: if item.hidden then "" else "active"
                       , style: css
-                          { padding: "0 0.8rem 0 0"
+                          { padding: "0 8px 0 0"
                           , alignItems: "center"
                           , borderTop:
                               if isOver && (fromMaybe false ((\dragItem -> dragItem.index > index) <$> maybeDragItem))
-                              then "0.2rem solid #0044e4"
-                              else "0.2rem solid transparent"
+                              then "2px solid #0044e4"
+                              else "2px solid transparent"
                           , borderBottom:
                               if isOver && (fromMaybe false ((\dragItem -> dragItem.index < index) <$> maybeDragItem))
-                              then "0.2rem solid #0044e4"
-                              else "0.2rem solid transparent"
+                              then "2px solid #0044e4"
+                              else "2px solid transparent"
                           , opacity: if isDragging then 0.1 else 1.0
                           }
                       , children:
@@ -152,9 +152,9 @@ filterItem_ = makeStateless filterItemComponent render
     renderLabel item =
       div
         { style: css
-            { paddingLeft: "0.8rem"
-            , paddingRight: "0.8rem"
-            , fontSize: "1.2rem"
+            { paddingLeft: "8px"
+            , paddingRight: "8px"
+            , fontSize: "12px"
             , flex: 1
             , whiteSpace: "nowrap"
             , overflow: "hidden"

@@ -68,9 +68,9 @@ styles = jss
           , "& lumi-status-slat-cell":
               { borderRight: [ "1px", "solid", cssStringHSLA colors.black4 ]
               , height: "100%"
-              , minWidth: "calc(25% - (2 * 1.6rem))"
+              , minWidth: "calc(25% - (2 * 16px))"
               , display: "inline-block"
-              , padding: "0 1.6rem"
+              , padding: "0 16px"
               , whiteSpace: "nowrap"
               , overflow: "hidden"
               , textOverflow: "ellipsis"
