@@ -277,7 +277,8 @@ column label orientation (FormBuilder f) =
             , children = [ R.text w ]
             }
 
--- | Make the props available, for convenience.
+-- | Make the props available. This allows for changing the structure of a table
+-- | form builder based on the current props.
 withProps
   :: forall props row result
    . (props -> TableFormBuilder props row result)
