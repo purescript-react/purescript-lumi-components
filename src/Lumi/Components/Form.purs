@@ -995,14 +995,16 @@ mapUI f form =
       , validate
       }
 
--- | Make the props available, for convenience.
+-- | Make the props available. This allows for changing the structure of a form
+-- | builder based on the current props.
 withProps
   :: forall ui props unvalidated result
    . (props -> FormBuilder' ui props unvalidated result)
   -> FormBuilder' ui props unvalidated result
 withProps f = FormBuilder \props value -> un FormBuilder (f props) props value
 
--- | Make the value available, for convenience.
+-- | Make the value available. This allows for changing the structure of a form
+-- | builder based on the current value.
 withValue
   :: forall ui props unvalidated result
    . (unvalidated -> FormBuilder' ui props unvalidated result)
