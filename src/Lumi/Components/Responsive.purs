@@ -16,14 +16,26 @@ useMedia mq = unsafeHook (runEffectFn1 useMedia_ mq)
 
 foreign import useMedia_ :: EffectFn1 String Boolean
 
-useIsMobile :: Hook UseMediaQuery Boolean
-useIsMobile = map not (useMedia "(min-width: 860px)")
-
 useIsPhone :: Hook UseMediaQuery Boolean
-useIsPhone = map not (useMedia "(min-width: 448px)")
+useIsPhone = map not (useMedia ("(min-width: " <> show minWidthNonPhone <> "px)"))
+
+useIsMobile :: Hook UseMediaQuery Boolean
+useIsMobile = map not useIsDesktop
 
 useIsDesktop :: Hook UseMediaQuery Boolean
-useIsDesktop = useMedia "(min-width: 860px)"
+useIsDesktop = useMedia ("(min-width: " <> show minWidthDesktop <> "px)")
+
+-- | Prefer `useIsPhone` or `phone` to using this value
+-- | directly. Named in the negative because -- | this
+-- | width is the first size that is _not_ a phone and
+-- | trying to use this width as a "max-width" leaves
+-- | out fractional pixels (447.5px) which sometimes
+-- | occur on high-dpi displays.
+minWidthNonPhone :: Int
+minWidthNonPhone = 448
+
+minWidthDesktop :: Int
+minWidthDesktop = 860
 
 mobile :: (Unit -> JSX) -> JSX
 mobile = element c <<< { render: _ }

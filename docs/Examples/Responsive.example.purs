@@ -1,16 +1,18 @@
 module Lumi.Components.Examples.Responsive where
 
 import Prelude
+
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Responsive (desktop, mobile, phone)
-import Lumi.Components.Text (body_, h2_)
+import Lumi.Components.Text (body_, p_)
 import React.Basic (JSX)
 
 docs :: JSX
 docs =
   column_
-    $ [ h2_ "Desktop and mobile"
+    $ [ p_ "The following component renders different values at each of these sizes: desktop, mobile, and phone"
+      , p_ "Note that phone sized screens still report themselves as \"mobile\" as well."
       , example
           $ column_
               [ mobile \_ ->
