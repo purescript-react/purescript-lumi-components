@@ -1,9 +1,10 @@
 module Lumi.Components.Form.Table
   ( TableFormBuilder
-  , column
-  , column_
   , editableTable
   , nonEmptyEditableTable
+  , column
+  , column_
+  , withProps
   ) where
 
 import Prelude
@@ -16,7 +17,7 @@ import Data.FunctorWithIndex (mapWithIndex)
 import Data.Lens.Index (ix)
 import Data.Maybe (Maybe, fromMaybe, isNothing, maybe)
 import Data.Monoid (guard)
-import Data.Newtype (class Newtype)
+import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
@@ -39,27 +40,32 @@ import Unsafe.Reference (unsafeRefEq)
 -- | `editableTable` function.
 newtype TableFormBuilder props row result =
   TableFormBuilder
-    { columns :: Array
-        { label :: String
-        , render :: props -> row -> ((row -> row) -> Effect Unit) -> JSX
-        }
-    , validate :: props -> row -> Maybe result
-    }
+    ( props
+      -> { columns :: Array
+             { label :: String
+             , render :: row -> ((row -> row) -> Effect Unit) -> JSX
+             }
+         , validate :: row -> Maybe result
+         }
+    )
 
 derive instance newtypeTableFormBuilder :: Newtype (TableFormBuilder props row a) _
 derive instance functorTableFormBuilder :: Functor (TableFormBuilder props row)
 instance applyTableFormBuilder :: Apply (TableFormBuilder props row) where
-  apply (TableFormBuilder f) (TableFormBuilder a) =
-    TableFormBuilder
-      { columns: f.columns <> a.columns
-      , validate: \props row ->
-          f.validate props row <*> a.validate props row
-      }
+  apply (TableFormBuilder ff) (TableFormBuilder fa) =
+    TableFormBuilder \props ->
+      let
+        { columns: columnsF, validate: validateF } = ff props
+        { columns: columnsA, validate: validateA } = fa props
+      in
+        { columns: columnsF <> columnsA
+        , validate: \row -> validateF row <*> validateA row
+        }
 instance applicativeTableFormBuilder :: Applicative (TableFormBuilder props row) where
   pure a =
-    TableFormBuilder
+    TableFormBuilder \_ ->
       { columns: []
-      , validate: \_ _ -> pure a
+      , validate: \_ -> pure a
       }
 
 -- | A `TableFormBuilder` makes a `FormBuilder` for an array where each row has
@@ -77,10 +83,10 @@ editableTable
       (Array row)
       (Array result)
 editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary } =
-  let
-    TableFormBuilder { columns, validate } = builder
-  in
-    formBuilder \props rows ->
+  formBuilder \props rows ->
+    let
+      { columns, validate } = (un TableFormBuilder builder) props
+    in
       { edit: \onChange ->
           EditableTable.editableTable
             { addLabel
@@ -105,10 +111,10 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary }
                 columns <#> \{ label, render } ->
                   { label
                   , renderCell: \(Tuple i r) ->
-                      render props r (onChange <<< ix i)
+                      render r (onChange <<< ix i)
                   }
             }
-      , validate: traverse (validate props) rows
+      , validate: traverse validate rows
       }
 
 -- | A `TableFormBuilder` makes a `FormBuilder` for a non-empty array where each
@@ -126,10 +132,10 @@ nonEmptyEditableTable
       (NEA.NonEmptyArray row)
       (NEA.NonEmptyArray result)
 nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary } =
-  let
-    TableFormBuilder { columns, validate } = builder
-  in
-    formBuilder \props rows ->
+  formBuilder \props rows ->
+    let
+      { columns, validate } = (un TableFormBuilder builder) props
+    in
       { edit: \onChange ->
           EditableTable.editableTable
             { addLabel
@@ -154,10 +160,10 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, s
                 columns <#> \{ label, render } ->
                   { label
                   , renderCell: \(Tuple i r) ->
-                      render props r (onChange <<< ix i)
+                      render r (onChange <<< ix i)
                   }
             }
-      , validate: traverse (validate props) rows
+      , validate: traverse validate rows
       }
 
 -- | Convert a `FormBuilder` into a column of a table form with the specified
@@ -186,14 +192,14 @@ column label orientation (FormBuilder f) =
         Vertical ->
           verticalRenderer
   in
-    TableFormBuilder
+    TableFormBuilder \props ->
       { columns:
           [ { label
-            , render: \props row onChange ->
+            , render: \row onChange ->
                 renderer props.readonly ((f props row).edit onChange)
             }
           ]
-      , validate: \props row ->
+      , validate: \row ->
           (f props row).validate
       }
   where
@@ -270,3 +276,11 @@ column label orientation (FormBuilder f) =
             { className = Nullable.notNull "labeled-field--validation-warning"
             , children = [ R.text w ]
             }
+
+-- | Make the props available. This allows for changing the structure of a table
+-- | form builder based on the current props.
+withProps
+  :: forall props row result
+   . (props -> TableFormBuilder props row result)
+  -> TableFormBuilder props row result
+withProps f = TableFormBuilder \props -> un TableFormBuilder (f props) props
