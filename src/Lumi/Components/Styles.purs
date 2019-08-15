@@ -36,7 +36,6 @@ import Lumi.Components.NativeSelect as NativeSelect
 import Lumi.Components.Navigation as Navigation
 import Lumi.Components.Pagination as Pagination
 import Lumi.Components.Pill as Pill
-import Lumi.Components.Responsive as Responsive
 import Lumi.Components.Row as Row
 import Lumi.Components.Select as Select
 import Lumi.Components.Slider as Slider
@@ -48,16 +47,6 @@ import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Toast as Toast
 import Lumi.Components.Tooltip as Tooltip
 import Lumi.Components.Upload as Upload
-
--- /* Grid unit */
--- $u: 4px;
-
--- /* Widths */
--- $break-point-cinema: 1700px;
--- $break-point-desktop: 1600px;
--- $break-point-laptop: 1100px;
--- $break-point-mobile: 860px;
--- $break-point-phone: 448px;
 
 attachGlobalComponentStyles :: Effect Unit
 attachGlobalComponentStyles = do
@@ -92,7 +81,6 @@ attachGlobalComponentStyles = do
     , Navigation.styles
     , Pagination.styles
     , Pill.styles
-    , Responsive.styles
     , Row.styles
     , Select.styles
     , Slider.styles
