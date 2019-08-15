@@ -16,6 +16,7 @@ import Data.Nullable as Nullable
 import Data.String as String
 import Data.String.NonEmpty (NonEmptyString, appendString, length, toString)
 import Data.Symbol (SProxy(..))
+import Effect (Effect)
 import Effect.Aff (Milliseconds(..), delay, error, throwError)
 import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
@@ -38,7 +39,7 @@ import React.Basic.DOM (css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (preventDefault)
 import React.Basic.Events (handler, handler_)
-import React.Basic.Hooks (JSX, CreateComponent, component, element, useState, (/\))
+import React.Basic.Hooks (JSX, ReactComponent, component, element, useState, (/\))
 import React.Basic.Hooks as React
 import Web.File.File as File
 
@@ -97,12 +98,14 @@ metaForm = ado
   in unit
 
 mkUserFormExample
-  :: CreateComponent
-       { inlineTable :: Boolean
-       , forceTopLabels :: Boolean
-       , readonly :: Boolean
-       , simulatePauses :: Boolean
-       }
+  :: Effect
+       ( ReactComponent
+           { inlineTable :: Boolean
+           , forceTopLabels :: Boolean
+           , readonly :: Boolean
+           , simulatePauses :: Boolean
+           }
+       )
 mkUserFormExample = do
   component "UserFormExample" \props -> React.do
     userDialog /\ setUserDialog <- useState Nothing
@@ -520,3 +523,4 @@ addressForm = ado
           { label: un State state
           , value: state
           }
+
