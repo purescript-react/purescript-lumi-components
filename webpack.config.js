@@ -135,5 +135,8 @@ module.exports = (_env, options) => ({
   },
   devServer: {
     stats: "minimal"
+  },
+  watchOptions: {
+    aggregateTimeout: 2000
   }
 });

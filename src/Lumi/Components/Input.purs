@@ -30,8 +30,6 @@ module Lumi.Components.Input
   , range
   , label
   , label_
-  , inputRow
-  , inputRow_
   , alignToInput
   , styles
   , lumiInputStyles
@@ -49,10 +47,9 @@ import Color (cssStringHSLA)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, notNull, toMaybe, toNullable)
 import Effect.Uncurried (mkEffectFn1)
-import JSS (JSS, jss)
+import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size(..))
-import Lumi.Components.Text (body_)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
@@ -286,29 +283,6 @@ label_ children = label
   , style: R.css {}
   }
 
-inputRow :: { labelText :: String, leftAligned :: Boolean, style :: CSS } -> InputProps -> JSX
-inputRow props opts = label
-  { style: R.mergeStyles
-            [ props.style
-            , R.css { flexDirection: "row" }
-            ]
-  , for: toNullable Nothing
-  , children:
-      [ input opts
-          { style =
-              R.mergeStyles
-                [ opts.style
-                , css { marginRight: 8, marginLeft: if props.leftAligned then 0 else 8 }
-                ]
-          }
-      , alignToInput $ body_ props.labelText
-      ]
-  }
-
-inputRow_ :: String -> InputProps -> JSX
-inputRow_ labelText opts =
-  inputRow { labelText: labelText, leftAligned: false, style: R.css { flexDirection: "row" } } opts
-
 alignToInputComponent :: Component JSX
 alignToInputComponent = createComponent "AlignToInput"
 
@@ -339,22 +313,13 @@ styles = jss
 
               -- Warning -- don't group browser-specific selectors
               , "&::-webkit-input-placeholder": lumiInputPlaceholderStyles
-              , "&::-moz-placeholder":
-                  { extend: lumiInputPlaceholderStyles
-                  , color: cssStringHSLA colors.black2
-                  , lineHeight: "normal"
-                  }
-              , "&:-ms-input-placeholder":
-                  { extend: lumiInputPlaceholderStyles
-                  , color: cssStringHSLA colors.black2
-                  , lineHeight: "normal"
-                  }
+              , "&::-moz-placeholder": lumiInputPlaceholderStyles
+              , "&:-ms-input-placeholder": lumiInputPlaceholderStyles
               , "&::placeholder": lumiInputPlaceholderStyles
               }
 
           , "&[type=\"checkbox\"]:not([data-variant=\"switch\"])":
-              { margin: inputPaddingStyles
-
+              { margin: [ inputPaddingYMobile, "0" ]
               , height: "20px"
               , width: "20px"
               , alignSelf: "center"
@@ -363,7 +328,7 @@ styles = jss
               , justifyContent: "center"
               , alignItems: "center"
               , flexShrink: "0"
-              , padding: "0"
+              , padding: important "0"
               , color: cssStringHSLA colors.white
               , backgroundColor: cssStringHSLA colors.white
               , cursor: "pointer"
@@ -374,28 +339,39 @@ styles = jss
                   , backgroundPosition: "center"
                   , backgroundSize: "80%"
                   , backgroundRepeat: "no-repeat"
-                  , fontSize: "12.2px"
-                  , "&:before":
+                  , fontSize: "12px"
+                  , "&::before":
                       { fontFamily: "lumi-font-icons"
                       , lineHeight: "1"
                       }
                   }
               , "&:checked":
-                  { "&:before": { content: "'✓'" }
+                  { "&::before":
+                      { content: "'✓'"
+                      }
                   }
               , "&:indeterminate":
-                  { "&:before": { content: "'⎻'" }
+                  { "&::before":
+                      { content: "'⎻'"
+                      }
                   }
               , "&:disabled":
                   { opacity: "0.25"
                   }
 
-              , "&[data-size=\"small\"]":
-                  { height: "14px"
-                  , width: "14px"
+              , "@media (min-width: 860px)":
+                  { margin: [ inputPaddingYDesktop, "0" ]
+                  , "&[data-size=\"small\"]":
+                      { height: "14px"
+                      , width: "14px"
 
-                  , "&:checked": { fontSize: "9px" }
-                  , "&:indeterminate": { fontSize: "9px" }
+                      , "&:checked":
+                          { fontSize: "9px"
+                          }
+                      , "&:indeterminate":
+                          { fontSize: "9px"
+                          }
+                      }
                   }
               }
 
@@ -408,8 +384,8 @@ styles = jss
               , display: "flex"
               , justifyContent: "center"
               , alignItems: "center"
-              , padding: "0"
-              , margin: inputPaddingStyles
+              , padding: important "0"
+              , margin: [ inputPaddingYMobile, "0" ]
               , color: cssStringHSLA colors.white
               , backgroundColor: cssStringHSLA colors.white
               , cursor: "pointer"
@@ -425,13 +401,16 @@ styles = jss
                   , borderRadius: "12px"
                   }
 
-              , "&[data-size=\"small\"]":
-                  { height: "16px"
-                  , width: "16px"
-                  , "&:checked::after":
-                      { height: "8px"
-                      , width: "8px"
-                      , borderRadius: "8px"
+              , "@media (min-width: 860px)":
+                  { margin: [ inputPaddingYDesktop, "0" ]
+                  , "&[data-size=\"small\"]":
+                      { height: "16px"
+                      , width: "16px"
+                      , "&:checked::after":
+                          { height: "8px"
+                          , width: "8px"
+                          , borderRadius: "8px"
+                          }
                       }
                   }
               }
@@ -448,9 +427,11 @@ styles = jss
               , borderRadius: "16px"
               , height: "16px"
               , width: "26px"
-              , padding: "0"
-              , margin: inputPaddingStyles
-              , marginLeft: "28px"
+              , padding: important "0"
+              , margin: "13px 0 11px 26px"
+              , "@media (min-width: 860px)":
+                  { margin: "9px 0 7px 26px"
+                  }
               , cursor: "pointer"
               , color: cssStringHSLA colors.black2
               , position: "relative"
@@ -462,6 +443,7 @@ styles = jss
                   { content: "'Off'"
                   , position: "absolute"
                   , left: "-29px"
+                  , top: "-5px"
                   }
               , "&::after":
                   { content: "' '"
@@ -495,6 +477,14 @@ styles = jss
                   { borderRadius: "22px"
                   , height: "22px"
                   , width: "35px"
+                  , margin: "10px 0 8px 26px"
+                  , "@media (min-width: 860px)":
+                      { margin: "6px 0 4px 26px"
+                      }
+
+                  , "&::before":
+                      { top: "-2px"
+                      }
 
                   , "&::after":
                       { height: "13px"
@@ -516,7 +506,10 @@ styles = jss
                 , cursor: "pointer"
                 , backgroundColor: "transparent"
                 , border: "none"
-                , padding: "14px 0"
+                , height: "40px"
+                , "@media (min-width: 860px)":
+                    { height: "32px"
+                    }
 
                 -- Warning -- don't group browser-specific selectors
                 , "&::-webkit-slider-runnable-track":
@@ -593,7 +586,7 @@ styles = jss
                       , "&::-moz-range-thumb": lumiInputFocusStyles
                       , "&::-ms-thumb": lumiInputFocusStyles
                       }
-                }
+                  }
           }
 
       , "label.lumi":
@@ -617,20 +610,28 @@ styles = jss
           , flexShrink: "1"
           , fontSize: "14px"
           , lineHeight: "20px"
-          , padding: inputAlignToPadding
+          , padding: inputAlignToPaddingMobile
+          , "@media (min-width: 860px)":
+              { padding: inputAlignToPaddingDesktop
+              }
           }
 
       }
   }
   where
-    inputAlignToPadding = "6px 12px 6px 0" -- vertical-only; extra padding for input borders
+    inputAlignToPaddingMobile = "10px 12px 10px 0" -- vertical-only; extra padding for input borders
+    inputAlignToPaddingDesktop = "6px 12px 6px 0"
 
-inputPaddingStyles :: String
-inputPaddingStyles = "5px 10px"
+inputPaddingYMobile :: String
+inputPaddingYMobile = "9px"
+
+inputPaddingYDesktop :: String
+inputPaddingYDesktop = "5px"
 
 lumiInputStyles :: JSS
 lumiInputStyles = jss
   { boxSizing: "border-box"
+  , width: "100%"
   , margin: "0"
   , boxShadow: "0 0 0 0 " <> cssStringHSLA colors.primary3
   , backgroundColor: cssStringHSLA colors.white
@@ -639,15 +640,17 @@ lumiInputStyles = jss
   , color: cssStringHSLA colors.black
   , fontSize: "14px"
   , lineHeight: "20px"
+  , padding: [ inputPaddingYMobile, "10px" ]
+  , "@media (min-width: 860px)":
+      { padding: [ inputPaddingYDesktop, "10px" ]
+      }
   , outline: "none"
-  , padding: inputPaddingStyles
   , touchAction: "manipulation"
   }
 
 lumiInputPlaceholderStyles :: JSS
 lumiInputPlaceholderStyles = jss
   { color: cssStringHSLA colors.black2
-  , lineHeight: "normal"
   }
 
 lumiInputHoverStyles :: JSS

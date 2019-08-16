@@ -25,7 +25,7 @@ import Data.Nullable (toNullable)
 import Data.String as String
 import Effect (Effect)
 import Effect.Aff (Aff)
-import JSS (JSS, jss)
+import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputStyles)
@@ -411,7 +411,7 @@ styles = jss
               , backgroundPositionY: "16px"
               , backgroundPositionX: "calc(100% - 10px)"
               , backgroundSize: "10px 6px"
-              , padding: "3px 24px 3px 3px"
+              , padding: important "3px 24px 3px 3px"
               }
 
           , "&:hover lumi-select-input": lumiInputHoverStyles
