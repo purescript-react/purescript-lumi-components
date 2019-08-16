@@ -30,6 +30,8 @@ module Lumi.Components.Input
   , range
   , label
   , label_
+  , inputRow
+  , inputRow_
   , alignToInput
   , styles
   , lumiInputStyles
@@ -50,6 +52,7 @@ import Effect.Uncurried (mkEffectFn1)
 import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size(..))
+import Lumi.Components.Text (body_)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
@@ -282,6 +285,30 @@ label_ children = label
   , for: toNullable Nothing
   , style: R.css {}
   }
+
+inputRow :: { labelText :: String, leftAligned :: Boolean, style :: CSS } -> InputProps -> JSX
+inputRow props opts = label
+  { style:
+      R.mergeStyles
+        [ props.style
+        , R.css { flexDirection: "row" }
+        ]
+  , for: toNullable Nothing
+  , children:
+      [ input opts
+          { style =
+              R.mergeStyles
+                [ opts.style
+                , css { marginRight: 8, marginLeft: if props.leftAligned then 0 else 8 }
+                ]
+          }
+      , alignToInput $ body_ props.labelText
+      ]
+  }
+
+inputRow_ :: String -> InputProps -> JSX
+inputRow_ labelText opts =
+  inputRow { labelText: labelText, leftAligned: false, style: R.css { flexDirection: "row" } } opts
 
 alignToInputComponent :: Component JSX
 alignToInputComponent = createComponent "AlignToInput"
