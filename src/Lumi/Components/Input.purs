@@ -667,9 +667,12 @@ lumiInputStyles = jss
   , color: cssStringHSLA colors.black
   , fontSize: "14px"
   , lineHeight: "20px"
+  , fontFamily: "inherit"
+  , height: "40px"
   , padding: [ inputPaddingYMobile, "10px" ]
   , "@media (min-width: 860px)":
-      { padding: [ inputPaddingYDesktop, "10px" ]
+      { height: "32px"
+      , padding: [ inputPaddingYDesktop, "10px" ]
       }
   , outline: "none"
   , touchAction: "manipulation"
