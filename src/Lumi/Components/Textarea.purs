@@ -1,10 +1,11 @@
 module Lumi.Components.Textarea where
 
 import Prelude
+
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Effect.Uncurried (mkEffectFn1)
-import JSS (JSS, jss)
+import JSS (JSS, important, jss)
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusInvalidStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputInvalidStyles, lumiInputPlaceholderStyles, lumiInputStyles)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
@@ -87,8 +88,12 @@ styles =
         , touchAction: "manipulation"
         , boxSizing: "border-box"
         , resize: "vertical"
-        , minHeight: "32px"
         , extend: lumiInputStyles
+        , height: important "unset"
+        , minHeight: "40px"
+        , "@media (min-width: 860px)":
+            { minHeight: "32px"
+            }
         , "&:hover": lumiInputHoverStyles
         , "&:invalid": lumiInputInvalidStyles
         , "&:focus":

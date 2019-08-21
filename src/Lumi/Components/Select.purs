@@ -484,7 +484,11 @@ styles = jss
               }
 
           , "&[data-multi=\"true\"]":
-              { "& lumi-select-input-selected-value":
+              { "& lumi-select-input":
+                  { height: important "unset"
+                  }
+
+              , "& lumi-select-input-selected-value":
                   { backgroundColor: cssStringHSLA colors.primary3
                   , borderRadius: "3px"
                   , padding: "0 0 0 7px"
