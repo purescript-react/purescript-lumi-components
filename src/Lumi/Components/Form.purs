@@ -466,7 +466,12 @@ select
 select toString fromString opts = formBuilder_ \{ readonly } selected onChange ->
   if readonly
     then
-      Input.alignToInput $ R.text (maybe "" toString selected)
+      let toLabel a =
+            Array.findMap (\{ label, value } ->
+              if toString value == toString a
+                then Just label
+                else Nothing) opts
+       in Input.alignToInput $ R.text (fromMaybe "" (selected >>= toLabel))
     else
       NativeSelect.nativeSelect NativeSelect.defaults
         { options = { label: "Select an option ...", value: "" } : map (\{ label, value } -> { label, value: toString value }) opts
