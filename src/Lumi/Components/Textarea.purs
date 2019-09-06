@@ -5,7 +5,7 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Effect.Uncurried (mkEffectFn1)
-import JSS (JSS, important, jss)
+import JSS (JSS, jss)
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusInvalidStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputInvalidStyles, lumiInputPlaceholderStyles, lumiInputStyles)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
@@ -89,10 +89,11 @@ styles =
         , boxSizing: "border-box"
         , resize: "vertical"
         , extend: lumiInputStyles
-        , height: important "unset"
         , minHeight: "40px"
+        , height: "unset"
         , "@media (min-width: 860px)":
             { minHeight: "32px"
+            , height: "unset"
             }
         , "&:hover": lumiInputHoverStyles
         , "&:invalid": lumiInputInvalidStyles
