@@ -347,15 +347,15 @@ styles = jss
 
           , "&[type=\"checkbox\"]:not([data-variant=\"switch\"])":
               { margin: [ inputPaddingYMobile, "0" ]
-              , height: "20px"
+              , height: important "20px"
               , width: "20px"
+              , padding: important "0"
               , alignSelf: "center"
               , borderRadius: "2px"
               , display: "flex"
               , justifyContent: "center"
               , alignItems: "center"
               , flexShrink: "0"
-              , padding: important "0"
               , color: cssStringHSLA colors.white
               , backgroundColor: cssStringHSLA colors.white
               , cursor: "pointer"
@@ -389,7 +389,7 @@ styles = jss
               , "@media (min-width: 860px)":
                   { margin: [ inputPaddingYDesktop, "0" ]
                   , "&[data-size=\"small\"]":
-                      { height: "14px"
+                      { height: important "14px"
                       , width: "14px"
 
                       , "&:checked":
@@ -404,14 +404,14 @@ styles = jss
 
           , "&[type=\"radio\"]":
               { appearance: "none"
-              , height: "20px"
+              , height: important "20px"
               , width: "20px"
+              , padding: important "0"
               , alignSelf: "center"
               , borderRadius: "20px"
               , display: "flex"
               , justifyContent: "center"
               , alignItems: "center"
-              , padding: important "0"
               , margin: [ inputPaddingYMobile, "0" ]
               , color: cssStringHSLA colors.white
               , backgroundColor: cssStringHSLA colors.white
@@ -431,7 +431,7 @@ styles = jss
               , "@media (min-width: 860px)":
                   { margin: [ inputPaddingYDesktop, "0" ]
                   , "&[data-size=\"small\"]":
-                      { height: "16px"
+                      { height: important "16px"
                       , width: "16px"
                       , "&:checked::after":
                           { height: "8px"
@@ -452,7 +452,7 @@ styles = jss
               , border: [ "2px", "solid", cssStringHSLA colors.black2 ]
               , backgroundColor: cssStringHSLA colors.black2
               , borderRadius: "16px"
-              , height: "16px"
+              , height: important "16px"
               , width: "26px"
               , padding: important "0"
               , margin: "13px 0 11px 26px"
@@ -502,7 +502,7 @@ styles = jss
 
               , "&[data-size=\"large\"]":
                   { borderRadius: "22px"
-                  , height: "22px"
+                  , height: important "22px"
                   , width: "35px"
                   , margin: "10px 0 8px 26px"
                   , "@media (min-width: 860px)":
