@@ -448,7 +448,7 @@ styles = jss
           , "& lumi-select-input-placeholder":
               { color: cssStringHSLA colors.black2
               , lineHeight: "32px"
-              , maxWidth: "calc(100% - 20px)"
+              , flex: "1 1 0%"
               , display: "block"
               , overflow: "hidden"
               , whiteSpace: "nowrap"
@@ -485,7 +485,6 @@ styles = jss
 
           , "& input.select-native-input":
               { flex: "1 1 0%"
-              -- , width: "100%"
               , minWidth: "40px"
               , appearance: "none"
               , border: "none"
