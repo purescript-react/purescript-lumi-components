@@ -3,15 +3,16 @@ module Lumi.Components.Examples.Select where
 import Prelude
 
 import Data.Array (filter)
+import Data.Array as Array
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (Pattern(..), contains, toLower)
 import Effect.Aff (Milliseconds(..), delay)
 import Lumi.Components.Column (column, column_)
+import Lumi.Components.Example (example)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (labeledField, RequiredField(..))
 import Lumi.Components.Select (asyncMultiSelect, asyncSingleSelect, multiSelect, singleSelect)
 import Lumi.Components.Text (h2_)
-import Lumi.Components.Example (example)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
@@ -188,6 +189,38 @@ docs = unit # make component { initialState, render }
                       , optionRenderer: R.text <<< _.label
                       , toSelectOption: identity
                       }
+                  ]
+              }
+
+        , h2_ "Truncating long values"
+        , example $
+            column
+              { style: css { alignSelf: "stretch", maxWidth: "300px" }
+              , children:
+                  [ let
+                      options =
+                        [ "80104 Somestreet Rd Ste 1124, San Diego, California, United States"
+                        , "1211 Blah blah Blvd, Charlotrte, North Carolina, United States"
+                        , "3031 Fall Ave, Colorado Springs, Colorado, United States"
+                        ]
+                    in
+                      singleSelect
+                        { value: Array.head options
+                        , options
+                        , optionSort: Nothing
+                        , onChange: mempty
+                        , className: ""
+                        , style: css {}
+                        , searchable: true
+                        , id: ""
+                        , name: ""
+                        , noResultsText: "No results"
+                        , placeholder: "Select a value..."
+                        , disabled
+                        , loading: false
+                        , optionRenderer: R.text
+                        , toSelectOption: \a -> { value: a, label: a }
+                        }
                   ]
               }
 

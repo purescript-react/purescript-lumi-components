@@ -3,7 +3,8 @@ module Lumi.Components.NativeSelect where
 import Prelude
 
 import Color (cssStringHSLA)
-import Data.Maybe (Maybe(..))
+import Data.Foldable (find)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Nullable (Nullable, toNullable)
 import Effect.Uncurried (mkEffectFn1)
 import JSS (JSS, important, jss)
@@ -56,6 +57,10 @@ nativeSelect = makeStateless component $ lumiSelectElement <<< mapProps
       , required: props.required
       , style: props.style
       , value: props.value
+      , title:
+        fromMaybe props.placeholder do
+          selected <- props.options # find \o -> o.value == props.value
+          pure selected.label
       }
 
 defaults :: NativeSelectProps
@@ -84,6 +89,7 @@ styles = jss
           , backgroundSize: "10px 5px"
           , cursor: "pointer"
           , display: "inline-block"
+          , textOverflow: "ellipsis"
           , "&:-moz-focusring":
               { color: "transparent"
               , textShadow: "0 0 0 " <> cssStringHSLA colors.black
