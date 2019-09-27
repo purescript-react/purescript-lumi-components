@@ -202,6 +202,12 @@ docs = unit # make component { initialState, render }
                         [ "80104 Somestreet Rd Ste 1124, San Diego, California, United States"
                         , "1211 Blah blah Blvd, Charlotrte, North Carolina, United States"
                         , "3031 Fall Ave, Colorado Springs, Colorado, United States"
+                        , "12345 Lorem Ave, Sioux Falls, South Dakota, United States"
+                        , "100 Phillips Ave, Madill, Oklahoma, United States"
+                        , "2453 Frosty Lane, Binghamton, New York, United States"
+                        , "4566 Random Ave, Grand Forks, North Dakota, United States"
+                        , "4702 Hart Rd, Northbrook, Illinois, United States"
+                        , "567 Fake Way, San Diego, California, United States"
                         ]
                     in
                       singleSelect
