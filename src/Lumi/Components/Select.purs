@@ -624,6 +624,7 @@ styles = jss
       , flexFlow: "column"
       , justifyContent: "center"
       , padding: "6px 9px"
+      , flex: "none"
       , minHeight: "32px"
       , cursor: "initial"
       , overflow: "hidden"
