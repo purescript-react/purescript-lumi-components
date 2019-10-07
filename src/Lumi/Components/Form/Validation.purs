@@ -37,7 +37,7 @@ import Data.String.NonEmpty (fromString) as NES
 import Data.String.Pattern (Pattern(..))
 import Data.Traversable (traverse)
 import Heterogeneous.Mapping (class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
-import Lumi.Components.Column (column_)
+import Lumi.Components.Column (column)
 import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Text (subtext, text)
@@ -215,6 +215,12 @@ validated
 validated runValidator editor = FormBuilder \props@{ readonly } v ->
   let value = fromValidated v
 
+      innerColumn_ children =
+        column
+          { style: R.css { maxWidth: "100%", maxHeight: "100%" }
+          , children
+          }
+
       { edit, validate } = un FormBuilder editor props value
 
       modify :: Maybe String -> Forest -> Forest
@@ -222,7 +228,7 @@ validated runValidator editor = FormBuilder \props@{ readonly } v ->
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]
             Just { init, last: Child c } ->
-              Array.snoc init (Child c { child = column_ [c.child, errLine] })
+              Array.snoc init (Child c { child = innerColumn_ [c.child, errLine] })
             Just { init, last: Wrapper c } ->
               Array.snoc init (Wrapper c { children = modify message c.children })
             Just { init, last: Node n } ->
@@ -276,12 +282,18 @@ warn
 warn warningValidator editor = FormBuilder \props@{ readonly } v ->
   let { edit, validate } = un FormBuilder editor props (fromValidated v)
 
+      innerColumn_ children =
+        column
+          { style: R.css { maxWidth: "100%", maxHeight: "100%" }
+          , children
+          }
+
       modify :: Forest -> Forest
       modify forest =
           case Array.unsnoc forest of
             Nothing -> [Child { key: Nothing, child: errLine }]
             Just { init, last: Child c } ->
-              Array.snoc init (Child c { child = column_ [c.child, errLine] })
+              Array.snoc init (Child c { child = innerColumn_ [c.child, errLine] })
             Just { init, last: Wrapper c } ->
               Array.snoc init (Wrapper c { children = modify c.children })
             Just { init, last: Node n } ->
