@@ -203,9 +203,21 @@ column label orientation (FormBuilder f) =
           (f props row).validate
       }
   where
+    innerColumn_ children =
+      Column.column
+        { style: R.css { maxWidth: "100%" }
+        , children
+        }
+
+    innerRow_ children =
+      Row.row
+        { style: R.css { maxWidth: "100%" }
+        , children
+        }
+
     horizontalRenderer :: Boolean -> Forest -> JSX
     horizontalRenderer readonly forest =
-      Row.row_
+      innerRow_
         [ intercalate (hspace S12) (map (toColumn readonly) forest)
         ]
 
@@ -214,20 +226,16 @@ column label orientation (FormBuilder f) =
       case _ of
         Child { key, child } ->
           maybe identity keyed key $ child
-        Wrapper { key, children } ->
-          R.div
-            { key: fromMaybe "" key
-            , style: R.css { flex: "1" }
-            , children:
-                [ Row.row_
-                    [ intercalate (hspace S12) (map (toColumn readonly) children)
-                    ]
+        Wrapper { key, wrap, children } ->
+          maybe identity keyed key $ wrap
+            [ innerRow_
+                [ intercalate (hspace S12) (map (toColumn readonly) children)
                 ]
-            }
+            ]
         Node { key, validationError, children } ->
           maybe identity keyed key $
-            Column.column_
-              [ Row.row_
+            innerColumn_
+              [ innerRow_
                   [ intercalate (hspace S12) (map (toColumn readonly) children)
                   ]
               , guard (not readonly) $
@@ -236,7 +244,7 @@ column label orientation (FormBuilder f) =
 
     verticalRenderer :: Boolean -> Forest -> JSX
     verticalRenderer readonly forest =
-      Column.column_
+      innerColumn_
         [ intercalate (vspace S8) (map (toRow readonly) forest)
         ]
 
@@ -245,19 +253,15 @@ column label orientation (FormBuilder f) =
       case _ of
         Child { key, child } ->
           maybe identity keyed key $ child
-        Wrapper { key, children } ->
-          R.div
-            { key: fromMaybe "" key
-            , style: R.css { flex: "1" }
-            , children:
-                [ Column.column_
-                    [ intercalate (vspace S8) (map (toColumn readonly) children)
-                    ]
+        Wrapper { key, wrap, children } ->
+          maybe identity keyed key $ wrap
+            [ innerColumn_
+                [ intercalate (vspace S8) (map (toColumn readonly) children)
                 ]
-            }
+            ]
         Node { key, validationError, children } ->
           maybe identity keyed key $
-            Column.column_
+            innerColumn_
               [ intercalate (vspace S8) (map (toColumn readonly) children)
               , guard (not readonly) $
                   foldMap errLine validationError
