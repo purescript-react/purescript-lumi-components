@@ -180,11 +180,15 @@ styles = jss
               , minHeight: "calc(48px + 1px)"
               , padding: "6px 0"
               , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
+              , "@media (max-width: 860px)":
+                  { flexFlow: "column"
+                  }
               , "& > lumi-list-row-cell":
                   { boxSizing: "border-box"
                   , display: "flex"
                   , flexFlow: "column"
                   , justifyContent: "center"
+                  , alignItems: "flex-start"
                   , flex: "1"
                   , maxWidth: "100%"
                   }
