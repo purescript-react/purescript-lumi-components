@@ -14,7 +14,7 @@ import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 type TooltipProps =
   { variant :: String
   , style :: CSS
-  , text :: JSX
+  , text :: Array JSX
   , content :: JSX
   , size :: Nullable Size
   }
@@ -35,7 +35,7 @@ tooltip = makeStateless component render
         , "data-variant": props.variant
         , children:
             [ lumiTooltipTextElement
-                { children: [ props.text ] }
+                { children: props.text }
             , props.content
             ]
         }
