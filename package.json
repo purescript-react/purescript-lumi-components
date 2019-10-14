@@ -35,9 +35,9 @@
     "react-dnd": "^2.6.0",
     "react-dnd-html5-backend": "^2.6.0",
     "react-dom": "^16.6.1",
+    "react-media-hook": "^0.4.4",
     "react-router": "^5.0.1",
-    "react-router-dom": "^5.0.1",
-    "use-media": "^1.4.0"
+    "react-router-dom": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
