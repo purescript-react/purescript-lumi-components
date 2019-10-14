@@ -1,3 +1,3 @@
 "use strict";
 
-exports.useMedia_ = require("use-media").default;
+exports.useMedia_ = require("react-media-hook").useMediaPredicate;
