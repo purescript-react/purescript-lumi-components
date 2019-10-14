@@ -14,7 +14,7 @@ import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 type TooltipProps =
   { variant :: String
   , style :: CSS
-  , text :: String
+  , text :: JSX
   , content :: JSX
   , size :: Nullable Size
   }
