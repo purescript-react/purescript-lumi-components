@@ -9,6 +9,7 @@ import Data.Nullable (toNullable)
 import Lumi.Components.Color (colors)
 import React.Basic (Component, JSX, createComponent, displayNameFromComponent, element, makeStateless)
 import React.Basic.DOM as R
+import React.Basic.DOM.SVG as RS
 
 type ProgressProps =
   { total :: Int
@@ -27,7 +28,7 @@ progressDefaults =
 
 progressBar :: ProgressProps -> JSX
 progressBar = makeProgressComponent (createComponent "ProgressBar") \{ total, completed } ->
-  R.svg
+  RS.svg
     { xmlns: "http://www.w3.org/2000/svg"
     , height: "6"
     , width: "120"
@@ -61,12 +62,12 @@ progressBar = makeProgressComponent (createComponent "ProgressBar") \{ total, co
     strokeWidth = "6"
     strokeMiterlimit = "round"
     d = "M0,3 L120,3"
-    backgroundPath = element (R.unsafeCreateDOMComponent "path")
-    meterPath = element (R.unsafeCreateDOMComponent "path")
+    backgroundPath = RS.path
+    meterPath = RS.path
 
 progressCircle :: ProgressProps -> JSX
 progressCircle = makeProgressComponent (createComponent "ProgressCircle") \{ total, completed } ->
-  R.svg
+  RS.svg
     { xmlns: "http://www.w3.org/2000/svg"
     , height: "24"
     , width: "24"
@@ -107,8 +108,8 @@ progressCircle = makeProgressComponent (createComponent "ProgressCircle") \{ tot
     cx = "12"
     cy = "12"
     r = "10"
-    backgroundPath = element (R.unsafeCreateDOMComponent "circle")
-    meterPath = element (R.unsafeCreateDOMComponent "circle")
+    backgroundPath = RS.circle
+    meterPath = RS.circle
 
 makeProgressComponent :: Component ProgressProps -> ({ total :: String, completed :: String } -> JSX) -> ProgressProps -> JSX
 makeProgressComponent component renderShape = makeStateless component render
