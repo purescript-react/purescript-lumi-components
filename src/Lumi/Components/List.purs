@@ -209,6 +209,11 @@ styles = jss
                 , justifyContent: "flex-end"
                 , alignItems: "center"
                 }
+            , "@media (max-width: 448px)":
+                { "& > lumi-list-row > lumi-list-row-cell:not(:first-child)":
+                    { alignItems: "flex-end"
+                    }
+                }
             }
       , "lumi-key-value-list":
           { "& lumi-key-value-list-label":
