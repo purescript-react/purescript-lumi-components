@@ -210,7 +210,7 @@ styles = jss
                 , alignItems: "center"
                 }
             , "@media (max-width: 448px)":
-                { "& > lumi-list-row > lumi-list-row-cell":
+                { "& > lumi-list-row > lumi-list-row-cell:not(:first-child)":
                     { alignItems: "flex-end"
                     }
                 }
