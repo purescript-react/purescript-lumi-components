@@ -2,15 +2,17 @@ module Lumi.Components.Table.FilterDropdown where
 
 import Prelude hiding (div)
 
+import Color (cssStringHSLA)
 import Control.Alt ((<|>))
 import Data.Array (drop, mapWithIndex, take, (!!))
 import Data.Foldable (for_)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn2, runEffectFn1, runEffectFn2)
-import Lumi.Components.Size (small)
+import Lumi.Components.Color (colors)
 import Lumi.Components.Icon (IconType(Rearrange), icon)
 import Lumi.Components.Input (CheckboxState(..), checkbox, input)
+import Lumi.Components.Size (small)
 import React.Basic (Component, JSX, createComponent, element, keyed, makeStateless)
 import React.Basic.DOM (CSS, css, div, text, unsafeCreateDOMComponent)
 import React.Basic.DOM.Events (targetChecked)
@@ -106,19 +108,23 @@ filterItem_ = makeStateless filterItemComponent render
                   connectDragSource $ connectDropTarget $
                     element (unsafeCreateDOMComponent "lumi-row")
                       { className: if item.hidden then "" else "active"
-                      , style: css
-                          { padding: "0 8px 0 0"
-                          , alignItems: "center"
-                          , borderTop:
-                              if isOver && (fromMaybe false ((\dragItem -> dragItem.index > index) <$> maybeDragItem))
-                              then "2px solid #0044e4"
-                              else "2px solid transparent"
-                          , borderBottom:
-                              if isOver && (fromMaybe false ((\dragItem -> dragItem.index < index) <$> maybeDragItem))
-                              then "2px solid #0044e4"
-                              else "2px solid transparent"
-                          , opacity: if isDragging then 0.1 else 1.0
-                          }
+                      , style:
+                        let
+                          borderStyle :: (Int -> Int -> Boolean) -> String
+                          borderStyle compare' =
+                            if isOver && (fromMaybe false ((\dragItem -> dragItem.index `compare'` index) <$> maybeDragItem))
+                            then "2px solid " <> cssStringHSLA colors.primary
+                            else "2px solid " <> cssStringHSLA colors.transparent
+                          borderTop = borderStyle (>)
+                          borderBottom = borderStyle (<)
+                        in
+                          css
+                            { padding: "0 8px"
+                            , alignItems: "center"
+                            , borderTop
+                            , borderBottom
+                            , opacity: if isDragging then 0.1 else 1.0
+                            }
                       , children:
                           [ renderInput onChange items item
                           , renderLabel item
