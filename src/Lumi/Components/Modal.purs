@@ -436,7 +436,7 @@ styles = jss
                           { position: "fixed"
                           , top: "0"
                           , left: "0"
-                          , minHeight: "100%"
+                          , height: "100%"
                           , width: "100vw"
                           , maxWidth: "100vw"
                           , "&[data-size=\"small\"], &[data-size=\"medium\"], &[data-size=\"large\"]":
