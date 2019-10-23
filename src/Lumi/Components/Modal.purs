@@ -433,7 +433,10 @@ styles = jss
               , "&:not([data-variant=\"dialog\"])":
                   { "& lumi-modal":
                       { "@media (max-width: 860px)":
-                          { minHeight: "100vh"
+                          { position: "fixed"
+                          , top: "0"
+                          , left: "0"
+                          , minHeight: "100%"
                           , width: "100vw"
                           , maxWidth: "100vw"
                           , "&[data-size=\"small\"], &[data-size=\"medium\"], &[data-size=\"large\"]":
