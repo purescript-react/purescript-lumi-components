@@ -112,7 +112,7 @@ filterItem_ = makeStateless filterItemComponent render
                         let
                           borderStyle :: (Int -> Int -> Boolean) -> String
                           borderStyle compare' =
-                            if isOver && (fromMaybe false ((\dragItem -> dragItem.index `compare'` index) <$> maybeDragItem))
+                            if isOver && maybe false (\dragItem -> dragItem.index `compare'` index) maybeDragItem
                             then "2px solid " <> cssStringHSLA colors.primary
                             else "2px solid " <> cssStringHSLA colors.transparent
                           borderTop = borderStyle (>)
