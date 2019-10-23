@@ -13,8 +13,7 @@ import Effect.Aff (Aff, runAff_)
 import Effect.Exception (throwException)
 import Lumi.Components.LabeledField (RequiredField, ValidationMessage)
 import Prim.TypeError (class Warn, Above, Text)
-import React.Basic (JSX)
-import React.Basic.DOM as R
+import React.Basic (JSX, fragment, keyed)
 
 data Tree
   = Child
@@ -113,7 +112,7 @@ instance parallelFormBuilder
      in { edit: \onChange ->
             [ Wrapper
                 { key: Just "seq"
-                , wrap: R.div <<< { key: "seq", children: _ }
+                , wrap: keyed "seq" <<< fragment
                 , children: edit onChange
                 }
             ]
@@ -127,7 +126,7 @@ parallel key (SeqFormBuilder (FormBuilder f)) = FormBuilder \props value ->
    in { edit: \onChange ->
           [ Wrapper
               { key: Just key
-              , wrap: R.div <<< { key, children: _ }
+              , wrap: keyed key <<< fragment
               , children: edit onChange
               }
           ]
@@ -140,7 +139,7 @@ sequential key (FormBuilder f) = SeqFormBuilder $ FormBuilder \props value ->
    in { edit: \onChange ->
           [ Wrapper
               { key: Just key
-              , wrap: R.div <<< { key, children: _ }
+              , wrap: keyed key <<< fragment
               , children: edit onChange
               }
           ]
