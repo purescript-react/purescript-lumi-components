@@ -671,7 +671,7 @@ styles = jss
                       { position: "sticky"
                       , left: "0"
                       }
-                  , "&.selectable .sticky-column": { left: "45px" }
+                  , "&.selectable .sticky-column": { left: "44px" }
                   , "&.selectable th:first-child, & th.sticky-column":
                       { zIndex: ziTableLockedColumnHeader
                       }
