@@ -2,10 +2,11 @@ module Lumi.Components2.Button where
 
 import Prelude
 
+import Color (Color)
 import Data.Array as Array
 import Data.Char (fromCharCode)
 import Data.Foldable (fold)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Data.String.CodeUnits (fromCharArray)
 import Effect (Effect)
@@ -28,6 +29,7 @@ type CommonButtonProps rest =
   , type :: String
   , kind :: ButtonKind
   , buttonState :: ButtonState
+  , color :: Maybe Color
   , testId :: Maybe String
   | rest
   )
@@ -63,7 +65,7 @@ mkButton t = do
       pure
         if props.type == "link"
         then E.element lumiButtonLinkElement
-          { css: Styles.Button.button theme props.kind props.buttonState props.size
+          { css: Styles.Button.button theme props.color props.kind props.buttonState props.size
           , "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
@@ -75,7 +77,7 @@ mkButton t = do
           }
         else
           E.element lumiButtonElement
-            { css: Styles.Button.button theme props.kind props.buttonState props.size
+            { css: Styles.Button.button theme props.color props.kind props.buttonState props.size
             , "aria-label": Nullable.toNullable props.accessibilityLabel
             , children: props.content
             , className: props.className
@@ -113,6 +115,7 @@ defaults =
   , type: mempty
   , kind: Primary
   , buttonState: Enabled
+  , color: Nothing
   , className: ""
   , content: mempty
   }

@@ -1,6 +1,10 @@
 module Lumi.Styles.Box where
 
-import React.Basic.Emotion (Style, class IsStyleProperty, css, merge, prop, str)
+import Prelude
+
+import Color (cssStringHSLA)
+import Lumi.Styles.Theme (LumiTheme)
+import React.Basic.Emotion (class IsStyleProperty, Style, css, merge, prop, selector, str)
 
 box :: Style
 box =
@@ -61,4 +65,15 @@ interactive =
     { touchAction: str "manipulation"
     , userSelect: str "none"
     , cursor: str "pointer"
+    }
+
+focusable :: LumiTheme -> Style
+focusable theme =
+  css
+    { "&:focus":
+      selector
+        $ css
+            { outline: str "0"
+            , boxShadow: str ("0 0 0 3px " <> cssStringHSLA theme.colors.primary3)
+            }
     }
