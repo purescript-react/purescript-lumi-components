@@ -422,7 +422,7 @@ styles = jss
                           , paddingRight: "16px"
                           , "& button.lumi":
                               { fontSize: "16px"
-                              , lineHeight: "24px"
+                              , lineHeight: "initial"
                               , padding: "10px 21px 10px"
                               }
                           }
