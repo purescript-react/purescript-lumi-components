@@ -38,40 +38,55 @@ minWidthDesktop :: Int
 minWidthDesktop = 860
 
 mobile :: (Unit -> JSX) -> JSX
-mobile = element c <<< { render: _ }
-  -- WARNING: Don't add any arguments the `mobile` function!
+mobile = \render ->
+  element c { render: \isMobile -> if isMobile then render unit else mempty }
+  -- WARNING: Don't add any arguments to the definition of `mobile`!
   --   `c` must be fully applied at module creation!
   where
-  c =
-    unsafePerformEffect do
-      mkMediaComponent "Mobile" useIsMobile
+  c = unsafePerformEffect (mkMediaComponent "Mobile" useIsMobile)
+
+withMobile :: (Boolean -> JSX) -> JSX
+withMobile = element c <<< { render: _ }
+  -- WARNING: Don't add any arguments to the `withMobile` function!
+  --   `c` must be fully applied at module creation!
+  where
+  c = unsafePerformEffect (mkMediaComponent "Mobile" useIsMobile)
 
 phone :: (Unit -> JSX) -> JSX
-phone = element c <<< { render: _ }
-  -- WARNING: Don't add any arguments the `phone` function!
+phone = \render ->
+  element c { render: \isPhone -> if isPhone then render unit else mempty }
+  -- WARNING: Don't add any arguments to the definition of `phone`!
   --   `c` must be fully applied at module creation!
   where
-  c =
-    unsafePerformEffect do
-      mkMediaComponent "Phone" useIsPhone
+  c = unsafePerformEffect (mkMediaComponent "Phone" useIsPhone)
+
+withPhone :: (Boolean -> JSX) -> JSX
+withPhone = element c <<< { render: _ }
+  -- WARNING: Don't add any arguments to the `withPhone` function!
+  --   `c` must be fully applied at module creation!
+  where
+  c = unsafePerformEffect (mkMediaComponent "Phone" useIsPhone)
 
 desktop :: (Unit -> JSX) -> JSX
-desktop = element c <<< { render: _ }
+desktop = \render ->
+  element c { render: \isDesktop -> if isDesktop then render unit else mempty }
   -- WARNING: Don't add any arguments the `desktop` function!
   --   `c` must be fully applied at module creation!
   where
-  c =
-    unsafePerformEffect do
-      mkMediaComponent "Desktop" useIsDesktop
+  c = unsafePerformEffect (mkMediaComponent "Desktop" useIsDesktop)
+
+withDesktop :: (Boolean -> JSX) -> JSX
+withDesktop = element c <<< { render: _ }
+  -- WARNING: Don't add any arguments to the `withDesktop` function!
+  --   `c` must be fully applied at module creation!
+  where
+  c = unsafePerformEffect (mkMediaComponent "Desktop" useIsDesktop)
 
 mkMediaComponent ::
   String ->
   Hook UseMediaQuery Boolean ->
-  Effect (ReactComponent { render :: Unit -> JSX })
+  Effect (ReactComponent { render :: Boolean -> JSX })
 mkMediaComponent name umq = do
   component ("MediaQuery(" <> name <> ")") \{ render } -> React.do
     isMatch <- umq
-    if isMatch then
-      pure (render unit)
-    else
-      mempty
+    pure $ render isMatch
