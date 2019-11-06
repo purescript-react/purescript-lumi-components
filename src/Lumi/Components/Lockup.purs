@@ -121,6 +121,7 @@ styles = jss
               { display: "flex"
               , flexFlow: "column"
               , minWidth: "0"
+              , lineHeight: "initial"
 
               , "& > lumi-lockup-description-body > lumi-subtext":
                   { textDecoration: "none"

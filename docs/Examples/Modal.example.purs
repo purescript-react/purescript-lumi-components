@@ -21,6 +21,7 @@ data ModalTestId
   | LargeModal
   | ExtraLargeModal
   | DialogModal
+  | NoCloseButtonModal
   | LongModal
   | ErrorModal
   | ErrorModalWithAction
@@ -187,11 +188,11 @@ docs = unit # make component
 
         , example $
             button secondary
-              { onPress = capture_ $ self.setState _ { modalId = Just DialogModal }
+              { onPress = capture_ $ self.setState _ { modalId = Just NoCloseButtonModal }
               , title = "Open modal, no close button"
               }
 
-        , guard (self.state.modalId == Just DialogModal) $
+        , guard (self.state.modalId == Just NoCloseButtonModal) $
             modal
               { modalOpen: true
               , closeButton: false
