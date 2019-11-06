@@ -4,7 +4,7 @@ import Prelude
 
 import Color (cssStringHSLA)
 import Lumi.Styles.Theme (LumiTheme)
-import React.Basic.Emotion (class IsStyleProperty, Style, css, merge, prop, selector, str)
+import React.Basic.Emotion (class IsStyleProperty, Style, css, merge, nested, prop, str)
 
 box :: Style
 box =
@@ -71,7 +71,7 @@ focusable :: LumiTheme -> Style
 focusable theme =
   css
     { "&:focus":
-      selector
+      nested
         $ css
             { outline: str "0"
             , boxShadow: str ("0 0 0 3px " <> cssStringHSLA theme.colors.primary3)

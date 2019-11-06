@@ -10,7 +10,7 @@ import Lumi.Components.Size (Size(..))
 import Lumi.Components.ZIndex (ziButtonGroup)
 import Lumi.Styles.Box (FlexAlign(..), align, focusable, interactive, justify, row)
 import Lumi.Styles.Theme (LumiTheme)
-import React.Basic.Emotion (Style, color, css, int, merge, selector, str)
+import React.Basic.Emotion (Style, color, css, int, merge, nested, str)
 
 data ButtonKind
   = Primary
@@ -43,7 +43,7 @@ button theme hue buttonKind buttonState size =
         , borderWidth: int 1
         , borderStyle: str "solid"
         , "@media (min-width: 860px)":
-          selector
+          nested
             $ fold
                 [ css
                     { padding: str "6px 16px"
@@ -118,18 +118,18 @@ _buttonStateStyles { hue, white, black } buttonKind buttonState =
                 , color: color white
                 , backgroundColor: color hue
                 , "&:hover":
-                  selector
+                  nested
                     $ css
                         { borderColor: color hueDarker
                         , backgroundColor: color hueDarker
                         }
                 , "&:active":
-                  selector
+                  nested
                     $ css
                         { borderColor: color hueDarkest
                         , backgroundColor: color hueDarkest
                         }
-                , "&:disabled": selector disabledStyles
+                , "&:disabled": nested disabledStyles
                 }
             Disabled -> disabledStyles
             Loading -> disabledStyles
@@ -150,20 +150,20 @@ _buttonStateStyles { hue, white, black } buttonKind buttonState =
                 , color: color black
                 , backgroundColor: color white
                 , "&:hover":
-                  selector
+                  nested
                     $ css
                         { borderColor: color hueDarker
                         , color: color hueDarker
                         , backgroundColor: color white
                         }
                 , "&:active":
-                  selector
+                  nested
                     $ css
                         { borderColor: color hueDarkest
                         , color: color hueDarkest
                         , backgroundColor: color white
                         }
-                , "&:disabled": selector disabledStyles
+                , "&:disabled": nested disabledStyles
                 }
             Disabled -> disabledStyles
             Loading -> disabledStyles
@@ -175,7 +175,7 @@ buttonGroup joined =
     , guard (not joined) do
         css
           { "& > *:not(:last-child)":
-            selector
+            nested
               $ css
                   { marginRight: int 10
                   }
@@ -183,20 +183,20 @@ buttonGroup joined =
     , guard joined do
         css
           { "& > button:not(:last-child)":
-            selector
+            nested
               $ css
                   { marginRight: int (-1)
                   , borderTopRightRadius: int 0
                   , borderBottomRightRadius: int 0
                   }
           , "& > button:not(:first-child)":
-            selector
+            nested
               $ css
                   { borderTopLeftRadius: int 0
                   , borderBottomLeftRadius: int 0
                   }
           , "& > *:focus, & > *:hover":
-            selector
+            nested
               $ css
                   { zIndex: int ziButtonGroup
                   }
