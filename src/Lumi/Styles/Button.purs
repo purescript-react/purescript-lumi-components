@@ -1,3 +1,4 @@
+-- | WARNING: not production ready -- this is a demo of react-basic-emotion
 module Lumi.Styles.Button where
 
 import Prelude

@@ -1,3 +1,4 @@
+-- | WARNING: not production ready -- this is a demo of react-basic-emotion and LumiComponent
 module Lumi.Components2.Button where
 
 import Prelude
