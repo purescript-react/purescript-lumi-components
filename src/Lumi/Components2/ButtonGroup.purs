@@ -2,22 +2,26 @@ module Lumi.Components2.ButtonGroup where
 
 import Prelude
 
-import Lumi.Components (LumiComponent')
+import Effect (Effect)
+import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles.Button as Styles.Button
+import Lumi.Styles.Theme (LumiTheme)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
-import React.Basic.Hooks (component)
+import React.Basic.Hooks (JSX, ReactContext)
 
 type ButtonGroupProps
   = ( joined :: Boolean
+    , content :: Array JSX
     )
 
-mkButtonGroup :: LumiComponent' ButtonGroupProps
+mkButtonGroup :: ReactContext LumiTheme -> Effect (LumiComponent ButtonGroupProps ButtonGroupProps)
 mkButtonGroup t = do
-  component "ButtonGroup" \props ->
+  lumiComponent "ButtonGroup" { className: "", joined: false, content: [] } \props ->
     pure
-      $ E.element R.div'
-          { css: Styles.Button.buttonGroup props.joined
-          , className: props.className
+      $ E.element
+          (Styles.Button.buttonGroup props.joined)
+          R.div'
+          { className: props.className
           , children: props.content
           }
