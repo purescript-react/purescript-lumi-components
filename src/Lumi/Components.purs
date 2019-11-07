@@ -36,7 +36,8 @@ lumiComponent name defaults render = do
 
 lumiElement ::
   forall props defaults.
-  LumiComponent ( | props )
-    defaults ->
+  LumiComponent ( | props ) defaults ->
   (LumiComponentProps defaults -> LumiComponentProps props) -> JSX
 lumiElement { component, defaults } fromDefaults = React.element component (fromDefaults defaults)
+
+infixl 2 lumiElement as %

@@ -5,7 +5,7 @@ import Prelude
 import Effect.Console (log)
 import Effect.Uncurried (mkEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (lumiElement)
+import Lumi.Components ((%))
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
@@ -29,49 +29,49 @@ docs = unsafePerformEffect do
   pure $ column_ $
     [ h2_ "Not Joined"
     , example
-        $ lumiElement buttonGroup _
+        $ buttonGroup % _
             { content =
-                [ lumiElement button \_ -> primary { content = [ R.text "Button" ] }
-                , lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
+                [ button % \_ -> primary { content = [ R.text "Button" ] }
+                , button % \_ -> secondary { content = [ R.text "Button" ] }
                 ]
             }
     , h2_ "Not Joined"
     , example
-        $ lumiElement buttonGroup _
+        $ buttonGroup % _
             { content =
-                [ lumiElement button \_ -> primary { content = [ R.text "Button" ] }
-                , lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
-                , lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
+                [ button % \_ -> primary { content = [ R.text "Button" ] }
+                , button % \_ -> secondary { content = [ R.text "Button" ] }
+                , button % \_ -> secondary { content = [ R.text "Button" ] }
                 ]
             }
     , h2_ "Not Joined"
     , example
-        $ lumiElement buttonGroup _
+        $ buttonGroup % _
             { content =
-                [ lumiElement button \_ -> primary { content = [ R.text "Button" ] }
+                [ button % \_ -> primary { content = [ R.text "Button" ] }
                 , nativeSelect defaults
                     { options = []
                     , onChange = mkEffectFn1 \_ -> log "onChange"
                     , value = "Foo bar"
                     }
-                , lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
+                , button % \_ -> secondary { content = [ R.text "Button" ] }
                 ]
             }
     , h2_ "Joined"
     , example
-        $ lumiElement buttonGroup _
+        $ buttonGroup % _
             { content =
-                [ lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
-                , lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
+                [ button % \_ -> secondary { content = [ R.text "Button" ] }
+                , button % \_ -> secondary { content = [ R.text "Button" ] }
                 ]
             }
     , h2_ "Joined"
     , example
-        $ lumiElement buttonGroup _
+        $ buttonGroup % _
             { content =
-                [ lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
-                , lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
-                , lumiElement button \_ -> secondary { content = [ R.text "Button" ] }
+                [ button % \_ -> secondary { content = [ R.text "Button" ] }
+                , button % \_ -> secondary { content = [ R.text "Button" ] }
+                , button % \_ -> secondary { content = [ R.text "Button" ] }
                 ]
             }
     ]
