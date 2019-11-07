@@ -1,20 +1,23 @@
 -- | WARNING: not production ready -- this is a demo of react-basic-emotion and LumiComponent
 module Lumi.Components2.Box where
 
--- import Prelude
+import Prelude
 
--- import Lumi.Components (LumiComponent')
--- import Lumi.Styles.Box as Styles.Box
--- import React.Basic.DOM as R
--- import React.Basic.Emotion as E
--- import React.Basic.Hooks (component)
+import Effect (Effect)
+import Lumi.Components (LumiComponent, lumiComponent)
+import Lumi.Styles.Box as Styles.Box
+import React.Basic.DOM as R
+import React.Basic (JSX)
+import React.Basic.Emotion as E
+import React.Basic.Hooks as React
 
--- mkBox :: LumiComponent' ()
--- mkBox t = do
---   component "Box" \props ->
---     pure
---       $ E.element R.div'
---           { css: Styles.Box.box
---           , children: props.content
---           , className: props.className
---           }
+type BoxProps = ( content :: Array JSX )
+
+mkBox :: Effect (LumiComponent (BoxProps) (BoxProps))
+mkBox = do
+  lumiComponent "Box" { content: [], className: "" } \props -> React.do
+    pure
+      $ E.element Styles.Box.box R.div'
+          { children: props.content
+          , className: props.className
+          }

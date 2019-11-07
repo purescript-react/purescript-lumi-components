@@ -89,6 +89,7 @@ const componentLoaders = [
   "Select",
   "Slider",
   "Spacing",
+  "Slat",
   "StatusSlat",
   "Svg",
   "Tab",

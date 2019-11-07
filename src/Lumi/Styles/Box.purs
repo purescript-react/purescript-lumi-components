@@ -13,7 +13,7 @@ box =
     , flexDirection: str "column"
     , boxSizing: str "border-box"
     , minHeight: str "0"
-    , flex: str "0 0 auto"
+    -- , flex: str "0 0 auto"
     }
 
 column :: Style
@@ -31,6 +31,16 @@ wrap =
   css
     { flexWrap: str "wrap"
     }
+
+-- data Justify
+--   = Start
+--   | End
+--   | Center
+--   | SpaceBetween
+--   | SpaceAround
+--
+-- data Align
+--   =
 
 data FlexAlign
   = Start
