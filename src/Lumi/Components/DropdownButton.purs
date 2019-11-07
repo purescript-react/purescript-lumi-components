@@ -24,8 +24,8 @@ import React.Basic (Component, JSX, createComponent, element, fragment, make, ma
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (ref)
-import React.Basic.DOM.Events (stopPropagation)
-import React.Basic.Events (handler, handler_)
+import React.Basic.DOM.Events (capture_, stopPropagation)
+import React.Basic.Events (handler)
 import Unsafe.Coerce (unsafeCoerce)
 import Unsafe.Reference (unsafeRefEq)
 import Web.DOM (Node)
@@ -134,7 +134,7 @@ dropdownButton =
                   fragment
                     [ button secondary
                         { title = props.label
-                        , onPress = handler_ $ toggleOpen self maybeDropdownButtonRef
+                        , onPress = capture_ $ toggleOpen self maybeDropdownButtonRef
                         }
                     , fold ado
                         rootEl <- state.root
