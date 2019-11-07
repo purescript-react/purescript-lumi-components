@@ -40,7 +40,7 @@ type CommonButtonProps rest
 type ButtonProps
   = CommonButtonProps ()
 
-mkButton :: ReactContext LumiTheme -> Effect (LumiComponent ButtonProps ButtonProps)
+mkButton :: ReactContext LumiTheme -> Effect (LumiComponent ButtonProps)
 mkButton t = do
   lumiComponent "Button" defaults render
   where

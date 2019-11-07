@@ -16,7 +16,7 @@ type ButtonGroupProps
     , content :: Array JSX
     )
 
-mkButtonGroup :: ReactContext LumiTheme -> Effect (LumiComponent ButtonGroupProps ButtonGroupProps)
+mkButtonGroup :: ReactContext LumiTheme -> Effect (LumiComponent ButtonGroupProps)
 mkButtonGroup t = do
   lumiComponent "ButtonGroup" { className: "", joined: false, content: [] } \props ->
     pure

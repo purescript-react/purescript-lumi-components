@@ -4,6 +4,7 @@ import Prelude
 
 import Effect (Effect)
 import Prim.Row (class Lacks)
+import React.Basic.Emotion as Emotion
 import React.Basic.Hooks (JSX, ReactComponent, Render, component)
 import React.Basic.Hooks as React
 
@@ -12,7 +13,10 @@ type Component props defaults
     , defaults :: defaults
     }
 
-type LumiComponent props defaults
+type LumiComponent props
+  = LumiComponent' props props
+
+type LumiComponent' props defaults
   = Component (LumiComponentProps props) (LumiComponentProps defaults)
 
 type LumiComponentProps p
@@ -26,7 +30,7 @@ lumiComponent ::
   String ->
   LumiComponentProps defaults ->
   (LumiComponentProps props -> Render Unit hooks JSX) ->
-  Effect (LumiComponent props defaults)
+  Effect (LumiComponent' props defaults)
 lumiComponent name defaults render = do
   c <- component name render
   pure
@@ -36,8 +40,18 @@ lumiComponent name defaults render = do
 
 lumiElement ::
   forall props defaults.
-  LumiComponent ( | props ) defaults ->
+  LumiComponent' ( | props ) defaults ->
   (LumiComponentProps defaults -> LumiComponentProps props) -> JSX
-lumiElement { component, defaults } fromDefaults = React.element component (fromDefaults defaults)
+lumiElement { component, defaults } fromDefaults =
+  React.element component (fromDefaults defaults)
 
 infixl 2 lumiElement as %
+
+lumiElement' ::
+  forall props defaults.
+  Lacks "css" props =>
+  Emotion.Style ->
+  LumiComponent' ( | props ) defaults ->
+  (LumiComponentProps defaults -> LumiComponentProps props) -> JSX
+lumiElement' style { component, defaults } fromDefaults =
+  Emotion.element style component (fromDefaults defaults)

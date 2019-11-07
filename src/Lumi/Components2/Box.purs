@@ -6,16 +6,16 @@ import Prelude
 import Effect (Effect)
 import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles.Box as Styles.Box
+import Lumi.Styles.Theme (LumiTheme)
+import React.Basic (JSX, ReactContext)
 import React.Basic.DOM as R
-import React.Basic (JSX)
 import React.Basic.Emotion as E
-import React.Basic.Hooks as React
 
 type BoxProps = ( content :: Array JSX )
 
-mkBox :: Effect (LumiComponent (BoxProps) (BoxProps))
-mkBox = do
-  lumiComponent "Box" { content: [], className: "" } \props -> React.do
+mkBox :: ReactContext LumiTheme -> Effect (LumiComponent BoxProps)
+mkBox t = do
+  lumiComponent "Box" { content: [], className: "" } \props ->
     pure
       $ E.element Styles.Box.box R.div'
           { children: props.content

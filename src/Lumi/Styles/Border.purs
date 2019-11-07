@@ -1,11 +1,8 @@
 module Lumi.Styles.Border where
 
-import Prelude
 
-import Color (cssStringHSLA)
-import Lumi.Components.Color (colors)
 import Lumi.Styles.Theme (LumiTheme)
-import React.Basic.Emotion (class IsStyleProperty, Style, color, css, int, merge, nested, none, prop, str)
+import React.Basic.Emotion (Style, color, css, int, merge, none, str)
 
 
 data Border
