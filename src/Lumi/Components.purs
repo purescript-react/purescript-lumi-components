@@ -2,6 +2,7 @@ module Lumi.Components where
 
 import Prelude
 
+import Data.String (joinWith, toLower)
 import Effect (Effect)
 import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
@@ -9,8 +10,10 @@ import React.Basic.Hooks (JSX, ReactComponent, Render, component)
 import React.Basic.Hooks as React
 
 type Component props defaults
-  = { component :: ReactComponent props
+  = { name :: String
+    , component :: ReactComponent props
     , defaults :: defaults
+    , className :: String
     }
 
 type LumiComponent props
@@ -34,16 +37,20 @@ lumiComponent ::
 lumiComponent name defaults render = do
   c <- component name render
   pure
-    { component: c
+    { name
+    , component: c
     , defaults
+    , className: "lumi lumi-" <> toLower name
     }
 
 lumiElement ::
   forall props defaults.
   LumiComponent' ( | props ) defaults ->
   (LumiComponentProps defaults -> LumiComponentProps props) -> JSX
-lumiElement { component, defaults } fromDefaults =
-  React.element component (fromDefaults defaults)
+lumiElement { component, defaults, className } fromDefaults =
+  React.element
+    component
+    ((appendLumiComponentClassName className <<< fromDefaults) defaults)
 
 infixl 2 lumiElement as %
 
@@ -53,5 +60,18 @@ lumiElement' ::
   Emotion.Style ->
   LumiComponent' ( | props ) defaults ->
   (LumiComponentProps defaults -> LumiComponentProps props) -> JSX
-lumiElement' style { component, defaults } fromDefaults =
-  Emotion.element style component (fromDefaults defaults)
+lumiElement' style { component, defaults, className } fromDefaults =
+  Emotion.element
+    style
+    component
+    ((appendLumiComponentClassName className <<< fromDefaults) defaults)
+
+appendLumiComponentClassName ::
+  forall props.
+  String ->
+  LumiComponentProps props ->
+  LumiComponentProps props
+appendLumiComponentClassName n r =
+  r
+    { className = joinWith " " [ n, r.className ]
+    }

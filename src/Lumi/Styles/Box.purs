@@ -32,23 +32,15 @@ wrap =
     { flexWrap: str "wrap"
     }
 
--- data Justify
---   = Start
---   | End
---   | Center
---   | SpaceBetween
---   | SpaceAround
---
--- data Align
---   =
-
 data FlexAlign
   = Start
   | End
   | Center
   | Stretch
   | Baseline
-  | Unset
+  | SpaceAround
+  | SpaceBetween
+  | SpaceEvenly
 
 instance isStylePropertyFlexAlign :: IsStyleProperty FlexAlign where
   prop a =
@@ -58,7 +50,9 @@ instance isStylePropertyFlexAlign :: IsStyleProperty FlexAlign where
       Center -> "center"
       Stretch -> "stretch"
       Baseline -> "baseline"
-      Unset -> "unset"
+      SpaceAround -> "space-around"
+      SpaceBetween -> "space-between"
+      SpaceEvenly -> "space-evenly"
 
 justify :: FlexAlign -> Style
 justify a = css { justifyContent: prop a }
@@ -80,7 +74,7 @@ interactive =
 focusable :: LumiTheme -> Style
 focusable theme =
   css
-    { "&:focus":
+    { "&:focus, &:active":
       nested
         $ css
             { outline: str "0"

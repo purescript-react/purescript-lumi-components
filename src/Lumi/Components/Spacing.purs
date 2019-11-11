@@ -5,8 +5,11 @@ module Lumi.Components.Spacing
   , toPixels
   ) where
 
+import Prelude
+
 import React.Basic.Compat (JSX)
 import React.Basic.DOM as R
+import React.Basic.Emotion (class IsStyleProperty, str)
 
 data Space
   = S4 | S8 | S12 | S16 | S24 | S32 | S48 | S56
@@ -44,3 +47,6 @@ toPixels S88 = "88px"
 toPixels S96 = "96px"
 toPixels S104 = "104px"
 toPixels S112 = "112px"
+
+instance isStylePropertySpace :: IsStyleProperty Space where
+  prop = str <<< toPixels
