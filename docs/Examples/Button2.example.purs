@@ -5,7 +5,7 @@ import Prelude
 import Data.Array (intercalate)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components ((%))
-import Lumi.Components.Color (colors)
+import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Icon (IconType(..), icon)
@@ -19,7 +19,7 @@ import React.Basic (JSX, createContext)
 import React.Basic.DOM as R
 
 theme :: LumiTheme
-theme = { colors }
+theme = { colors, colorNames }
 
 docs :: JSX
 docs = unsafePerformEffect do

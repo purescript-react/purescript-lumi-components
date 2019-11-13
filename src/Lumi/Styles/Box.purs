@@ -13,7 +13,8 @@ box =
     , flexDirection: str "column"
     , boxSizing: str "border-box"
     , minHeight: str "0"
-    -- , flex: str "0 0 auto"
+    , minWidth: str "min-content"
+    , flex: str "0 0 auto"
     }
 
 column :: Style

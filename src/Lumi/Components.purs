@@ -40,7 +40,7 @@ lumiComponent name defaults render = do
     { name
     , component: c
     , defaults
-    , className: "lumi lumi-" <> toLower name
+    , className: "lumi-component lumi-" <> toLower name
     }
 
 lumiElement ::

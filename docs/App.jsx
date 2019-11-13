@@ -169,7 +169,7 @@ const renderRoute = component => (
     render={() =>
       column_([
         row({
-          style: { alignItems: "center", marginBottom: "24px" },
+          style: { alignItems: "center", marginBottom: "24px", flexWrap: "wrap" },
           children: [
             h1_(component.title),
             <a
@@ -236,7 +236,11 @@ const Root = ({ children }) =>
 const Title = ({ children }) => (
   <Link
     to="/"
-    style={{ color: cssStringHSLA(colors.black1), textDecoration: "none" }}
+    style={{
+      color: cssStringHSLA(colors.black1),
+      textDecoration: "none",
+      whiteSpace: "nowrap"
+    }}
   >
     {mainHeader_(children)}
   </Link>
@@ -247,7 +251,7 @@ const Version = ({ children }) =>
     ...subsectionHeader,
     color: colorNames.black1,
     children: children,
-    style: { marginLeft: 10 }
+    style: { marginLeft: 10, whiteSpace: "nowrap" }
   });
 
 const MenuLink = ({ toggleMenu }) =>
