@@ -1,12 +1,10 @@
 module Lumi.Components2.Slat where
 
 import Prelude
-import Data.Maybe (Maybe(..), isJust)
+import Data.Maybe (Maybe(..))
 import Data.Newtype (un)
 import Effect (Effect)
 import Lumi.Components (LumiComponent, lumiComponent)
-import Lumi.Components2.Box (mkBox)
-import Lumi.Styles.Border (Border(..))
 import Lumi.Styles.Slat as Styles.Slat
 import Lumi.Styles.Theme (LumiTheme)
 import React.Basic.DOM as R
@@ -18,9 +16,7 @@ import Web.HTML.History (URL(..))
 
 type SlatProps
   = ( content :: Array JSX
-    , border :: Border
-    , isList :: Boolean
-    , onInteraction ::
+    , interaction ::
       Maybe
         { onClick :: Effect Unit
         , tabIndex :: Int
@@ -31,52 +27,46 @@ type SlatProps
 mkSlat ::
   ReactContext LumiTheme ->
   Effect (LumiComponent SlatProps)
-mkSlat t = do
-  box <- mkBox t
-  lumiComponent
-    "Slat"
-    { content: []
-    , className: ""
-    , border: BorderRound
-    , isList: true
-    , onInteraction: Nothing
-    }
-    ( \props -> React.do
-        theme <- useContext t
-        let
-          slatStyle =
-            E.merge
-              [ Styles.Slat.slat
-                theme
-                { border: props.border
-                , isInteractive: isJust props.onInteraction
-                , isList: props.isList
-                }
-              , appearanceNone
-              ]
-        pure case props.onInteraction of
-          Nothing ->
-            E.element slatStyle R.div'
-              { children: props.content
-              , className: props.className
-              }
-          Just onInteraction -> case onInteraction.href of
-            Nothing ->
-              E.element slatStyle R.button'
-                { children: props.content
-                , className: props.className
-                , onClick: capture_ onInteraction.onClick
-                , tabIndex: onInteraction.tabIndex
-                }
-            Just href ->
-              E.element slatStyle R.a'
-                { children: props.content
-                , className: props.className
-                , onClick: capture_ onInteraction.onClick
-                , tabIndex: onInteraction.tabIndex
-                , href: un URL href
-                }
-    )
+mkSlat t =
+  lumiComponent "Slat" defaults \props@{ className } -> React.do
+    theme <- useContext t
+    let
+      slatStyle =
+        E.merge
+          [ Styles.Slat.slat theme
+          , appearanceNone
+          ]
+    pure
+      case props.interaction of
+        Nothing ->
+          E.element R.div'
+            { css: slatStyle
+            , children: props.content
+            , className
+            }
+        Just interaction@{ href: Nothing } ->
+          E.element R.button'
+            { css: slatStyle
+            , children: props.content
+            , onClick: capture_ interaction.onClick
+            , tabIndex: interaction.tabIndex
+            , className
+            }
+        Just interaction@{ href: Just href } ->
+          E.element R.a'
+            { css: slatStyle
+            , children: props.content
+            , onClick: capture_ interaction.onClick
+            , tabIndex: interaction.tabIndex
+            , href: un URL href
+            , className
+            }
+  where
+    defaults :: Record SlatProps
+    defaults =
+      { content: []
+      , interaction: Nothing
+      }
 
-appearanceNone :: E.Style
-appearanceNone = E.css { appearance: E.none }
+    appearanceNone :: E.Style
+    appearanceNone = E.css { appearance: E.none }

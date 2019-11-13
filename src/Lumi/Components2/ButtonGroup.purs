@@ -18,11 +18,10 @@ type ButtonGroupProps
 
 mkButtonGroup :: ReactContext LumiTheme -> Effect (LumiComponent ButtonGroupProps)
 mkButtonGroup t = do
-  lumiComponent "ButtonGroup" { className: "", joined: false, content: [] } \props ->
+  lumiComponent "ButtonGroup" { joined: false, content: [] } \props ->
     pure
-      $ E.element
-          (Styles.Button.buttonGroup props.joined)
-          R.div'
+      $ E.element R.div'
           { className: props.className
           , children: props.content
+          , css: Styles.Button.buttonGroup props.joined
           }

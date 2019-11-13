@@ -12,7 +12,7 @@ import Data.Nullable as Nullable
 import Data.String.CodeUnits (fromCharArray)
 import Effect (Effect)
 import Foreign.Object (fromHomogeneous)
-import Lumi.Components (LumiComponent, LumiComponentProps, lumiComponent)
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
 import Lumi.Components.Size (Size(..))
 import Lumi.Styles.Button (ButtonKind(..), ButtonState(..))
 import Lumi.Styles.Button as Styles.Button
@@ -64,16 +64,30 @@ mkButton t = do
       }
   lumiButtonLinkElement = R.unsafeCreateDOMComponent "a"
 
+  defaults :: Record ButtonProps
+  defaults =
+    { accessibilityLabel: mempty
+    , onPress: mempty
+    , size: Medium
+    , testId: mempty
+    , type: mempty
+    , kind: Primary
+    , buttonState: Enabled
+    , color: Nothing
+    , content: mempty
+    }
+
   render props = React.do
     theme <- useContext t
     let
       buttonStyle = Styles.Button.button theme props.color props.kind props.buttonState props.size
     pure
       if props.type == "link" then
-        E.element buttonStyle lumiButtonLinkElement
+        E.element lumiButtonLinkElement
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
+          , css: buttonStyle
           , onClick: capture_ props.onPress
           , role: "button"
           , _data:
@@ -82,10 +96,11 @@ mkButton t = do
               }
           }
       else
-        E.element buttonStyle lumiButtonElement
+        E.element lumiButtonElement
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
+          , css: buttonStyle
           , onClick: capture_ props.onPress
           , type: props.type
           , _data:
@@ -112,36 +127,21 @@ mkButton t = do
       else
         props.content
 
-defaults :: LumiComponentProps ButtonProps
-defaults =
-  { accessibilityLabel: mempty
-  , onPress: mempty
-  , size: Medium
-  , testId: mempty
-  , type: mempty
-  , kind: Primary
-  , buttonState: Enabled
-  , color: Nothing
-  , className: ""
-  , content: mempty
-  }
+primary :: PropsModifier ButtonProps
+primary = identity
 
-primary :: LumiComponentProps ButtonProps
-primary = defaults
-
-secondary :: LumiComponentProps ButtonProps
+secondary :: PropsModifier ButtonProps
 secondary =
-  defaults
+  propsModifier _
     { kind = Secondary
     }
 
-linkStyle :: LumiComponentProps ButtonProps
+linkStyle :: PropsModifier ButtonProps
 linkStyle =
-  defaults
+  propsModifier _
     { type = "link"
     -- , kind = LinkButton
     }
 
 invisibleSpace :: String
 invisibleSpace = fromCharArray $ Array.catMaybes [ fromCharCode 0x2063 ]
-

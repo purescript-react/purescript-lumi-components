@@ -15,9 +15,10 @@ type BoxProps = ( content :: Array JSX )
 
 mkBox :: ReactContext LumiTheme -> Effect (LumiComponent BoxProps)
 mkBox t = do
-  lumiComponent "Box" { content: [], className: "" } \props ->
+  lumiComponent "Box" { content: [] } \props ->
     pure
-      $ E.element Styles.Box.box R.div'
+      $ E.element R.div'
           { children: props.content
           , className: props.className
+          , css: Styles.Box.box
           }

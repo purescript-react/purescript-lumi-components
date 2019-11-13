@@ -31,8 +31,8 @@ docs =
             $ buttonGroup
             % _
                 { content =
-                  [ button % \_ -> primary { content = [ R.text "Button" ] }
-                  , button % \_ -> secondary { content = [ R.text "Button" ] }
+                  [ button % primary _{ content = [ R.text "Button" ] }
+                  , button % secondary _{ content = [ R.text "Button" ] }
                   ]
                 }
         , h2_ "Not Joined"
@@ -40,9 +40,9 @@ docs =
             $ buttonGroup
             % _
                 { content =
-                  [ button % \_ -> primary { content = [ R.text "Button" ] }
-                  , button % \_ -> secondary { content = [ R.text "Button" ] }
-                  , button % \_ -> secondary { content = [ R.text "Button" ] }
+                  [ button % primary _{ content = [ R.text "Button" ] }
+                  , button % secondary _{ content = [ R.text "Button" ] }
+                  , button % secondary _{ content = [ R.text "Button" ] }
                   ]
                 }
         , h2_ "Not Joined"
@@ -50,14 +50,14 @@ docs =
             $ buttonGroup
             % _
                 { content =
-                  [ button % \_ -> primary { content = [ R.text "Button" ] }
+                  [ button % primary _{ content = [ R.text "Button" ] }
                   , nativeSelect
                       defaults
                         { options = []
                         , onChange = mkEffectFn1 \_ -> log "onChange"
                         , value = "Foo bar"
                         }
-                  , button % \_ -> secondary { content = [ R.text "Button" ] }
+                  , button % secondary _{ content = [ R.text "Button" ] }
                   ]
                 }
         , h2_ "Joined"
@@ -65,8 +65,8 @@ docs =
             $ buttonGroup
             % _
                 { content =
-                  [ button % \_ -> secondary { content = [ R.text "Button" ] }
-                  , button % \_ -> secondary { content = [ R.text "Button" ] }
+                  [ button % secondary _{ content = [ R.text "Button" ] }
+                  , button % secondary _{ content = [ R.text "Button" ] }
                   ]
                 }
         , h2_ "Joined"
@@ -74,9 +74,9 @@ docs =
             $ buttonGroup
             % _
                 { content =
-                  [ button % \_ -> secondary { content = [ R.text "Button" ] }
-                  , button % \_ -> secondary { content = [ R.text "Button" ] }
-                  , button % \_ -> secondary { content = [ R.text "Button" ] }
+                  [ button % secondary _{ content = [ R.text "Button" ] }
+                  , button % secondary _{ content = [ R.text "Button" ] }
+                  , button % secondary _{ content = [ R.text "Button" ] }
                   ]
                 }
         ]

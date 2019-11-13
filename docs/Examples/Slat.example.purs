@@ -7,7 +7,7 @@ import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent, lumiElement', (%))
+import Lumi.Components (LumiComponent, StyleModifier, lumiComponent, styleModifier, (%))
 import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
@@ -17,7 +17,7 @@ import Lumi.Components.Svg (userSvg)
 import Lumi.Components.Text as Text
 import Lumi.Components2.Box (mkBox)
 import Lumi.Components2.Slat (mkSlat)
-import Lumi.Styles.Border (Border(..))
+import Lumi.Styles.Border as Border
 import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Theme (LumiTheme)
 import React.Basic (JSX, ReactContext, createContext, fragment)
@@ -40,19 +40,22 @@ docs =
     labeledInfo <- mkLabeledInfo t
     let
       exampleSlatContent =
-        [ lumiElement' (slatColumn 4) box _
-          { content =
-            [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
-            ]
-          }
-        , lumiElement' (slatColumn 1) labeledInfo _
-          { title = R.text "Lead time"
-          , value = R.text "11 weeks"
-          }
-        , lumiElement' (slatColumn 1) labeledInfo _
-          { title = R.text "Quantities"
-          , value = R.text "500-2.5k"
-          }
+        [ box
+          % slatColumn 4 _
+              { content =
+                [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
+                ]
+              }
+        , labeledInfo
+          % slatColumn 1 _
+              { title = R.text "Lead time"
+              , value = R.text "11 weeks"
+              }
+        , labeledInfo
+          % slatColumn 1 _
+              { title = R.text "Quantities"
+              , value = R.text "500-2.5k"
+              }
         ]
 
     pure $ column_
@@ -60,80 +63,84 @@ docs =
           [ [ example
                 $ fragment
                 $ replicate 3
-                $ lumiElement' slatWidth slat _
+                $ slat
+                % slatWidth _
                     { content = exampleSlatContent
                     }
+
             , example
                 $ fragment
                 $ replicate 3
                 $ slat
-                % _
-                    { border = BorderSquare
-                    , content = exampleSlatContent
-                    , onInteraction = Just
+                % Border.interactive exampleTheme
+                $ Border.topBottom exampleTheme
+                $ _ { content = exampleSlatContent
+                    , interaction = Just
                       { onClick: window >>= alert "click!"
                       , tabIndex: 1
                       , href: Nothing
                       }
                     }
+
             , example
                 $ fragment
                 $ replicate 9
-                $ lumiElement' slatWidth slat _
-                    { border = BorderTopBottom
-                    , content = exampleSlatContent
-                    , onInteraction = Just
+                $ slat
+                % slatWidth
+                $ Border.topBottom exampleTheme
+                $ _ { content = exampleSlatContent
+                    , interaction = Just
                       { onClick: window >>= alert "click!"
                       , tabIndex: 2
                       , href: Just $ URL "#"
                       }
                     }
+
             ]
           ]
 
-slatWidth :: E.Style
-slatWidth = E.css { maxWidth: E.int 500, width: E.str "100%" }
+slatWidth :: StyleModifier
+slatWidth = styleModifier $ E.css { maxWidth: E.int 500, width: E.str "100%" }
 
-slatColumn :: Int -> E.Style
+slatColumn :: Int -> StyleModifier
 slatColumn flexGrow =
-  E.css
-    { flexGrow: E.int flexGrow
-    , "&:not(:first-child)":
-      E.nested
-        $ E.css
-            { marginLeft: E.prop S16
-            , alignItems: E.prop End
-            }
-    }
+  styleModifier
+    $ E.css
+    $ { flexGrow: E.int flexGrow
+      , "&:not(:first-child)":
+        E.nested
+          $ E.css
+              { marginLeft: E.prop S16
+              , alignItems: E.prop End
+              }
+      }
 
 mkLabeledInfo :: ReactContext LumiTheme -> Effect (LumiComponent ( title :: JSX, value :: JSX ))
 mkLabeledInfo t = do
   box <- mkBox t
-  lumiComponent
-    "LabeledInfo"
-    { className: ""
-    , title: mempty :: JSX
-    , value: mempty :: JSX
-    }
-    ( \{ className, title, value } -> React.do
-        theme <- React.useContext t
-        pure
-          $ box
-          % _
-              { className = className
-              , content =
-                [ Text.text
-                    Text.body
-                      { children = [ value ]
-                      , color = Nullable.notNull theme.colorNames.black
-                      , style = R.css { whiteSpace: "nowrap" }
-                      }
-                , Text.text
-                    Text.subtext
-                      { children = [ title ]
-                      , color = Nullable.notNull theme.colorNames.black1
-                      , style = R.css { whiteSpace: "nowrap" }
-                      }
-                ]
-              }
-    )
+  lumiComponent "LabeledInfo" defaults \{ className, title, value } -> React.do
+    theme <- React.useContext t
+    pure
+      $ box
+      % _
+          { className = className
+          , content =
+            [ Text.text
+                Text.body
+                  { children = [ value ]
+                  , color = Nullable.notNull theme.colorNames.black
+                  , style = R.css { whiteSpace: "nowrap" }
+                  }
+            , Text.text
+                Text.subtext
+                  { children = [ title ]
+                  , color = Nullable.notNull theme.colorNames.black1
+                  , style = R.css { whiteSpace: "nowrap" }
+                  }
+            ]
+          }
+  where
+    defaults =
+      { title: mempty
+      , value: mempty
+      }

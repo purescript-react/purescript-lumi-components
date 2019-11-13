@@ -58,31 +58,31 @@ docs = unsafePerformEffect do
       , [ h2_ "Color"
         , h4_ "Primary"
         , example
-            $ button % \_ -> primary { content = [ R.text "Button" ] }
+            $ button % primary _{ content = [ R.text "Button" ] }
         ]
       , [ h4_ "Primary + Disabled"
         , example
-            $ button % \_ -> primary { content = [ R.text "Button" ], buttonState = Disabled }
+            $ button % primary _{ content = [ R.text "Button" ], buttonState = Disabled }
         ]
       , [ h4_ "Secondary Medium (default)"
         , example
-            $ button % \_ -> secondary { content = [ R.text "Button" ] }
+            $ button % secondary _{ content = [ R.text "Button" ] }
         ]
       , [ h4_ "Secondary Small"
         , example
-            $ button % \_ -> secondary { content = [ R.text "Button" ], size = Small }
+            $ button % secondary _{ content = [ R.text "Button" ], size = Small }
         ]
       , [ h4_ "Secondary Large"
         , example
-            $ button % \_ -> secondary { content = [ R.text "Button" ], size = Large }
+            $ button % secondary _{ content = [ R.text "Button" ], size = Large }
         ]
       , [ h4_ "Secondary Extra Large"
         , example
-            $ button % \_ -> secondary { content = [ R.text "Button" ], size = ExtraLarge }
+            $ button % secondary _{ content = [ R.text "Button" ], size = ExtraLarge }
         ]
       , [ h4_ "Secondary + Disabled"
         , example
-            $ button % \_ -> secondary { content = [ R.text "Button" ], buttonState = Disabled }
+            $ button % secondary _{ content = [ R.text "Button" ], buttonState = Disabled }
         ]
       , [ h4_ "Icon button"
         , example
@@ -90,7 +90,7 @@ docs = unsafePerformEffect do
         ]
       , [ h4_ "Icon button"
         , example
-            $ button % \_ -> secondary { content = [ buttonIcon Plus, hspace S8, R.text "Add new item" ] }
+            $ button % secondary _{ content = [ buttonIcon Plus, hspace S8, R.text "Add new item" ] }
         ]
       , [ h4_ "Icon button"
         , example
@@ -98,23 +98,23 @@ docs = unsafePerformEffect do
         ]
       , [ h4_ "Link style"
         , example
-            $ button % \_ -> linkStyle { content = [ R.text "Button w/ link style" ] }
+            $ button % linkStyle _{ content = [ R.text "Button w/ link style" ] }
         ]
       , [ h4_ "Loading (Medium/default)"
         , example
-            $ button % \_ -> primary { buttonState = Loading }
+            $ button % primary _{ buttonState = Loading }
         ]
       , [ h4_ "Loading (Small) "
         , example
-            $ button % \_ -> primary { buttonState = Loading, size = Small }
+            $ button % primary _{ buttonState = Loading, size = Small }
         ]
       , [ h4_ "Loading (Large) "
         , example
-            $ button % \_ -> primary { buttonState = Loading, size = Large }
+            $ button % primary _{ buttonState = Loading, size = Large }
         ]
       , [ h4_ "Loading (ExtraLarge) "
         , example
-            $ button % \_ -> primary { buttonState = Loading, size = ExtraLarge }
+            $ button % primary _{ buttonState = Loading, size = ExtraLarge }
         ]
       ]
   where
