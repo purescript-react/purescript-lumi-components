@@ -81,4 +81,9 @@ focusable theme =
             { outline: str "0"
             , boxShadow: str ("0 0 0 3px " <> cssStringHSLA theme.colors.primary3)
             }
+    , "&::-moz-focus-inner":
+      nested
+        $ css
+            { border: str "0"
+            }
     }
