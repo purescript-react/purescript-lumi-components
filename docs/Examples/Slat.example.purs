@@ -18,6 +18,7 @@ import Lumi.Components.Text as Text
 import Lumi.Components2.Box (mkBox)
 import Lumi.Components2.Slat (mkSlat)
 import Lumi.Styles.Border (Border(..))
+import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Theme (LumiTheme)
 import React.Basic (JSX, ReactContext, createContext, fragment)
 import React.Basic.DOM as R
@@ -39,16 +40,16 @@ docs =
     labeledInfo <- mkLabeledInfo t
     let
       exampleSlatContent =
-        [ lumiElement' primarySlatColumn box _
+        [ lumiElement' (slatColumn 4) box _
           { content =
             [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
             ]
           }
-        , lumiElement' slatColumn labeledInfo _
+        , lumiElement' (slatColumn 1) labeledInfo _
           { title = R.text "Lead time"
           , value = R.text "11 weeks"
           }
-        , lumiElement' slatColumn labeledInfo _
+        , lumiElement' (slatColumn 1) labeledInfo _
           { title = R.text "Quantities"
           , value = R.text "500-2.5k"
           }
@@ -93,20 +94,15 @@ docs =
 slatWidth :: E.Style
 slatWidth = E.css { maxWidth: E.int 500, width: E.str "100%" }
 
-primarySlatColumn :: E.Style
-primarySlatColumn =
-  E.merge
-    [ slatColumn
-    , E.css { flex: E.str "1 0 auto" }
-    ]
-
-slatColumn :: E.Style
-slatColumn =
+slatColumn :: Int -> E.Style
+slatColumn flexGrow =
   E.css
-    { "&:not(:first-child)":
+    { flexGrow: E.int flexGrow
+    , "&:not(:first-child)":
       E.nested
         $ E.css
             { marginLeft: E.prop S16
+            , alignItems: E.prop End
             }
     }
 
