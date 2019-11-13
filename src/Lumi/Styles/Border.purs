@@ -43,3 +43,30 @@ interactive = Styles.do
         { borderColor: color theme.colors.black2
         }
       }
+
+listSpaced :: StyleModifier
+listSpaced =
+  styleModifier \(LumiTheme theme) ->
+  css
+    { "&:not(:first-child)": nested $ css
+      { marginTop: prop S8
+      }
+    }
+
+listCompact :: StyleModifier
+listCompact =
+  styleModifier \(LumiTheme theme) ->
+  css
+    { "&:first-child": nested $ css
+      { borderTopColor: color theme.colors.transparent
+      }
+    , "&:last-child": nested $ css
+      { borderBottomColor: color theme.colors.transparent
+      }
+    , "&:not(:first-child)": nested $ css
+      { marginTop: int (-borderWidth)
+      , ":not(:hover)": nested $ css
+        { borderTopColor: color theme.colors.transparent
+        }
+      }
+    }
