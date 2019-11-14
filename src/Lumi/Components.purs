@@ -1,33 +1,26 @@
 module Lumi.Components where
 
-import Prelude
+import Prelude hiding (bind, discard)
 
 import Data.String (toLower)
-import Data.Symbol (SProxy(..))
 import Effect (Effect)
+import Lumi.Styles.Theme (LumiTheme)
+import Prelude as Prelude
 import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
-import React.Basic.Hooks (JSX, ReactComponent, Render, component)
-import Record as Record
+import React.Basic.Hooks (JSX, ReactComponent, Render, component, element)
+import Record.Unsafe.Union (unsafeUnion)
 
-type LumiProps (props :: # Type)
-  = { className :: String | props }
+type LumiProps props = { style :: LumiTheme -> Emotion.Style, className :: String | props }
 
-type LumiModifier (props :: # Type)
-  = { css :: Emotion.Style, className :: String | props } ->
-    { css :: Emotion.Style, className :: String | props }
+type LumiModifier props = LumiProps props -> LumiProps props
 
 type PropsModifier props = LumiModifier props -> LumiModifier props
 
 propsModifier :: forall props. LumiModifier props -> PropsModifier props
 propsModifier f m = m >>> f
 
-type StyleModifier = forall props. PropsModifier props
-
-styleModifier :: Emotion.Style -> StyleModifier
-styleModifier s m = m >>> \p -> p { css = p.css <> s }
-
-newtype LumiComponent (props :: # Type)
+newtype LumiComponent props
   = LumiComponent
       { name :: String
       , component :: ReactComponent (LumiProps props)
@@ -44,7 +37,7 @@ lumiComponent ::
   { | props } ->
   (LumiProps props -> Render Unit hooks JSX) ->
   Effect (LumiComponent props)
-lumiComponent name defaults render = do
+lumiComponent name defaults render = Prelude.do
   c <- component name render
   pure $
     LumiComponent
@@ -56,23 +49,36 @@ lumiComponent name defaults render = do
 
 lumiElement ::
   forall props.
-  Lacks "css" props =>
+  -- XXX: Can we remove these two constraints? I believe they're unnecessary
+  -- here because of the definitions of `LumiProps` and `lumiComponent`.
   Lacks "className" props =>
+  Lacks "style" props =>
   LumiComponent props ->
   LumiModifier props ->
   JSX
 lumiElement (LumiComponent { component, defaults, className }) modifyProps =
-  Emotion.element component
+  element component
     $ appendClassName
     $ modifyProps
-    $ Record.insert _css mempty
-    $ Record.insert _className ""
+    $ unsafeUnion { style: mempty, className: "" }
     $ defaults
   where
-    _css = SProxy :: _ "css"
-    _className = SProxy :: _ "className"
-
     appendClassName :: LumiModifier props
     appendClassName props = props { className = className <> " " <> props.className }
 
 infixr 0 lumiElement as %
+
+withContent ::
+  forall props content.
+  PropsModifier (content :: content | props) ->
+  content ->
+  LumiModifier (content :: content | props)
+withContent p content = p _{ content = content }
+
+infixr 0 withContent as %%%
+
+bind :: forall props. PropsModifier props -> (Unit -> PropsModifier props) -> PropsModifier props
+bind m f = m >>> f unit
+
+discard :: forall props. PropsModifier props -> (Unit -> PropsModifier props) -> PropsModifier props
+discard = bind

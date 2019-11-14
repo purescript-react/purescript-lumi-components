@@ -6,11 +6,12 @@ import Prelude
 import Color (Color, darken, desaturate, lighten)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe, fromMaybe)
-import Data.Monoid (guard)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.ZIndex (ziButtonGroup)
+import Lumi.Styles as Styles
+import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..), align, focusable, interactive, justify, row)
-import Lumi.Styles.Theme (LumiTheme)
+import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (Style, color, css, int, merge, nested, str)
 
 data ButtonKind
@@ -22,66 +23,67 @@ data ButtonState
   | Disabled
   | Loading
 
-button :: LumiTheme -> Maybe Color -> ButtonKind -> ButtonState -> Size -> Style
-button theme hue buttonKind buttonState size =
-  merge
-    [ row
-    , align Center
-    , justify Center
-    , interactive
-    , focusable theme
-    , css
-        { appearance: str "none"
-        , minWidth: int 70
-        , padding: str "10px 20px"
-        , fontSize: int 14
-        , lineHeight: int 20
-        , whiteSpace: str "nowrap"
-        , textOverflow: str "ellipsis"
-        , overflow: str "hidden"
-        , height: int 40
-        , borderRadius: int 3
-        , borderWidth: int 1
-        , borderStyle: str "solid"
-        , "@media (min-width: 860px)":
-          nested
-            $ fold
-                [ css
-                    { padding: str "6px 16px"
-                    , height: int 32
-                    }
-                , case size of
-                    Small ->
-                      css
-                        { fontSize: int 12
-                        , lineHeight: int 16
-                        , height: int 28
-                        }
-                    Medium -> mempty
-                    Large ->
-                      css
-                        { fontSize: int 15
-                        , lineHeight: int 24
-                        , padding: str "12px 24px"
-                        , height: int 48
-                        }
-                    ExtraLarge ->
-                      css
-                        { fontSize: int 20
-                        , lineHeight: int 32
-                        , padding: str "16px 32px"
-                        , height: int 64
-                        }
-                ]
+button :: Maybe Color -> ButtonKind -> ButtonState -> Size -> StyleModifier
+button hue buttonKind buttonState size = Styles.do
+  row
+  align Center
+  justify Center
+  interactive
+  focusable
+  styleModifier \theme@(LumiTheme { colors }) ->
+    merge
+      [ css
+          { appearance: str "none"
+          , minWidth: int 70
+          , padding: str "10px 20px"
+          , fontSize: int 14
+          , lineHeight: int 20
+          , whiteSpace: str "nowrap"
+          , textOverflow: str "ellipsis"
+          , overflow: str "hidden"
+          , height: int 40
+          , borderRadius: int 3
+          , borderWidth: int 1
+          , borderStyle: str "solid"
+          , "@media (min-width: 860px)":
+            nested
+              $ fold
+                  [ css
+                      { padding: str "6px 16px"
+                      , height: int 32
+                      }
+                  , case size of
+                      Small ->
+                        css
+                          { fontSize: int 12
+                          , lineHeight: int 16
+                          , height: int 28
+                          }
+                      Medium -> mempty
+                      Large ->
+                        css
+                          { fontSize: int 15
+                          , lineHeight: int 24
+                          , padding: str "12px 24px"
+                          , height: int 48
+                          }
+                      ExtraLarge ->
+                        css
+                          { fontSize: int 20
+                          , lineHeight: int 32
+                          , padding: str "16px 32px"
+                          , height: int 64
+                          }
+                  ]
+          }
+      , _buttonStateStyles
+        { hue: fromMaybe colors.primary hue
+        , black: colors.black
+        , white: colors.white
         }
-    , _buttonStateStyles
-      { hue: fromMaybe theme.colors.primary hue
-      , black: theme.colors.black
-      , white: theme.colors.white
-      }
-      buttonKind
-      buttonState
-    ]
+        buttonKind
+        buttonState
+      ]
 
 _buttonStateStyles ::
   { hue :: Color
@@ -169,37 +171,36 @@ _buttonStateStyles { hue, white, black } buttonKind buttonState =
             Disabled -> disabledStyles
             Loading -> disabledStyles
 
-buttonGroup :: Boolean -> Style
-buttonGroup joined =
-  merge
-    [ row
-    , guard (not joined) do
-        css
-          { "& > *:not(:last-child)":
-            nested
-              $ css
-                  { marginRight: int 10
-                  }
-          }
-    , guard joined do
-        css
-          { "& > button:not(:last-child)":
-            nested
-              $ css
-                  { marginRight: int (-1)
-                  , borderTopRightRadius: int 0
-                  , borderBottomRightRadius: int 0
-                  }
-          , "& > button:not(:first-child)":
-            nested
-              $ css
-                  { borderTopLeftRadius: int 0
-                  , borderBottomLeftRadius: int 0
-                  }
-          , "& > *:focus, & > *:hover":
-            nested
-              $ css
-                  { zIndex: int ziButtonGroup
-                  }
-          }
-    ]
+buttonGroup :: Boolean -> StyleModifier
+buttonGroup joined = Styles.do
+  row
+  styleModifier_ $
+    if not joined then
+      css
+        { "& > *:not(:last-child)":
+          nested
+            $ css
+                { marginRight: int 10
+                }
+        }
+    else
+      css
+        { "& > button:not(:last-child)":
+          nested
+            $ css
+                { marginRight: int (-1)
+                , borderTopRightRadius: int 0
+                , borderBottomRightRadius: int 0
+                }
+        , "& > button:not(:first-child)":
+          nested
+            $ css
+                { borderTopLeftRadius: int 0
+                , borderBottomLeftRadius: int 0
+                }
+        , "& > *:focus, & > *:hover":
+          nested
+            $ css
+                { zIndex: int ziButtonGroup
+                }
+        }

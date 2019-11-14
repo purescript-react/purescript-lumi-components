@@ -1,8 +1,15 @@
 module Lumi.Styles.Theme where
 
-import Lumi.Components.Color (Color, ColorMap, ColorName)
+import Data.Newtype (class Newtype)
+import Lumi.Components.Color (Color, ColorMap, ColorName, colorNames, colors)
 
-type LumiTheme
-  = { colors :: ColorMap Color
-    , colorNames :: ColorMap ColorName
-    }
+newtype LumiTheme
+  = LumiTheme
+      { colors :: ColorMap Color
+      , colorNames :: ColorMap ColorName
+      }
+
+derive instance newtypeLumiTheme :: Newtype LumiTheme _
+
+defaultTheme :: LumiTheme
+defaultTheme = LumiTheme { colors, colorNames }

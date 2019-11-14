@@ -5,7 +5,6 @@ import Prelude
 import Data.Array (intercalate)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components ((%))
-import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Icon (IconType(..), icon)
@@ -14,16 +13,13 @@ import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (h2_, h4_)
 import Lumi.Components2.Button (linkStyle, mkButton, primary, secondary)
 import Lumi.Styles.Button (ButtonState(..))
-import Lumi.Styles.Theme (LumiTheme)
+import Lumi.Styles.Theme (defaultTheme)
 import React.Basic (JSX, createContext)
 import React.Basic.DOM as R
 
-theme :: LumiTheme
-theme = { colors, colorNames }
-
 docs :: JSX
 docs = unsafePerformEffect do
-  t <- createContext theme
+  t <- createContext defaultTheme
   button <- mkButton t
   pure $ column_ $
     intercalate [ vspace S16 ]

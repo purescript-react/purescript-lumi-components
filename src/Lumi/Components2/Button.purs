@@ -14,6 +14,7 @@ import Effect (Effect)
 import Foreign.Object (fromHomogeneous)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
 import Lumi.Components.Size (Size(..))
+import Lumi.Styles (StyleModifier, styleModifier, toCSS)
 import Lumi.Styles.Button (ButtonKind(..), ButtonState(..))
 import Lumi.Styles.Button as Styles.Button
 import Lumi.Styles.Theme (LumiTheme)
@@ -80,14 +81,17 @@ mkButton t = do
   render props = React.do
     theme <- useContext t
     let
-      buttonStyle = Styles.Button.button theme props.color props.kind props.buttonState props.size
+      buttonStyle :: StyleModifier
+      buttonStyle =
+        Styles.Button.button props.color props.kind props.buttonState props.size
+        >>> styleModifier props.style
     pure
       if props.type == "link" then
         E.element lumiButtonLinkElement
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
-          , css: buttonStyle
+          , css: toCSS theme buttonStyle
           , onClick: capture_ props.onPress
           , role: "button"
           , _data:
@@ -100,7 +104,7 @@ mkButton t = do
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
-          , css: buttonStyle
+          , css: toCSS theme buttonStyle
           , onClick: capture_ props.onPress
           , type: props.type
           , _data:

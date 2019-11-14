@@ -3,13 +3,16 @@ module Lumi.Styles.Box where
 import Prelude
 
 import Color (cssStringHSLA)
-import Lumi.Styles.Theme (LumiTheme)
-import React.Basic.Emotion (class IsStyleProperty, Style, css, merge, nested, prop, str)
+import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
+import Lumi.Styles as Styles
+import Lumi.Styles.Theme (LumiTheme(..))
+import React.Basic.Emotion (class IsStyleProperty, css, nested, prop, str)
 
-box :: Style
+box :: StyleModifier
 box =
-  css
-    { display: str "flex"
+  styleModifier_
+  $ css
+  $ { display: str "flex"
     , flexDirection: str "column"
     , boxSizing: str "border-box"
     , minHeight: str "0"
@@ -17,20 +20,19 @@ box =
     , flex: str "0 0 auto"
     }
 
-column :: Style
+column :: StyleModifier
 column = box
 
-row :: Style
-row =
-  merge
-    [ box
-    , css { flexDirection: str "row" }
-    ]
+row :: StyleModifier
+row = Styles.do
+  box
+  styleModifier_ $ css { flexDirection: str "row" }
 
-wrap :: Style
+wrap :: StyleModifier
 wrap =
-  css
-    { flexWrap: str "wrap"
+  styleModifier_
+  $ css
+  $ { flexWrap: str "wrap"
     }
 
 data FlexAlign
@@ -55,35 +57,37 @@ instance isStylePropertyFlexAlign :: IsStyleProperty FlexAlign where
       SpaceBetween -> "space-between"
       SpaceEvenly -> "space-evenly"
 
-justify :: FlexAlign -> Style
-justify a = css { justifyContent: prop a }
+justify :: FlexAlign -> StyleModifier
+justify a = styleModifier_ $ css { justifyContent: prop a }
 
-align :: FlexAlign -> Style
-align a = css { alignItems: prop a }
+align :: FlexAlign -> StyleModifier
+align a = styleModifier_ $ css { alignItems: prop a }
 
-alignSelf :: FlexAlign -> Style
-alignSelf a = css { alignSelf: prop a }
+alignSelf :: FlexAlign -> StyleModifier
+alignSelf a = styleModifier_ $ css { alignSelf: prop a }
 
-interactive :: Style
+interactive :: StyleModifier
 interactive =
-  css
-    { touchAction: str "manipulation"
+  styleModifier_
+  $ css
+  $ { touchAction: str "manipulation"
     , userSelect: str "none"
     , cursor: str "pointer"
     }
 
-focusable :: LumiTheme -> Style
-focusable theme =
-  css
-    { "&:focus, &:active":
-      nested
-        $ css
-            { outline: str "0"
-            , boxShadow: str ("0 0 0 3px " <> cssStringHSLA theme.colors.primary3)
-            }
-    , "&::-moz-focus-inner":
-      nested
-        $ css
-            { border: str "0"
-            }
-    }
+focusable :: StyleModifier
+focusable =
+  styleModifier \(LumiTheme theme) ->
+    css
+      { "&:focus, &:active":
+        nested
+          $ css
+              { outline: str "0"
+              , boxShadow: str ("0 0 0 3px " <> cssStringHSLA theme.colors.primary3)
+              }
+      , "&::-moz-focus-inner":
+        nested
+          $ css
+              { border: str "0"
+              }
+      }
