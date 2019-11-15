@@ -49,10 +49,6 @@ lumiComponent name defaults render = Prelude.do
 
 lumiElement ::
   forall props.
-  -- XXX: Can we remove these two constraints? I believe they're unnecessary
-  -- here because of the definitions of `LumiProps` and `lumiComponent`.
-  Lacks "className" props =>
-  Lacks "style" props =>
   LumiComponent props ->
   LumiModifier props ->
   JSX

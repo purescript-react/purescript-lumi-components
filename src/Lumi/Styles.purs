@@ -1,8 +1,15 @@
-module Lumi.Styles where
+module Lumi.Styles
+  ( StyleModifier
+  , styleModifier
+  , styleModifier_
+  , toCSS
+  , module Components
+  ) where
 
 import Prelude hiding (bind, discard)
 
 import Lumi.Components (PropsModifier)
+import Lumi.Components (bind, discard) as Components
 import Lumi.Styles.Theme (LumiTheme)
 import React.Basic.Emotion as Emotion
 
