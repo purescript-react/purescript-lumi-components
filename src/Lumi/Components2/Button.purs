@@ -2,7 +2,6 @@
 module Lumi.Components2.Button where
 
 import Prelude
-
 import Color (Color)
 import Data.Array as Array
 import Data.Char (fromCharCode)
@@ -84,7 +83,7 @@ mkButton t = do
       buttonStyle :: StyleModifier
       buttonStyle =
         Styles.Button.button props.color props.kind props.buttonState props.size
-        >>> styleModifier props.style
+          >>> styleModifier props.css
     pure
       if props.type == "link" then
         E.element lumiButtonLinkElement
@@ -136,16 +135,18 @@ primary = identity
 
 secondary :: PropsModifier ButtonProps
 secondary =
-  propsModifier _
-    { kind = Secondary
-    }
+  propsModifier
+    _
+      { kind = Secondary
+      }
 
 linkStyle :: PropsModifier ButtonProps
 linkStyle =
-  propsModifier _
-    { type = "link"
-    -- , kind = LinkButton
-    }
+  propsModifier
+    _
+      { type = "link"
+      -- , kind = LinkButton
+      }
 
 invisibleSpace :: String
 invisibleSpace = fromCharArray $ Array.catMaybes [ fromCharCode 0x2063 ]

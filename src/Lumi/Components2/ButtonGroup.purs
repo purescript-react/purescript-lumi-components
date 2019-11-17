@@ -2,7 +2,6 @@
 module Lumi.Components2.ButtonGroup where
 
 import Prelude
-
 import Effect (Effect)
 import Lumi.Components as L
 import Lumi.Styles (styleModifier, toCSS)
@@ -27,7 +26,8 @@ mkButtonGroup t = do
       $ E.element R.div'
           { className: props.className
           , children: props.content
-          , css: toCSS theme Styles.do
+          , css:
+            toCSS theme Styles.do
               Styles.Button.buttonGroup props.joined
-              styleModifier props.style
+              styleModifier props.css
           }

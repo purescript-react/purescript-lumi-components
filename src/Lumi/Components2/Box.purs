@@ -2,7 +2,6 @@
 module Lumi.Components2.Box where
 
 import Prelude
-
 import Effect (Effect)
 import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles (styleModifier, toCSS)
@@ -13,7 +12,8 @@ import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Hooks as React
 
-type BoxProps = ( content :: Array JSX )
+type BoxProps
+  = ( content :: Array JSX )
 
 mkBox :: ReactContext LumiTheme -> Effect (LumiComponent BoxProps)
 mkBox t = do
@@ -23,5 +23,5 @@ mkBox t = do
       $ E.element R.div'
           { children: props.content
           , className: props.className
-          , css: toCSS theme (Styles.Box.box >>> styleModifier props.style)
+          , css: toCSS theme (Styles.Box.box >>> styleModifier props.css)
           }

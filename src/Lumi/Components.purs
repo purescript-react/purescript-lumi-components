@@ -1,7 +1,6 @@
 module Lumi.Components where
 
 import Prelude hiding (bind, discard)
-
 import Data.String (toLower)
 import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
@@ -11,22 +10,25 @@ import React.Basic.Emotion as Emotion
 import React.Basic.Hooks (JSX, ReactComponent, Render, component, element)
 import Record.Unsafe.Union (unsafeUnion)
 
-type LumiProps props = { style :: LumiTheme -> Emotion.Style, className :: String | props }
+type LumiProps props
+  = { css :: LumiTheme -> Emotion.Style, className :: String | props }
 
-type LumiModifier props = LumiProps props -> LumiProps props
+type LumiModifier props
+  = LumiProps props -> LumiProps props
 
-type PropsModifier props = LumiModifier props -> LumiModifier props
+type PropsModifier props
+  = LumiModifier props -> LumiModifier props
 
 propsModifier :: forall props. LumiModifier props -> PropsModifier props
 propsModifier f m = m >>> f
 
 newtype LumiComponent props
   = LumiComponent
-      { name :: String
-      , component :: ReactComponent (LumiProps props)
-      , defaults :: { | props }
-      , className :: String
-      }
+  { name :: String
+  , component :: ReactComponent (LumiProps props)
+  , defaults :: { | props }
+  , className :: String
+  }
 
 lumiComponent ::
   forall hooks props.
@@ -39,13 +41,13 @@ lumiComponent ::
   Effect (LumiComponent props)
 lumiComponent name defaults render = Prelude.do
   c <- component name render
-  pure $
-    LumiComponent
-      { name
-      , component: c
-      , defaults
-      , className: "lumi-component lumi-" <> toLower name
-      }
+  pure
+    $ LumiComponent
+        { name
+        , component: c
+        , defaults
+        , className: "lumi-component lumi-" <> toLower name
+        }
 
 lumiElement ::
   forall props.
@@ -56,20 +58,20 @@ lumiElement (LumiComponent { component, defaults, className }) modifyProps =
   element component
     $ appendClassName
     $ modifyProps
-    $ unsafeUnion { style: mempty, className: "" }
+    $ unsafeUnion { css: mempty, className: "" }
     $ defaults
   where
-    appendClassName :: LumiModifier props
-    appendClassName props = props { className = className <> " " <> props.className }
+  appendClassName :: LumiModifier props
+  appendClassName props = props { className = className <> " " <> props.className }
 
 infixr 0 lumiElement as %
 
 withContent ::
   forall props content.
-  PropsModifier (content :: content | props) ->
+  PropsModifier ( content :: content | props ) ->
   content ->
-  LumiModifier (content :: content | props)
-withContent p content = p _{ content = content }
+  LumiModifier ( content :: content | props )
+withContent p content = p _ { content = content }
 
 infixr 0 withContent as %%%
 

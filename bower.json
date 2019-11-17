@@ -30,7 +30,7 @@
     "purescript-profunctor-lenses": ">=4.0.0 <7.0.0",
     "purescript-random": "^4.0.0",
     "purescript-react-basic": "^13.0.0",
-    "purescript-react-basic-emotion": "git://github.com/lumihq/purescript-react-basic-emotion#madeline/hmm",
+    "purescript-react-basic-emotion": "^3.0.0",
     "purescript-react-basic-hooks": "^4.0.0",
     "purescript-react-dnd-basic": "^6.1.4",
     "purescript-record": ">= 1.0.0 < 3.0.0",

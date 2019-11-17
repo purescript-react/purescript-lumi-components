@@ -1,7 +1,6 @@
 module Lumi.Components.Examples.Slat where
 
 import Prelude
-
 import Data.Array (intercalate, replicate)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
@@ -38,21 +37,22 @@ docs =
     let
       exampleSlatContent =
         [ box
-          % slatColumn 4
-          %%% [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
+            % slatColumn 4
+            %%% [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
               ]
         , labeledInfo
-          % slatColumn 1
-          $ _ { title = R.text "Lead time"
-              , value = R.text "11 weeks"
-              }
+            % slatColumn 1
+            $ _
+                { title = R.text "Lead time"
+                , value = R.text "11 weeks"
+                }
         , labeledInfo
-          % slatColumn 1
-          $ _ { title = R.text "Quantities"
-              , value = R.text "500-2.5k"
-              }
+            % slatColumn 1
+            $ _
+                { title = R.text "Quantities"
+                , value = R.text "500-2.5k"
+                }
         ]
-
     pure $ column_
       $ intercalate [ vspace S16 ]
           [ [ example
@@ -60,33 +60,35 @@ docs =
                 $ replicate 3
                 $ slat
                 % slatWidth
+                $ Border.listSpaced
                 %%% exampleSlatContent
-
             , example
                 $ fragment
                 $ replicate 3
                 $ slat
-                % Slat.interactive
+                % Border.listSpaced
+                $ Slat.interactive
                     { onClick: window >>= alert "click!"
                     , tabIndex: 1
                     , href: Nothing
                     }
                 %%% exampleSlatContent
-
             , example
                 $ fragment
                 $ replicate 9
                 $ slat
                 % slatWidth
                 $ Border.topBottom
-                $ _ { content = exampleSlatContent
-                    , interaction = Just
-                      { onClick: window >>= alert "click!"
-                      , tabIndex: 2
-                      , href: Just $ URL "#"
-                      }
+                $ Border.listCompact
+                $ _
+                    { content = exampleSlatContent
+                    , interaction =
+                      Just
+                        { onClick: window >>= alert "click!"
+                        , tabIndex: 2
+                        , href: Just $ URL "#"
+                        }
                     }
-
             ]
           ]
 
@@ -109,13 +111,13 @@ slatColumn flexGrow =
 mkLabeledInfo :: ReactContext LumiTheme -> Effect (LumiComponent ( title :: JSX, value :: JSX ))
 mkLabeledInfo t = do
   box <- mkBox t
-  lumiComponent "LabeledInfo" defaults \{ className, style, title, value } -> React.do
+  lumiComponent "LabeledInfo" defaults \{ className, css, title, value } -> React.do
     LumiTheme theme <- React.useContext t
     pure
       $ box
       % _
           { className = className
-          , style = style
+          , css = css
           , content =
             [ Text.text
                 Text.body
@@ -132,7 +134,7 @@ mkLabeledInfo t = do
             ]
           }
   where
-    defaults =
-      { title: mempty
-      , value: mempty
-      }
+  defaults =
+    { title: mempty
+    , value: mempty
+    }
