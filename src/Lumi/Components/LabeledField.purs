@@ -123,12 +123,13 @@ styles = jss
               }
 
           , "& .labeled-field--left":
-              { flex: "3 5 0%"
+              { flex: "0 1 30%"
               , whiteSpace: "nowrap"
               }
 
           , "& .labeled-field--right":
-              { flex: "7 7 0%"
+              { flex: "0 1 70%"
+              , maxWidth: "70%"
               }
 
           , "& .labeled-field--validation-error": labeledFieldValidationErrorStyles
