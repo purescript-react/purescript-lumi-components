@@ -114,7 +114,13 @@ styles = jss
               { flexFlow: "column nowrap"
 
               , "& .labeled-field--left":
-                  { whiteSpace: "normal"
+                  { flex: "initial"
+                  , whiteSpace: "normal"
+                  }
+
+              , "& .labeled-field--right":
+                  { flex: "initial"
+                  , maxWidth: "none"
                   }
               }
 
