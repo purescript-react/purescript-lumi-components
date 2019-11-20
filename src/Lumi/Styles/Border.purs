@@ -2,14 +2,14 @@ module Lumi.Styles.Border where
 
 import Prelude
 
+import Lumi.Components (PropsModifier)
 import Lumi.Components.Spacing (Space(..))
-import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
-import Lumi.Styles as Styles
+import Lumi.Styles (styleModifier, styleModifier_)
 import Lumi.Styles.Box as Box
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (color, css, int, nested, none, prop, str)
 
-border :: StyleModifier
+border :: forall props. PropsModifier props
 border =
   styleModifier \(LumiTheme theme) ->
     css
@@ -19,38 +19,39 @@ border =
       , padding: str "8px 16px"
       }
 
-round :: StyleModifier
-round = Styles.do
+round :: forall props. PropsModifier props
+round =
   border
-  styleModifier_ $ css { borderRadius: int 4 }
+    >>> styleModifier_ (css { borderRadius: int 4 })
 
-topBottom :: StyleModifier
-topBottom = Styles.do
+topBottom :: forall props. PropsModifier props
+topBottom =
   border
-  styleModifier_
-    $ css
-    $ { borderLeft: none
-      , borderRight: none
-      , borderRadius: int 0
-      , paddingLeft: int 0
-      , paddingRight: int 0
-      }
+    >>> styleModifier_
+        ( css
+            { borderLeft: none
+            , borderRight: none
+            , borderRadius: int 0
+            , paddingLeft: int 0
+            , paddingRight: int 0
+            }
+        )
 
-interactive :: StyleModifier
-interactive = Styles.do
+interactive :: forall props. PropsModifier props
+interactive =
   border
-  Box.interactive
-  Box.focusable
-  styleModifier \(LumiTheme theme) ->
-    css
-      { "&:hover":
-        nested
-          $ css
-              { borderColor: color theme.colors.black2
-              }
-      }
+    >>> Box.interactive
+    >>> Box.focusable
+    >>> styleModifier \(LumiTheme theme) ->
+        css
+          { "&:hover":
+            nested
+              $ css
+                  { borderColor: color theme.colors.black2
+                  }
+          }
 
-listSpaced :: StyleModifier
+listSpaced :: forall props. PropsModifier props
 listSpaced =
   styleModifier \(LumiTheme theme) ->
     css
@@ -61,7 +62,7 @@ listSpaced =
               }
       }
 
-listCompact :: StyleModifier
+listCompact :: forall props. PropsModifier props
 listCompact =
   styleModifier \(LumiTheme theme) ->
     css

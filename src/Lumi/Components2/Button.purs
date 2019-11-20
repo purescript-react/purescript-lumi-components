@@ -2,6 +2,7 @@
 module Lumi.Components2.Button where
 
 import Prelude
+
 import Color (Color)
 import Data.Array as Array
 import Data.Char (fromCharCode)
@@ -10,18 +11,19 @@ import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Data.String.CodeUnits (fromCharArray)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (fromHomogeneous)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
 import Lumi.Components.Size (Size(..))
-import Lumi.Styles (StyleModifier, styleModifier, toCSS)
+import Lumi.Styles (toCSS)
 import Lumi.Styles.Button (ButtonKind(..), ButtonState(..))
 import Lumi.Styles.Button as Styles.Button
-import Lumi.Styles.Theme (LumiTheme)
+import Lumi.Styles.Theme (lumiThemeContext)
 import Prim.Row (class Union)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_)
 import React.Basic.Emotion as E
-import React.Basic.Hooks (JSX, ReactComponent, ReactContext, useContext)
+import React.Basic.Hooks (JSX, ReactComponent, useContext)
 import React.Basic.Hooks as React
 
 type CommonButtonProps rest
@@ -40,8 +42,8 @@ type CommonButtonProps rest
 type ButtonProps
   = CommonButtonProps ()
 
-mkButton :: ReactContext LumiTheme -> Effect (LumiComponent ButtonProps)
-mkButton t = do
+button :: LumiComponent ButtonProps
+button = unsafePerformEffect do
   lumiComponent "Button" defaults render
   where
   lumiButtonElement ::
@@ -78,19 +80,17 @@ mkButton t = do
     }
 
   render props = React.do
-    theme <- useContext t
+    theme <- useContext lumiThemeContext
     let
-      buttonStyle :: StyleModifier
       buttonStyle =
         Styles.Button.button props.color props.kind props.buttonState props.size
-          >>> styleModifier props.css
     pure
       if props.type == "link" then
         E.element lumiButtonLinkElement
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
-          , css: toCSS theme buttonStyle
+          , css: toCSS theme props buttonStyle
           , onClick: capture_ props.onPress
           , role: "button"
           , _data:
@@ -103,7 +103,7 @@ mkButton t = do
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
-          , css: toCSS theme buttonStyle
+          , css: toCSS theme props buttonStyle
           , onClick: capture_ props.onPress
           , type: props.type
           , _data:

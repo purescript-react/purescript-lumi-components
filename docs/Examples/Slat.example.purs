@@ -1,53 +1,49 @@
 module Lumi.Components.Examples.Slat where
 
 import Prelude
+
 import Data.Array (intercalate, replicate)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
-import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent, (%), (%%%))
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, lumiElement, withContent)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Lockup (userLockup)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Svg (userSvg)
 import Lumi.Components.Text as Text
-import Lumi.Components2.Box (mkBox)
+import Lumi.Components2.Box (box)
 import Lumi.Components2.Slat as Slat
-import Lumi.Styles (StyleModifier, styleModifier_)
+import Lumi.Styles (styleModifier_)
 import Lumi.Styles.Border as Border
 import Lumi.Styles.Box (FlexAlign(..))
-import Lumi.Styles.Theme (LumiTheme(..), defaultTheme)
-import React.Basic (JSX, ReactContext, createContext, fragment)
+import Lumi.Styles.Theme (LumiTheme(..), lumiThemeContext)
+import React.Basic (JSX, fragment)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Hooks as React
 import Web.HTML (window)
-import Web.HTML.History (URL(..))
 import Web.HTML.Window (alert)
 
 docs :: JSX
 docs =
   unsafePerformEffect do
-    t <- createContext defaultTheme
-    box <- mkBox t
-    slat <- Slat.mkSlat t
-    labeledInfo <- mkLabeledInfo t
     let
       exampleSlatContent =
-        [ box
-            % slatColumn 4
-            %%% [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
+        [ lumiElement box
+            $ slatColumn 4
+            $ withContent
+              [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
               ]
-        , labeledInfo
-            % slatColumn 1
+        , lumiElement labeledInfo
+            $ slatColumn 1
             $ _
                 { title = R.text "Lead time"
                 , value = R.text "11 weeks"
                 }
-        , labeledInfo
-            % slatColumn 1
+        , lumiElement labeledInfo
+            $ slatColumn 1
             $ _
                 { title = R.text "Quantities"
                 , value = R.text "500-2.5k"
@@ -58,44 +54,41 @@ docs =
           [ [ example
                 $ fragment
                 $ replicate 3
-                $ slat
-                % slatWidth
+                $ lumiElement Slat.slat
+                $ slatWidth
                 $ Border.listSpaced
-                %%% exampleSlatContent
+                $ withContent exampleSlatContent
             , example
                 $ fragment
                 $ replicate 3
-                $ slat
-                % Border.listSpaced
+                $ lumiElement Slat.slat
+                $ Border.listSpaced
                 $ Slat.interactive
                     { onClick: window >>= alert "click!"
                     , tabIndex: 1
                     , href: Nothing
                     }
-                %%% exampleSlatContent
+                $ withContent exampleSlatContent
             , example
                 $ fragment
                 $ replicate 9
-                $ slat
-                % slatWidth
+                $ lumiElement Slat.slat
+                $ slatWidth
                 $ Border.topBottom
                 $ Border.listCompact
-                $ _
-                    { content = exampleSlatContent
-                    , interaction =
-                      Just
-                        { onClick: window >>= alert "click!"
-                        , tabIndex: 2
-                        , href: Just $ URL "#"
-                        }
+                $ Slat.interactive
+                    { onClick: window >>= alert "click!"
+                    , tabIndex: 1
+                    , href: Nothing
                     }
+                $ withContent exampleSlatContent
             ]
           ]
 
-slatWidth :: StyleModifier
+slatWidth :: forall props. PropsModifier props
 slatWidth = styleModifier_ $ E.css { maxWidth: E.int 500, width: E.str "100%" }
 
-slatColumn :: Int -> StyleModifier
+slatColumn :: forall props. Int -> PropsModifier props
 slatColumn flexGrow =
   styleModifier_
     $ E.css
@@ -108,14 +101,13 @@ slatColumn flexGrow =
               }
       }
 
-mkLabeledInfo :: ReactContext LumiTheme -> Effect (LumiComponent ( title :: JSX, value :: JSX ))
-mkLabeledInfo t = do
-  box <- mkBox t
+labeledInfo :: LumiComponent ( title :: JSX, value :: JSX )
+labeledInfo = unsafePerformEffect do
   lumiComponent "LabeledInfo" defaults \{ className, css, title, value } -> React.do
-    LumiTheme theme <- React.useContext t
+    LumiTheme theme <- React.useContext lumiThemeContext
     pure
-      $ box
-      % _
+      $ lumiElement box
+      $ _
           { className = className
           , css = css
           , content =

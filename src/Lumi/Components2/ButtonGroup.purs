@@ -2,15 +2,15 @@
 module Lumi.Components2.ButtonGroup where
 
 import Prelude
-import Effect (Effect)
+
+import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components as L
-import Lumi.Styles (styleModifier, toCSS)
-import Lumi.Styles as Styles
+import Lumi.Styles (toCSS)
 import Lumi.Styles.Button as Styles.Button
-import Lumi.Styles.Theme (LumiTheme)
+import Lumi.Styles.Theme (lumiThemeContext)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
-import React.Basic.Hooks (JSX, ReactContext, useContext)
+import React.Basic.Hooks (JSX, useContext)
 import React.Basic.Hooks as React
 
 type ButtonGroupProps
@@ -18,16 +18,15 @@ type ButtonGroupProps
     , content :: Array JSX
     )
 
-mkButtonGroup :: ReactContext LumiTheme -> Effect (L.LumiComponent ButtonGroupProps)
-mkButtonGroup t = do
+buttonGroup :: L.LumiComponent ButtonGroupProps
+buttonGroup = unsafePerformEffect do
   L.lumiComponent "ButtonGroup" { joined: false, content: [] } \props -> React.do
-    theme <- useContext t
+    theme <- useContext lumiThemeContext
     pure
       $ E.element R.div'
           { className: props.className
           , children: props.content
           , css:
-            toCSS theme Styles.do
-              Styles.Button.buttonGroup props.joined
-              styleModifier props.css
+            toCSS theme props
+              $ Styles.Button.buttonGroup props.joined
           }

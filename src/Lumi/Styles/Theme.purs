@@ -1,7 +1,9 @@
 module Lumi.Styles.Theme where
 
 import Data.Newtype (class Newtype)
+import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Color (Color, ColorMap, ColorName, colorNames, colors)
+import React.Basic (ReactContext, createContext)
 
 newtype LumiTheme
   = LumiTheme
@@ -13,3 +15,7 @@ derive instance newtypeLumiTheme :: Newtype LumiTheme _
 
 defaultTheme :: LumiTheme
 defaultTheme = LumiTheme { colors, colorNames }
+
+lumiThemeContext :: ReactContext LumiTheme
+lumiThemeContext = unsafePerformEffect do
+  createContext defaultTheme

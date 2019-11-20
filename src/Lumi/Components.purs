@@ -1,10 +1,9 @@
 module Lumi.Components where
 
-import Prelude hiding (bind, discard)
+import Prelude
 import Data.String (toLower)
 import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
-import Prelude as Prelude
 import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
 import React.Basic.Hooks (JSX, ReactComponent, Render, component, element)
@@ -39,7 +38,7 @@ lumiComponent ::
   { | props } ->
   (LumiProps props -> Render Unit hooks JSX) ->
   Effect (LumiComponent props)
-lumiComponent name defaults render = Prelude.do
+lumiComponent name defaults render = do
   c <- component name render
   pure
     $ LumiComponent
@@ -64,19 +63,9 @@ lumiElement (LumiComponent { component, defaults, className }) modifyProps =
   appendClassName :: LumiModifier props
   appendClassName props = props { className = className <> " " <> props.className }
 
-infixr 0 lumiElement as %
-
 withContent ::
   forall props content.
-  PropsModifier ( content :: content | props ) ->
   content ->
-  LumiModifier ( content :: content | props )
-withContent p content = p _ { content = content }
-
-infixr 0 withContent as %%%
-
-bind :: forall props. PropsModifier props -> (Unit -> PropsModifier props) -> PropsModifier props
-bind m f = m >>> f unit
-
-discard :: forall props. PropsModifier props -> (Unit -> PropsModifier props) -> PropsModifier props
-discard = bind
+  { content :: content | props } ->
+  { content :: content | props }
+withContent content = _ { content = content }
