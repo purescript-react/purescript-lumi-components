@@ -6,10 +6,9 @@ import Prelude
 import Color (Color, darken, desaturate, lighten)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe, fromMaybe)
-import Lumi.Components (PropsModifier)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.ZIndex (ziButtonGroup)
-import Lumi.Styles (styleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..), align, focusable, interactive, justify, row)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (Style, color, css, int, merge, nested, str)
@@ -23,7 +22,7 @@ data ButtonState
   | Disabled
   | Loading
 
-button :: forall props. Maybe Color -> ButtonKind -> ButtonState -> Size -> PropsModifier props
+button :: forall props. Maybe Color -> ButtonKind -> ButtonState -> Size -> StyleModifier props
 button hue buttonKind buttonState size =
   row
     >>> align Center
@@ -171,7 +170,7 @@ _buttonStateStyles { hue, white, black } buttonKind buttonState =
             Disabled -> disabledStyles
             Loading -> disabledStyles
 
-buttonGroup :: forall props. Boolean -> PropsModifier props
+buttonGroup :: forall props. Boolean -> StyleModifier props
 buttonGroup joined =
   row
     >>> styleModifier_

@@ -2,14 +2,13 @@ module Lumi.Styles.Border where
 
 import Prelude
 
-import Lumi.Components (PropsModifier)
 import Lumi.Components.Spacing (Space(..))
-import Lumi.Styles (styleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
 import Lumi.Styles.Box as Box
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (color, css, int, nested, none, prop, str)
 
-border :: forall props. PropsModifier props
+border :: forall props. StyleModifier props
 border =
   styleModifier \(LumiTheme theme) ->
     css
@@ -19,15 +18,13 @@ border =
       , padding: str "8px 16px"
       }
 
-round :: forall props. PropsModifier props
+round :: forall props. StyleModifier props
 round =
-  border
-    >>> styleModifier_ (css { borderRadius: int 4 })
+  styleModifier_ (css { borderRadius: int 4 })
 
-topBottom :: forall props. PropsModifier props
+topBottom :: forall props. StyleModifier props
 topBottom =
-  border
-    >>> styleModifier_
+  styleModifier_
         ( css
             { borderLeft: none
             , borderRight: none
@@ -37,10 +34,9 @@ topBottom =
             }
         )
 
-interactive :: forall props. PropsModifier props
+interactive :: forall props. StyleModifier props
 interactive =
-  border
-    >>> Box.interactive
+  Box.interactive
     >>> Box.focusable
     >>> styleModifier \(LumiTheme theme) ->
         css
@@ -51,7 +47,7 @@ interactive =
                   }
           }
 
-listSpaced :: forall props. PropsModifier props
+listSpaced :: forall props. StyleModifier props
 listSpaced =
   styleModifier \(LumiTheme theme) ->
     css
@@ -62,7 +58,7 @@ listSpaced =
               }
       }
 
-listCompact :: forall props. PropsModifier props
+listCompact :: forall props. StyleModifier props
 listCompact =
   styleModifier \(LumiTheme theme) ->
     css

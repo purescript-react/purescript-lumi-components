@@ -7,8 +7,7 @@ import Data.Newtype (un)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, lumiComponent)
-import Lumi.Components as L
-import Lumi.Styles (styleModifier_, toCSS)
+import Lumi.Styles (StyleModifier, propsModifier_, styleModifier_, toCSS)
 import Lumi.Styles.Border as Border
 import Lumi.Styles.Box as Box
 import Lumi.Styles.Slat as Styles.Slat
@@ -34,7 +33,7 @@ type SlatInteraction
 
 slat :: LumiComponent SlatProps
 slat = unsafePerformEffect do
-  lumiComponent "Slat" defaults \props@{ className, css } -> React.do
+  lumiComponent "Slat" defaults \props@{ className } -> React.do
     theme <- useContext lumiThemeContext
     let
       slatStyle =
@@ -71,11 +70,11 @@ slat = unsafePerformEffect do
     , isList: true
     }
 
-interactive :: SlatInteraction -> L.PropsModifier SlatProps
+interactive :: SlatInteraction -> StyleModifier SlatProps
 interactive interaction =
   Border.interactive
     >>> Box.interactive
-    >>> L.propsModifier
+    >>> propsModifier_
         _
           { interaction = Just interaction
           }

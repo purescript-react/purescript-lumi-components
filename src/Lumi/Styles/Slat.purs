@@ -2,12 +2,11 @@ module Lumi.Styles.Slat where
 
 import Prelude
 
-import Lumi.Components (PropsModifier)
-import Lumi.Styles (styleModifier_)
+import Lumi.Styles (StyleModifier, styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..), align, justify, row)
 import React.Basic.Emotion (css, str, unset)
 
-slat :: forall props. PropsModifier props
+slat :: forall props. StyleModifier props
 slat =
   row
     >>> align Center

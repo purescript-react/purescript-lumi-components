@@ -3,12 +3,11 @@ module Lumi.Styles.Box where
 import Prelude
 
 import Color (cssStringHSLA)
-import Lumi.Components (PropsModifier)
-import Lumi.Styles (styleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (class IsStyleProperty, css, nested, prop, str)
 
-box :: forall props. PropsModifier props
+box :: forall props. StyleModifier props
 box =
   styleModifier_
   $ css
@@ -20,15 +19,15 @@ box =
     , flex: str "0 0 auto"
     }
 
-column :: forall props. PropsModifier props
+column :: forall props. StyleModifier props
 column = box
 
-row :: forall props. PropsModifier props
+row :: forall props. StyleModifier props
 row =
   box >>>
   styleModifier_ (css { flexDirection: str "row" })
 
-wrap :: forall props. PropsModifier props
+wrap :: forall props. StyleModifier props
 wrap =
   styleModifier_
   $ css
@@ -57,16 +56,16 @@ instance isStylePropertyFlexAlign :: IsStyleProperty FlexAlign where
       SpaceBetween -> "space-between"
       SpaceEvenly -> "space-evenly"
 
-justify :: forall props. FlexAlign -> PropsModifier props
+justify :: forall props. FlexAlign -> StyleModifier props
 justify a = styleModifier_ $ css { justifyContent: prop a }
 
-align :: forall props. FlexAlign -> PropsModifier props
+align :: forall props. FlexAlign -> StyleModifier props
 align a = styleModifier_ $ css { alignItems: prop a }
 
-alignSelf :: forall props. FlexAlign -> PropsModifier props
+alignSelf :: forall props. FlexAlign -> StyleModifier props
 alignSelf a = styleModifier_ $ css { alignSelf: prop a }
 
-interactive :: forall props. PropsModifier props
+interactive :: forall props. StyleModifier props
 interactive =
   styleModifier_
   $ css
@@ -75,7 +74,7 @@ interactive =
     , cursor: str "pointer"
     }
 
-focusable :: forall props. PropsModifier props
+focusable :: forall props. StyleModifier props
 focusable =
   styleModifier \(LumiTheme theme) ->
     css

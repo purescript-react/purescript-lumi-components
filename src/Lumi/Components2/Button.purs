@@ -13,9 +13,9 @@ import Data.String.CodeUnits (fromCharArray)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (fromHomogeneous)
-import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
+import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Components.Size (Size(..))
-import Lumi.Styles (toCSS)
+import Lumi.Styles (StyleModifier, propsModifier_, toCSS)
 import Lumi.Styles.Button (ButtonKind(..), ButtonState(..))
 import Lumi.Styles.Button as Styles.Button
 import Lumi.Styles.Theme (lumiThemeContext)
@@ -130,19 +130,19 @@ button = unsafePerformEffect do
       else
         props.content
 
-primary :: PropsModifier ButtonProps
+primary :: StyleModifier ButtonProps
 primary = identity
 
-secondary :: PropsModifier ButtonProps
+secondary :: StyleModifier ButtonProps
 secondary =
-  propsModifier
+  propsModifier_
     _
       { kind = Secondary
       }
 
-linkStyle :: PropsModifier ButtonProps
+linkStyle :: StyleModifier ButtonProps
 linkStyle =
-  propsModifier
+  propsModifier_
     _
       { type = "link"
       -- , kind = LinkButton
