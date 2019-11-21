@@ -6,7 +6,7 @@ import Data.Array (intercalate, replicate)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent, lumiElement, withContent)
+import Lumi.Components (LumiComponent, lumiComponent, lumiElement)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Lockup (userLockup)
@@ -15,7 +15,7 @@ import Lumi.Components.Svg (userSvg)
 import Lumi.Components.Text as Text
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Slat as Slat
-import Lumi.Styles (StyleModifier, styleModifier_, withStyle)
+import Lumi.Styles (StyleModifier, styleModifier_)
 import Lumi.Styles.Border as Border
 import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Theme (LumiTheme(..), lumiThemeContext, useTheme)
@@ -34,20 +34,19 @@ docs = (flip lumiElement identity) do
       let
         exampleSlatContent =
           [ lumiElement box
-              $ withStyle theme do slatColumn 4
-              >>> withContent
-                [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
-                ]
+              $ slatColumn 4
+              $ _ { content =
+                      [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
+                      ]
+                  }
           , lumiElement labeledInfo
-              $ withStyle theme do slatColumn 1
-              >>> _
-                  { title = R.text "Lead time"
+              $ slatColumn 1
+              $ _ { title = R.text "Lead time"
                   , value = R.text "11 weeks"
                   }
           , lumiElement labeledInfo
-              $ withStyle theme do slatColumn 1
-              >>> _
-                  { title = R.text "Quantities"
+              $ slatColumn 1
+              $ _ { title = R.text "Quantities"
                   , value = R.text "500-2.5k"
                   }
           ]
@@ -57,40 +56,37 @@ docs = (flip lumiElement identity) do
                   $ fragment
                   $ replicate 3
                   $ lumiElement Slat.slat
-                  $ withStyle theme do
-                    slatWidth
-                      >>> Border.border
-                      >>> Border.round
-                      >>> Border.listSpaced
-                  >>> withContent exampleSlatContent
+                  $ slatWidth
+                  $ Border.border
+                  $ Border.round
+                  $ Border.listSpaced
+                  $ _ { content = exampleSlatContent }
               , example
                   $ fragment
                   $ replicate 3
                   $ lumiElement Slat.slat
-                  $ withStyle theme do
-                    Border.border
-                      >>> Border.listSpaced
-                      >>> Slat.interactive
-                          { onClick: window >>= alert "click!"
-                          , tabIndex: 1
-                          , href: Nothing
-                          }
-                  >>> withContent exampleSlatContent
+                  $ Border.border
+                  $ Border.listSpaced
+                  $ Slat.interactive
+                      { onClick: window >>= alert "click!"
+                      , tabIndex: 1
+                      , href: Nothing
+                      }
+                  $ _ { content = exampleSlatContent }
               , example
                   $ fragment
                   $ replicate 9
                   $ lumiElement Slat.slat
-                  $ withStyle theme do
-                    slatWidth
-                      >>> Border.border
-                      >>> Border.topBottom
-                      >>> Border.listCompact
-                      >>> Slat.interactive
-                          { onClick: window >>= alert "click!"
-                          , tabIndex: 1
-                          , href: Nothing
-                          }
-                  >>> withContent exampleSlatContent
+                  $ slatWidth
+                  $ Border.border
+                  $ Border.topBottom
+                  $ Border.listCompact
+                  $ Slat.interactive
+                      { onClick: window >>= alert "click!"
+                      , tabIndex: 1
+                      , href: Nothing
+                      }
+                  $ _ { content = exampleSlatContent }
               ]
             ]
 
@@ -112,23 +108,23 @@ slatColumn flexGrow =
 
 labeledInfo :: LumiComponent ( title :: JSX, value :: JSX )
 labeledInfo = unsafePerformEffect do
-  lumiComponent "LabeledInfo" defaults \{ className, title, value } -> React.do
-    LumiTheme theme <- React.useContext lumiThemeContext
+  lumiComponent "LabeledInfo" defaults \{ className, css, title, value } -> React.do
+    theme@(LumiTheme { colorNames }) <- React.useContext lumiThemeContext
     pure
       $ lumiElement box
-      $ _
-          { className = className
+      $ _ { css = css
+          , className = className
           , content =
             [ Text.text
                 Text.body
                   { children = [ value ]
-                  , color = Nullable.notNull theme.colorNames.black
+                  , color = Nullable.notNull colorNames.black
                   , style = R.css { whiteSpace: "nowrap" }
                   }
             , Text.text
                 Text.subtext
                   { children = [ title ]
-                  , color = Nullable.notNull theme.colorNames.black1
+                  , color = Nullable.notNull colorNames.black1
                   , style = R.css { whiteSpace: "nowrap" }
                   }
             ]

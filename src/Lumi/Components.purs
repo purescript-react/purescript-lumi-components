@@ -1,35 +1,29 @@
 module Lumi.Components where
 
 import Prelude
+
 import Data.String (toLower)
 import Effect (Effect)
+import Lumi.Styles.Theme (LumiTheme)
 import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
-import React.Basic.Hooks (JSX, ReactComponent, Render, component)
+import React.Basic.Hooks (JSX, ReactComponent, Render, component, element)
 import Record.Unsafe.Union (unsafeUnion)
 
 type LumiProps props
-  = { css :: Emotion.Style, className :: String | props }
-
--- type LumiModifier props
---   = LumiTheme -> LumiProps props -> LumiProps props
--- type PropsModifier props
---   = LumiModifier props -> LumiModifier props
--- propsModifier ::
---   forall props.
---   LumiModifier props ->
---   PropsModifier props
--- propsModifier f1 f2 t = f1 t <<< f2 t
-type LumiModifier props
-  = LumiProps props -> LumiProps props
+  = { css :: LumiTheme -> Emotion.Style, className :: String | props }
 
 type PropsModifier props
-  = LumiModifier props -> LumiModifier props
+  = (LumiProps props -> LumiProps props) ->
+    (LumiProps props -> LumiProps props)
+
+propsModifier :: forall props. (LumiProps props -> LumiProps props) -> PropsModifier props
+propsModifier = (<<<)
 
 newtype LumiComponent props
   = LumiComponent
   { name :: String
-  , component :: ReactComponent { className :: String | props }
+  , component :: ReactComponent (LumiProps props)
   , defaults :: { | props }
   , className :: String
   }
@@ -37,12 +31,11 @@ newtype LumiComponent props
 lumiComponent ::
   forall hooks props.
   Lacks "children" props =>
-  Lacks "css" props =>
   Lacks "key" props =>
   Lacks "ref" props =>
   String ->
   { | props } ->
-  ({ className :: String | props } -> Render Unit hooks JSX) ->
+  (LumiProps props -> Render Unit hooks JSX) ->
   Effect (LumiComponent props)
 lumiComponent name defaults render = do
   c <- component name render
@@ -57,10 +50,10 @@ lumiComponent name defaults render = do
 lumiElement ::
   forall props.
   LumiComponent props ->
-  LumiModifier props ->
+  (LumiProps props -> LumiProps props) ->
   JSX
 lumiElement (LumiComponent { component, defaults, className }) modifyProps =
-  Emotion.element component
+  element component
     $ appendClassName
     $ modifyProps
     $ unsafeUnion { css: mempty, className: "" }
@@ -70,6 +63,3 @@ lumiElement (LumiComponent { component, defaults, className }) modifyProps =
     props
       { className = className <> " " <> props.className
       }
-
-withContent :: forall props content. content -> LumiModifier ( content :: content | props )
-withContent content = _ { content = content }

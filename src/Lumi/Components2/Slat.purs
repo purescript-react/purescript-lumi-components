@@ -6,8 +6,8 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (un)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent)
-import Lumi.Styles (StyleModifier, propsModifier_, styleModifier_, toCSS)
+import Lumi.Components (LumiComponent, lumiComponent, propsModifier)
+import Lumi.Styles (StyleModifier, styleModifier_, toCSS)
 import Lumi.Styles.Border as Border
 import Lumi.Styles.Box as Box
 import Lumi.Styles.Slat as Styles.Slat
@@ -74,7 +74,7 @@ interactive :: SlatInteraction -> StyleModifier SlatProps
 interactive interaction =
   Border.interactive
     >>> Box.interactive
-    >>> propsModifier_
+    >>> propsModifier
         _
           { interaction = Just interaction
           }
