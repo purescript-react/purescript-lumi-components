@@ -18,29 +18,25 @@ import Lumi.Components.Size (Size(..))
 import Lumi.Styles (toCSS)
 import Lumi.Styles.Button (ButtonKind(..), ButtonState(..))
 import Lumi.Styles.Button as Styles.Button
-import Lumi.Styles.Theme (lumiThemeContext)
+import Lumi.Styles.Theme (useTheme)
 import Prim.Row (class Union)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_)
 import React.Basic.Emotion as E
-import React.Basic.Hooks (JSX, ReactComponent, useContext)
+import React.Basic.Hooks (JSX, ReactComponent)
 import React.Basic.Hooks as React
 
-type CommonButtonProps rest
+type ButtonProps
   = ( accessibilityLabel :: Maybe String
     , onPress :: Effect Unit
     , size :: Size
     , type :: String
     , kind :: ButtonKind
-    , buttonState :: ButtonState
+    , state :: ButtonState
     , color :: Maybe Color
     , testId :: Maybe String
     , content :: Array JSX
-    | rest
     )
-
-type ButtonProps
-  = CommonButtonProps ()
 
 button :: LumiComponent ButtonProps
 button = unsafePerformEffect do
@@ -74,23 +70,20 @@ button = unsafePerformEffect do
     , testId: mempty
     , type: mempty
     , kind: Primary
-    , buttonState: Enabled
+    , state: Enabled
     , color: Nothing
     , content: mempty
     }
 
   render props = React.do
-    theme <- useContext lumiThemeContext
-    let
-      buttonStyle =
-        Styles.Button.button props.color props.kind props.buttonState props.size
+    theme <- useTheme
     pure
       if props.type == "link" then
         E.element lumiButtonLinkElement
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
-          , css: toCSS theme props buttonStyle
+          , css: toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
           , onClick: capture_ props.onPress
           , role: "button"
           , _data:
@@ -103,7 +96,7 @@ button = unsafePerformEffect do
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
-          , css: toCSS theme props buttonStyle
+          , css: toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
           , onClick: capture_ props.onPress
           , type: props.type
           , _data:
@@ -111,14 +104,14 @@ button = unsafePerformEffect do
               { testid: fold props.testId
               , size: show props.size
               , loading:
-                show case props.buttonState of
+                show case props.state of
                   Enabled -> false
                   Disabled -> false
                   Loading -> true
               -- , color: un ColorName props.color
               }
           , disabled:
-            case props.buttonState of
+            case props.state of
               Enabled -> false
               Disabled -> true
               Loading -> false

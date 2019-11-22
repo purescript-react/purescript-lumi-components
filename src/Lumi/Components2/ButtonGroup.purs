@@ -7,10 +7,10 @@ import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components as L
 import Lumi.Styles (toCSS)
 import Lumi.Styles.Button as Styles.Button
-import Lumi.Styles.Theme (lumiThemeContext)
+import Lumi.Styles.Theme (useTheme)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
-import React.Basic.Hooks (JSX, useContext)
+import React.Basic.Hooks (JSX)
 import React.Basic.Hooks as React
 
 type ButtonGroupProps
@@ -21,12 +21,10 @@ type ButtonGroupProps
 buttonGroup :: L.LumiComponent ButtonGroupProps
 buttonGroup = unsafePerformEffect do
   L.lumiComponent "ButtonGroup" { joined: false, content: [] } \props -> React.do
-    theme <- useContext lumiThemeContext
+    theme <- useTheme
     pure
       $ E.element R.div'
           { className: props.className
           , children: props.content
-          , css:
-            toCSS theme props
-              $ Styles.Button.buttonGroup props.joined
+          , css: toCSS theme props (Styles.Button.buttonGroup props.joined)
           }

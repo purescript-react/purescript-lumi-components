@@ -1,17 +1,16 @@
--- | WARNING: not production ready -- this is a demo of react-basic-emotion
 module Lumi.Styles.Button where
 
 import Prelude
-
 import Color (Color, darken, desaturate, lighten)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe, fromMaybe)
+import Lumi.Components (PropsModifier)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.ZIndex (ziButtonGroup)
-import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
-import Lumi.Styles.Box (FlexAlign(..), align, focusable, interactive, justify, row)
+import Lumi.Styles (styleModifier, styleModifier_)
+import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
 import Lumi.Styles.Theme (LumiTheme(..))
-import React.Basic.Emotion (Style, color, css, int, merge, nested, str)
+import React.Basic.Emotion (color, css, int, merge, nested, str)
 
 data ButtonKind
   = Primary
@@ -22,17 +21,27 @@ data ButtonState
   | Disabled
   | Loading
 
-button :: forall props. Maybe Color -> ButtonKind -> ButtonState -> Size -> StyleModifier props
-button hue buttonKind buttonState size =
-  row
-    >>> align Center
-    >>> justify Center
-    >>> interactive
-    >>> focusable
+button ::
+  forall props.
+  Maybe Color ->
+  ButtonKind ->
+  ButtonState ->
+  Size ->
+  PropsModifier props
+button colo kind state size =
+  box
+    >>> _row
+    >>> _align Center
+    >>> _justify Center
+    >>> case state of
+        Disabled -> identity
+        Enabled -> _interactive >>> _focusable
+        Loading -> _interactive >>> _focusable
     >>> styleModifier \theme@(LumiTheme { colors }) ->
         merge
           [ css
-              { appearance: str "none"
+              { label: str "button"
+              , appearance: str "none"
               , minWidth: int 70
               , padding: str "10px 20px"
               , fontSize: int 14
@@ -75,108 +84,103 @@ button hue buttonKind buttonState size =
                               }
                       ]
               }
-          , _buttonStateStyles
-              { hue: fromMaybe colors.primary hue
+          , buttonStateStyles
+              { hue: fromMaybe colors.primary colo
               , black: colors.black
               , white: colors.white
               }
-              buttonKind
-              buttonState
           ]
+  where
+  buttonStateStyles { hue, white, black } =
+    let
+      hueDarker = darken 0.1 hue
 
-_buttonStateStyles ::
-  { hue :: Color
-  , black :: Color
-  , white :: Color
-  } ->
-  ButtonKind -> ButtonState -> Style
-_buttonStateStyles { hue, white, black } buttonKind buttonState =
-  let
-    hueDarker = darken 0.1 hue
+      hueDarkest = darken 0.15 hue
 
-    hueDarkest = darken 0.15 hue
+      hueDisabled = lighten 0.4137 $ desaturate 0.1972 hue
 
-    hueDisabled = lighten 0.4137 $ desaturate 0.1972 hue
+      grey1 = lighten 0.7 black
 
-    grey1 = lighten 0.7 black
-
-    grey2 = lighten 0.82 black
-  in
-    case buttonKind of
-      Primary ->
-        let
-          disabledStyles =
-            css
-              { cursor: str "default"
-              , color: color white
-              , borderColor: color hueDisabled
-              , backgroundColor: color hueDisabled
-              }
-        in
-          case buttonState of
-            Enabled ->
+      grey2 = lighten 0.82 black
+    in
+      case kind of
+        Primary ->
+          let
+            disabledStyles =
               css
-                { borderColor: color hue
+                { cursor: str "default"
                 , color: color white
-                , backgroundColor: color hue
-                , "&:hover":
-                  nested
-                    $ css
-                        { borderColor: color hueDarker
-                        , backgroundColor: color hueDarker
-                        }
-                , "&:active":
-                  nested
-                    $ css
-                        { borderColor: color hueDarkest
-                        , backgroundColor: color hueDarkest
-                        }
-                , "&:disabled": nested disabledStyles
+                , borderColor: color hueDisabled
+                , backgroundColor: color hueDisabled
                 }
-            Disabled -> disabledStyles
-            Loading -> disabledStyles
-      Secondary ->
-        let
-          disabledStyles =
-            css
-              { cursor: str "default"
-              , color: color grey1
-              , borderColor: color grey2
-              , backgroundColor: color white
-              }
-        in
-          case buttonState of
-            Enabled ->
+          in
+            case state of
+              Enabled ->
+                css
+                  { borderColor: color hue
+                  , color: color white
+                  , backgroundColor: color hue
+                  , "&:hover":
+                    nested
+                      $ css
+                          { borderColor: color hueDarker
+                          , backgroundColor: color hueDarker
+                          }
+                  , "&:active":
+                    nested
+                      $ css
+                          { borderColor: color hueDarkest
+                          , backgroundColor: color hueDarkest
+                          }
+                  , "&:disabled": nested disabledStyles
+                  }
+              Disabled -> disabledStyles
+              Loading -> disabledStyles
+        Secondary ->
+          let
+            disabledStyles =
               css
-                { borderColor: color grey1
-                , color: color black
+                { cursor: str "default"
+                , color: color grey1
+                , borderColor: color grey2
                 , backgroundColor: color white
-                , "&:hover":
-                  nested
-                    $ css
-                        { borderColor: color hueDarker
-                        , color: color hueDarker
-                        , backgroundColor: color white
-                        }
-                , "&:active":
-                  nested
-                    $ css
-                        { borderColor: color hueDarkest
-                        , color: color hueDarkest
-                        , backgroundColor: color white
-                        }
-                , "&:disabled": nested disabledStyles
                 }
-            Disabled -> disabledStyles
-            Loading -> disabledStyles
+          in
+            case state of
+              Enabled ->
+                css
+                  { borderColor: color grey1
+                  , color: color black
+                  , backgroundColor: color white
+                  , "&:hover":
+                    nested
+                      $ css
+                          { borderColor: color hueDarker
+                          , color: color hueDarker
+                          , backgroundColor: color white
+                          }
+                  , "&:active":
+                    nested
+                      $ css
+                          { borderColor: color hueDarkest
+                          , color: color hueDarkest
+                          , backgroundColor: color white
+                          }
+                  , "&:disabled": nested disabledStyles
+                  }
+              Disabled -> disabledStyles
+              Loading -> disabledStyles
 
-buttonGroup :: forall props. Boolean -> StyleModifier props
+buttonGroup :: forall props. Boolean -> PropsModifier props
 buttonGroup joined =
-  row
+  box
+    >>> _row
+    >>> styleModifier_ (css { label: str "buttonGroup" })
     >>> styleModifier_
         if not joined then
           css
-            { "& > *:not(:last-child)":
+            { label: str "notJoined"
+            , "& > *:not(:last-child)":
               nested
                 $ css
                     { marginRight: int 10
@@ -184,14 +188,15 @@ buttonGroup joined =
             }
         else
           css
-            { "& > button:not(:last-child)":
+            { label: str "joined"
+            , "& > *:not(:last-child)":
               nested
                 $ css
                     { marginRight: int (-1)
                     , borderTopRightRadius: int 0
                     , borderBottomRightRadius: int 0
                     }
-            , "& > button:not(:first-child)":
+            , "& > *:not(:first-child)":
               nested
                 $ css
                     { borderTopLeftRadius: int 0

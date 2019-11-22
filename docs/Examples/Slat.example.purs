@@ -1,24 +1,22 @@
 module Lumi.Components.Examples.Slat where
 
 import Prelude
-
 import Data.Array (intercalate, replicate)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent, lumiElement)
-import Lumi.Components.Column (column_)
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, lumiElement)
 import Lumi.Components.Example (example)
 import Lumi.Components.Lockup (userLockup)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Svg (userSvg)
+import Lumi.Components.Text (h2_, p_)
 import Lumi.Components.Text as Text
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Slat as Slat
-import Lumi.Styles (StyleModifier, styleModifier_)
-import Lumi.Styles.Border as Border
+import Lumi.Styles (styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..))
-import Lumi.Styles.Theme (LumiTheme(..), lumiThemeContext, useTheme)
+import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic (JSX, fragment)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
@@ -27,73 +25,73 @@ import Web.HTML (window)
 import Web.HTML.Window (alert)
 
 docs :: JSX
-docs = (flip lumiElement identity) do
-  unsafePerformEffect do
-    lumiComponent "SlatExample" {className: "" }\_ -> React.do
-      theme <- useTheme
-      let
-        exampleSlatContent =
-          [ lumiElement box
-              $ slatColumn 4
-              $ _ { content =
-                      [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
-                      ]
-                  }
-          , lumiElement labeledInfo
-              $ slatColumn 1
-              $ _ { title = R.text "Lead time"
-                  , value = R.text "11 weeks"
-                  }
-          , lumiElement labeledInfo
-              $ slatColumn 1
-              $ _ { title = R.text "Quantities"
-                  , value = R.text "500-2.5k"
-                  }
-          ]
-      pure $ column_
-        $ intercalate [ vspace S16 ]
-            [ [ example
-                  $ fragment
-                  $ replicate 3
-                  $ lumiElement Slat.slat
-                  $ slatWidth
-                  $ Border.border
-                  $ Border.round
-                  $ Border.listSpaced
-                  $ _ { content = exampleSlatContent }
-              , example
-                  $ fragment
-                  $ replicate 3
-                  $ lumiElement Slat.slat
-                  $ Border.border
-                  $ Border.listSpaced
-                  $ Slat.interactive
-                      { onClick: window >>= alert "click!"
-                      , tabIndex: 1
-                      , href: Nothing
-                      }
-                  $ _ { content = exampleSlatContent }
-              , example
-                  $ fragment
-                  $ replicate 9
-                  $ lumiElement Slat.slat
-                  $ slatWidth
-                  $ Border.border
-                  $ Border.topBottom
-                  $ Border.listCompact
-                  $ Slat.interactive
-                      { onClick: window >>= alert "click!"
-                      , tabIndex: 1
-                      , href: Nothing
-                      }
-                  $ _ { content = exampleSlatContent }
-              ]
-            ]
+docs =
+  let
+    exampleSlatContent =
+      [ lumiElement box
+          $ slatColumn 4
+          $ _
+              { content =
+                [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
+                ]
+              }
+      , lumiElement labeledInfo
+          $ slatColumn 1
+          $ _
+              { title = R.text "Lead time"
+              , value = R.text "11 weeks"
+              }
+      , lumiElement labeledInfo
+          $ slatColumn 1
+          $ _
+              { title = R.text "Quantities"
+              , value = R.text "500-2.5k"
+              }
+      ]
+  in
+    intercalate (vspace S8)
+      [ p_ "Slats are stackable, bordered containers with optional interactive behavior. They do not prescribe any formatting on their content besides defaulting to a center-aligned row layout."
+      , h2_ "square (default), spaced list, interactive, min-width content"
+      , example
+          $ fragment
+          $ replicate 3
+          $ lumiElement Slat.slat
+          $ Slat._listSpaced
+          $ Slat._interactive
+              { onClick: window >>= alert "click!"
+              , tabIndex: 1
+              , href: Nothing
+              }
+          $ _ { content = exampleSlatContent }
+      , h2_ "round, spaced list, non-interactive, min-width 500px"
+      , example
+          $ fragment
+          $ replicate 3
+          $ lumiElement Slat.slat
+          $ slatExWidth
+          $ Slat._round
+          $ Slat._listSpaced
+          $ _ { content = exampleSlatContent }
+      , h2_ "top/bottom, compact list, interactive, min-width 500px"
+      , example
+          $ fragment
+          $ replicate 9
+          $ lumiElement Slat.slat
+          $ Slat._interactive
+              { onClick: window >>= alert "click!"
+              , tabIndex: 1
+              , href: Nothing
+              }
+          $ Slat._topBottom
+          $ Slat._listCompact
+          $ slatExWidth
+          $ _ { content = exampleSlatContent }
+      ]
 
-slatWidth :: forall props. StyleModifier props
-slatWidth = styleModifier_ $ E.css { maxWidth: E.int 500, width: E.str "100%" }
+slatExWidth :: forall props. PropsModifier props
+slatExWidth = styleModifier_ $ E.css { maxWidth: E.int 500, width: E.str "100%" }
 
-slatColumn :: forall props. Int -> StyleModifier props
+slatColumn :: forall props. Int -> PropsModifier props
 slatColumn flexGrow =
   styleModifier_
     $ E.css
@@ -107,28 +105,31 @@ slatColumn flexGrow =
       }
 
 labeledInfo :: LumiComponent ( title :: JSX, value :: JSX )
-labeledInfo = unsafePerformEffect do
-  lumiComponent "LabeledInfo" defaults \{ className, css, title, value } -> React.do
-    theme@(LumiTheme { colorNames }) <- React.useContext lumiThemeContext
-    pure
-      $ lumiElement box
-      $ _ { css = css
-          , className = className
-          , content =
-            [ Text.text
-                Text.body
-                  { children = [ value ]
-                  , color = Nullable.notNull colorNames.black
-                  , style = R.css { whiteSpace: "nowrap" }
-                  }
-            , Text.text
-                Text.subtext
-                  { children = [ title ]
-                  , color = Nullable.notNull colorNames.black1
-                  , style = R.css { whiteSpace: "nowrap" }
-                  }
-            ]
-          }
+labeledInfo =
+  unsafePerformEffect do
+    lumiComponent "LabeledInfo" defaults \{ className, css, title, value } -> React.do
+      theme@(LumiTheme { colorNames }) <- useTheme
+      pure
+        $ lumiElement box
+        $ styleModifier_ (E.css { label: E.str "labeledInfo" })
+        $ _
+            { css = css
+            , className = className
+            , content =
+              [ Text.text
+                  Text.body
+                    { children = [ value ]
+                    , color = Nullable.notNull colorNames.black
+                    , style = R.css { whiteSpace: "nowrap" }
+                    }
+              , Text.text
+                  Text.subtext
+                    { children = [ title ]
+                    , color = Nullable.notNull colorNames.black1
+                    , style = R.css { whiteSpace: "nowrap" }
+                    }
+              ]
+            }
   where
   defaults =
     { title: mempty

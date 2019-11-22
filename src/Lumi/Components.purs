@@ -18,7 +18,7 @@ type PropsModifier props
     (LumiProps props -> LumiProps props)
 
 propsModifier :: forall props. (LumiProps props -> LumiProps props) -> PropsModifier props
-propsModifier = (<<<)
+propsModifier = (>>>)
 
 newtype LumiComponent props
   = LumiComponent

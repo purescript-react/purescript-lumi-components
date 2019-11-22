@@ -2,28 +2,35 @@ module Lumi.Styles.Border where
 
 import Prelude
 
+import Lumi.Components (PropsModifier)
 import Lumi.Components.Spacing (Space(..))
-import Lumi.Styles (StyleModifier, styleModifier, styleModifier_)
+import Lumi.Styles (styleModifier, styleModifier_)
+import Lumi.Styles.Box (box)
 import Lumi.Styles.Box as Box
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (color, css, int, nested, none, prop, str)
 
-border :: forall props. StyleModifier props
+border :: forall props. PropsModifier props
 border =
-  styleModifier \(LumiTheme theme) ->
-    css
-      { borderWidth: int 1
-      , borderColor: color theme.colors.black4
-      , borderStyle: str "solid"
-      , padding: str "8px 16px"
+  box
+    >>> styleModifier \(LumiTheme theme) ->
+      css
+        { label: str "border"
+        , borderWidth: int 1
+        , borderColor: color theme.colors.black4
+        , borderStyle: str "solid"
+        , padding: str "8px 16px"
+        }
+
+_round :: forall props. PropsModifier props
+_round =
+  styleModifier_
+    $ css
+      { borderRadius: int 4
       }
 
-round :: forall props. StyleModifier props
-round =
-  styleModifier_ (css { borderRadius: int 4 })
-
-topBottom :: forall props. StyleModifier props
-topBottom =
+_topBottom :: forall props. PropsModifier props
+_topBottom =
   styleModifier_
         ( css
             { borderLeft: none
@@ -34,10 +41,10 @@ topBottom =
             }
         )
 
-interactive :: forall props. StyleModifier props
-interactive =
-  Box.interactive
-    >>> Box.focusable
+_interactive :: forall props. PropsModifier props
+_interactive =
+  Box._interactive
+    >>> Box._focusable
     >>> styleModifier \(LumiTheme theme) ->
         css
           { "&:hover":
@@ -47,8 +54,8 @@ interactive =
                   }
           }
 
-listSpaced :: forall props. StyleModifier props
-listSpaced =
+_listSpaced :: forall props. PropsModifier props
+_listSpaced =
   styleModifier \(LumiTheme theme) ->
     css
       { "&:not(:first-child)":
@@ -58,8 +65,8 @@ listSpaced =
               }
       }
 
-listCompact :: forall props. StyleModifier props
-listCompact =
+_listCompact :: forall props. PropsModifier props
+_listCompact =
   styleModifier \(LumiTheme theme) ->
     css
       { "&:first-child":
