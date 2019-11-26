@@ -75,6 +75,7 @@ const componentLoaders = [
   "LabeledField",
   "Layouts",
   "Link",
+  "Link2",
   "List",
   "Loader",
   "Lockup",
@@ -169,7 +170,11 @@ const renderRoute = component => (
     render={() =>
       column_([
         row({
-          style: { alignItems: "center", marginBottom: "24px", flexWrap: "wrap" },
+          style: {
+            alignItems: "center",
+            marginBottom: "24px",
+            flexWrap: "wrap"
+          },
           children: [
             h1_(component.title),
             <a

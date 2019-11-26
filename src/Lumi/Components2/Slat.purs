@@ -26,7 +26,6 @@ import Web.HTML.History (URL(..))
 type SlatProps
   = ( content :: Array JSX
     , interaction :: Maybe SlatInteraction
-    , isList :: Boolean
     )
 
 type SlatInteraction
@@ -68,7 +67,6 @@ slat =
   defaults =
     { content: []
     , interaction: Nothing
-    , isList: true
     }
 
   slatStyle =
