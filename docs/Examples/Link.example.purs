@@ -1,7 +1,6 @@
-module Lumi.Components.Examlpes.Link where
+module Lumi.Components.Examples.Link where
 
 import Prelude
-
 import Data.Maybe (Maybe(..))
 import Effect.Console (log)
 import Effect.Uncurried (mkEffectFn1)
@@ -21,16 +20,18 @@ docs =
             { onClick: mkEffectFn1 \_ -> log "Propagated"
             , style: R.css { display: "flex", flexDirection: "column" }
             , children:
-                [ link defaults
+              [ link
+                  defaults
                     { href = URL "#/link"
                     , navigate = pure $ log "link clicked"
                     , text = body_ "Click here"
                     }
-                , link defaults
+              , link
+                  defaults
                     { href = URL "#/input"
                     , target = Just "_blank"
                     , text = body_ "This should open in a new tab"
                     }
-                ]
+              ]
             }
     ]

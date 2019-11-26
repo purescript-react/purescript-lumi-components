@@ -1,8 +1,6 @@
--- | WARNING: not production ready -- this is a demo of react-basic-emotion and LumiComponent
 module Lumi.Components2.Box where
 
 import Prelude
-
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles (toCSS)
@@ -17,12 +15,13 @@ type BoxProps
   = ( content :: Array JSX )
 
 box :: LumiComponent BoxProps
-box = unsafePerformEffect do
-  lumiComponent "Box" { content: [] } \props -> React.do
-    theme <- useTheme
-    pure
-      $ E.element R.div'
-          { children: props.content
-          , className: props.className
-          , css: toCSS theme props Styles.Box.box
-          }
+box =
+  unsafePerformEffect do
+    lumiComponent "Box" { content: [] } \props -> React.do
+      theme <- useTheme
+      pure
+        $ E.element R.div'
+            { children: props.content
+            , className: props.className
+            , css: toCSS theme props Styles.Box.box
+            }

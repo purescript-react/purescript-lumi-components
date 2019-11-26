@@ -1,8 +1,6 @@
--- | WARNING: not production ready -- this is a demo of react-basic-emotion and LumiComponent
 module Lumi.Components2.ButtonGroup where
 
 import Prelude
-
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components as L
 import Lumi.Styles (toCSS)
@@ -19,12 +17,13 @@ type ButtonGroupProps
     )
 
 buttonGroup :: L.LumiComponent ButtonGroupProps
-buttonGroup = unsafePerformEffect do
-  L.lumiComponent "ButtonGroup" { joined: false, content: [] } \props -> React.do
-    theme <- useTheme
-    pure
-      $ E.element R.div'
-          { className: props.className
-          , children: props.content
-          , css: toCSS theme props (Styles.Button.buttonGroup props.joined)
-          }
+buttonGroup =
+  unsafePerformEffect do
+    L.lumiComponent "ButtonGroup" { joined: false, content: [] } \props -> React.do
+      theme <- useTheme
+      pure
+        $ E.element R.div'
+            { className: props.className
+            , children: props.content
+            , css: toCSS theme props (Styles.Button.buttonGroup props.joined)
+            }

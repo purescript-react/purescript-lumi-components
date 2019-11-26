@@ -1,7 +1,6 @@
 module Lumi.Components where
 
 import Prelude
-
 import Data.String (toLower)
 import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
@@ -17,6 +16,7 @@ type PropsModifier props
   = (LumiProps props -> LumiProps props) ->
     (LumiProps props -> LumiProps props)
 
+-- | Lift a `props -> props` function for composition with other `PropsModifier` functions.
 propsModifier :: forall props. (LumiProps props -> LumiProps props) -> PropsModifier props
 propsModifier = (>>>)
 
@@ -28,6 +28,8 @@ newtype LumiComponent props
   , className :: String
   }
 
+-- | Create a `LumiComponent` from a name, set of defaults, and a render function.
+-- | The render function behaves the same as in the [hooks API](https://github.com/spicydonuts/purescript-react-basic-hooks/blob/master/examples/counter/src/Counter.purs#L12).
 lumiComponent ::
   forall hooks props.
   Lacks "children" props =>
@@ -47,6 +49,18 @@ lumiComponent name defaults render = do
         , className: "lumi-component lumi-" <> toLower name
         }
 
+-- | Render a `LumiComponent`. Similar to `React.Basic.element`, except the second argument
+-- | is an update function rather than a plain record for props. This helps reduce
+-- | the surface area for API updates:
+-- |
+-- | ```purs
+-- | React.Basic.element reactComponent
+-- |   { relevantProp, otherProp1: mempty, otherProp2: mempty, ...etc }
+-- |
+-- | -- vs
+-- |
+-- | lumiElement lumiComponent _{ relevantProp = relevantProp }
+-- | ```
 lumiElement ::
   forall props.
   LumiComponent props ->
