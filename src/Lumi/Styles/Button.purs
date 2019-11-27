@@ -7,14 +7,16 @@ import Data.Maybe (Maybe, fromMaybe)
 import Lumi.Components (PropsModifier)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.ZIndex (ziButtonGroup)
-import Lumi.Styles (styleModifier, styleModifier_)
+import Lumi.Styles (merge, none, styleModifier, styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
+import Lumi.Styles.Link as Link
 import Lumi.Styles.Theme (LumiTheme(..))
-import React.Basic.Emotion (color, css, int, merge, nested, str)
+import React.Basic.Emotion (color, css, int, nested, str)
 
 data ButtonKind
   = Primary
   | Secondary
+  | Link
 
 data ButtonState
   = Enabled
@@ -28,20 +30,140 @@ button ::
   ButtonState ->
   Size ->
   PropsModifier props
-button colo kind state size =
-  box
-    >>> _row
-    >>> _align Center
-    >>> _justify Center
-    >>> case state of
-        Disabled -> identity
-        Enabled -> _interactive >>> _focusable
-        Loading -> _interactive >>> _focusable
-    >>> styleModifier \theme@(LumiTheme { colors }) ->
-        merge
-          [ css
+button colo kind state size = case kind of
+  Primary ->
+    buttonStyle
+      >>> styleModifier \(LumiTheme { colors }) ->
+          let
+            { hue, hueDarker, hueDarkest, hueDisabled, white } =
+              makeColorShades
+                { hue: fromMaybe colors.primary colo
+                , black: colors.black
+                , white: colors.white
+                }
+
+            disabledStyles =
+              css
+                { cursor: str "default"
+                , color: color white
+                , borderColor: color hueDisabled
+                , backgroundColor: color hueDisabled
+                }
+          in
+            case state of
+              Enabled ->
+                css
+                  { borderColor: color hue
+                  , color: color white
+                  , backgroundColor: color hue
+                  , "&:hover":
+                    nested
+                      $ css
+                          { borderColor: color hueDarker
+                          , backgroundColor: color hueDarker
+                          }
+                  , "&:active":
+                    nested
+                      $ css
+                          { borderColor: color hueDarkest
+                          , backgroundColor: color hueDarkest
+                          }
+                  , "&:disabled": nested disabledStyles
+                  }
+              Disabled -> disabledStyles
+              Loading -> disabledStyles
+  Secondary ->
+    buttonStyle
+      >>> styleModifier \(LumiTheme { colors }) ->
+          let
+            { hueDarker, hueDarkest, grey1, grey2, white, black } =
+              makeColorShades
+                { hue: fromMaybe colors.primary colo
+                , black: colors.black
+                , white: colors.white
+                }
+
+            disabledStyles =
+              css
+                { cursor: str "default"
+                , color: color grey1
+                , borderColor: color grey2
+                , backgroundColor: color white
+                }
+          in
+            case state of
+              Enabled ->
+                css
+                  { borderColor: color grey1
+                  , color: color black
+                  , backgroundColor: color white
+                  , "&:hover":
+                    nested
+                      $ css
+                          { borderColor: color hueDarker
+                          , color: color hueDarker
+                          , backgroundColor: color white
+                          }
+                  , "&:active":
+                    nested
+                      $ css
+                          { borderColor: color hueDarkest
+                          , color: color hueDarkest
+                          , backgroundColor: color white
+                          }
+                  , "&:disabled": nested disabledStyles
+                  }
+              Disabled -> disabledStyles
+              Loading -> disabledStyles
+  Link ->
+    Link.link
+      >>> styleModifier \(LumiTheme { colors }) ->
+          let
+            { hueDisabled } =
+              makeColorShades
+                { hue: fromMaybe colors.primary colo
+                , black: colors.black
+                , white: colors.white
+                }
+          in
+            merge
+              [ css
+                  { label: str "button"
+                  , appearance: none
+                  , padding: int 0
+                  , background: none
+                  , border: none
+                  }
+              , case state of
+                  Disabled ->
+                    css
+                      { cursor: str "default"
+                      , color: color hueDisabled
+                      , "&:hover, &:active":
+                        nested
+                          $ css
+                              { cursor: str "default"
+                              -- , color: color hueDisabled
+                              , textDecoration: none
+                              }
+                      }
+                  Enabled -> mempty
+                  Loading -> mempty
+              ]
+  where
+  buttonStyle =
+    box
+      >>> _row
+      >>> _align Center
+      >>> _justify Center
+      >>> case state of
+          Disabled -> identity
+          Enabled -> _interactive >>> _focusable
+          Loading -> _interactive >>> _focusable
+      >>> styleModifier_
+          ( css
               { label: str "button"
-              , appearance: str "none"
+              , appearance: none
               , minWidth: int 70
               , padding: str "10px 20px"
               , fontSize: int 14
@@ -84,14 +206,9 @@ button colo kind state size =
                               }
                       ]
               }
-          , buttonStateStyles
-              { hue: fromMaybe colors.primary colo
-              , black: colors.black
-              , white: colors.white
-              }
-          ]
-  where
-  buttonStateStyles { hue, white, black } =
+          )
+
+  makeColorShades { hue, white, black } =
     let
       hueDarker = darken 0.1 hue
 
@@ -103,73 +220,7 @@ button colo kind state size =
 
       grey2 = lighten 0.82 black
     in
-      case kind of
-        Primary ->
-          let
-            disabledStyles =
-              css
-                { cursor: str "default"
-                , color: color white
-                , borderColor: color hueDisabled
-                , backgroundColor: color hueDisabled
-                }
-          in
-            case state of
-              Enabled ->
-                css
-                  { borderColor: color hue
-                  , color: color white
-                  , backgroundColor: color hue
-                  , "&:hover":
-                    nested
-                      $ css
-                          { borderColor: color hueDarker
-                          , backgroundColor: color hueDarker
-                          }
-                  , "&:active":
-                    nested
-                      $ css
-                          { borderColor: color hueDarkest
-                          , backgroundColor: color hueDarkest
-                          }
-                  , "&:disabled": nested disabledStyles
-                  }
-              Disabled -> disabledStyles
-              Loading -> disabledStyles
-        Secondary ->
-          let
-            disabledStyles =
-              css
-                { cursor: str "default"
-                , color: color grey1
-                , borderColor: color grey2
-                , backgroundColor: color white
-                }
-          in
-            case state of
-              Enabled ->
-                css
-                  { borderColor: color grey1
-                  , color: color black
-                  , backgroundColor: color white
-                  , "&:hover":
-                    nested
-                      $ css
-                          { borderColor: color hueDarker
-                          , color: color hueDarker
-                          , backgroundColor: color white
-                          }
-                  , "&:active":
-                    nested
-                      $ css
-                          { borderColor: color hueDarkest
-                          , color: color hueDarkest
-                          , backgroundColor: color white
-                          }
-                  , "&:disabled": nested disabledStyles
-                  }
-              Disabled -> disabledStyles
-              Loading -> disabledStyles
+      { hue, hueDarker, hueDarkest, hueDisabled, grey1, grey2, white, black }
 
 buttonGroup :: forall props. Boolean -> PropsModifier props
 buttonGroup joined =
@@ -183,7 +234,7 @@ buttonGroup joined =
             , "& > *:not(:last-child)":
               nested
                 $ css
-                    { marginRight: int 10
+                    { marginRight: int 8
                     }
             }
         else

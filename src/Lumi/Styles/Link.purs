@@ -2,7 +2,7 @@ module Lumi.Styles.Link where
 
 import Prelude
 import Lumi.Components (PropsModifier)
-import Lumi.Styles (color, int, nested, none, str, styleModifier)
+import Lumi.Styles (color, nested, none, str, styleModifier)
 import Lumi.Styles.Box (box)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (css)
@@ -25,10 +25,5 @@ link =
               $ css
                   { cursor: str "pointer"
                   , textDecoration: str "underline"
-                  }
-          , "&:focus, &:active":
-            nested
-              $ css
-                  { outline: int 0
                   }
           }

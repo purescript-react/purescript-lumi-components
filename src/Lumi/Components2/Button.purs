@@ -2,17 +2,14 @@
 module Lumi.Components2.Button where
 
 import Prelude
-
 import Color (Color)
 import Data.Array as Array
 import Data.Char (fromCharCode)
-import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Data.String.CodeUnits (fromCharArray)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
-import Foreign.Object (fromHomogeneous)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
 import Lumi.Components.Size (Size(..))
 import Lumi.Styles (toCSS)
@@ -34,13 +31,13 @@ type ButtonProps
     , kind :: ButtonKind
     , state :: ButtonState
     , color :: Maybe Color
-    , testId :: Maybe String
     , content :: Array JSX
     )
 
 button :: LumiComponent ButtonProps
-button = unsafePerformEffect do
-  lumiComponent "Button" defaults render
+button =
+  unsafePerformEffect do
+    lumiComponent "Button" defaults render
   where
   lumiButtonElement ::
     forall attrs attrs_.
@@ -52,22 +49,11 @@ button = unsafePerformEffect do
       }
   lumiButtonElement = R.unsafeCreateDOMComponent "button"
 
-  lumiButtonLinkElement ::
-    forall attrs attrs_.
-    Union attrs attrs_ ( | R.Props_a ) =>
-    ReactComponent
-      { className :: String
-      , "aria-label" :: Nullable.Nullable String
-      | attrs
-      }
-  lumiButtonLinkElement = R.unsafeCreateDOMComponent "a"
-
   defaults :: Record ButtonProps
   defaults =
     { accessibilityLabel: mempty
     , onPress: mempty
     , size: Medium
-    , testId: mempty
     , type: mempty
     , kind: Primary
     , state: Enabled
@@ -78,38 +64,14 @@ button = unsafePerformEffect do
   render props = React.do
     theme <- useTheme
     pure
-      if props.type == "link" then
-        E.element lumiButtonLinkElement
+      $ E.element lumiButtonElement
           { "aria-label": Nullable.toNullable props.accessibilityLabel
           , children: props.content
           , className: props.className
-          , css: toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
-          , onClick: capture_ props.onPress
-          , role: "button"
-          , _data:
-            fromHomogeneous
-              { testid: fold props.testId
-              }
-          }
-      else
-        E.element lumiButtonElement
-          { "aria-label": Nullable.toNullable props.accessibilityLabel
-          , children: props.content
-          , className: props.className
-          , css: toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
+          , css:
+            toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
           , onClick: capture_ props.onPress
           , type: props.type
-          , _data:
-            fromHomogeneous
-              { testid: fold props.testId
-              , size: show props.size
-              , loading:
-                show case props.state of
-                  Enabled -> false
-                  Disabled -> false
-                  Loading -> true
-              -- , color: un ColorName props.color
-              }
           , disabled:
             case props.state of
               Enabled -> false
@@ -137,8 +99,7 @@ linkStyle :: PropsModifier ButtonProps
 linkStyle =
   propsModifier
     _
-      { type = "link"
-      -- , kind = LinkButton
+      { kind = Link
       }
 
 invisibleSpace :: String

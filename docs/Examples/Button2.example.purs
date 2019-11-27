@@ -14,6 +14,8 @@ import Lumi.Styles.Box (_interactive)
 import Lumi.Styles.Button (ButtonState(..))
 import React.Basic (JSX)
 import React.Basic.DOM as R
+import Web.HTML (window)
+import Web.HTML.Window (alert)
 
 docs :: JSX
 docs =
@@ -143,7 +145,11 @@ docs =
           , example
               $ lumiElement button
               $ linkStyle
-              $ _ { content = [ R.text "Button w/ link style" ] }
+              $ _ { content = [ R.text "Button w/ link style" ], onPress = alert "asdf" =<< window }
+          , example
+              $ lumiElement button
+              $ linkStyle
+              $ _ { state = Disabled, content = [ R.text "Button w/ link style" ], onPress = alert "asdf" =<< window }
           ]
         , [ h4_ "Loading (Medium/default)"
           , example
