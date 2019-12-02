@@ -12,7 +12,7 @@ import React.Basic.DOM as R
 import React.Basic.Emotion (class IsStyleProperty, str)
 
 data Space
-  = S4 | S8 | S12 | S16 | S24 | S32 | S48 | S56
+  = S4 | S8 | S12 | S16 | S24 | S32 | S40 | S48 | S56
   | S64 | S72 | S80 | S88 | S96 | S104 | S112
 
 hspace :: Space -> JSX
@@ -38,6 +38,7 @@ toPixels S12 = "12px"
 toPixels S16 = "16px"
 toPixels S24 = "24px"
 toPixels S32 = "32px"
+toPixels S40 = "40px"
 toPixels S48 = "48px"
 toPixels S56 = "56px"
 toPixels S64 = "64px"
