@@ -10,6 +10,7 @@ import Lumi.Components.ZIndex (ziButtonGroup)
 import Lumi.Styles (merge, none, styleModifier, styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
 import Lumi.Styles.Link as Link
+import Lumi.Styles.Loader (mkLoader, spin)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (color, css, int, nested, str)
 
@@ -33,7 +34,7 @@ button ::
 button colo kind state size = case kind of
   Primary ->
     buttonStyle
-      >>> styleModifier \(LumiTheme { colors }) ->
+      >>> styleModifier \theme@(LumiTheme { colors }) ->
           let
             { hue, hueDarker, hueDarkest, hueDisabled, white } =
               makeColorShades
@@ -71,10 +72,14 @@ button colo kind state size = case kind of
                   , "&:disabled": nested disabledStyles
                   }
               Disabled -> disabledStyles
-              Loading -> disabledStyles
+              Loading ->
+                merge
+                  [ disabledStyles
+                  , loadingStyles theme
+                  ]
   Secondary ->
     buttonStyle
-      >>> styleModifier \(LumiTheme { colors }) ->
+      >>> styleModifier \theme@(LumiTheme { colors }) ->
           let
             { hueDarker, hueDarkest, grey1, grey2, white, black } =
               makeColorShades
@@ -114,7 +119,11 @@ button colo kind state size = case kind of
                   , "&:disabled": nested disabledStyles
                   }
               Disabled -> disabledStyles
-              Loading -> disabledStyles
+              Loading ->
+                merge
+                  [ disabledStyles
+                  , loadingStyles theme
+                  ]
   Link ->
     Link.link
       >>> styleModifier \(LumiTheme { colors }) ->
@@ -124,6 +133,18 @@ button colo kind state size = case kind of
                 { hue: fromMaybe colors.primary colo
                 , black: colors.black
                 , white: colors.white
+                }
+
+            disabledStyles =
+              css
+                { cursor: str "default"
+                , color: color hueDisabled
+                , "&:hover, &:active":
+                  nested
+                    $ css
+                        { cursor: str "default"
+                        , textDecoration: none
+                        }
                 }
           in
             merge
@@ -135,20 +156,9 @@ button colo kind state size = case kind of
                   , border: none
                   }
               , case state of
-                  Disabled ->
-                    css
-                      { cursor: str "default"
-                      , color: color hueDisabled
-                      , "&:hover, &:active":
-                        nested
-                          $ css
-                              { cursor: str "default"
-                              -- , color: color hueDisabled
-                              , textDecoration: none
-                              }
-                      }
+                  Disabled -> disabledStyles
+                  Loading -> disabledStyles
                   Enabled -> mempty
-                  Loading -> mempty
               ]
   where
   buttonStyle =
@@ -158,8 +168,8 @@ button colo kind state size = case kind of
       >>> _justify Center
       >>> case state of
           Disabled -> identity
+          Loading -> identity
           Enabled -> _interactive >>> _focusable
-          Loading -> _interactive >>> _focusable
       >>> styleModifier_
           ( css
               { label: str "button"
@@ -207,6 +217,36 @@ button colo kind state size = case kind of
                       ]
               }
           )
+
+  loadingStyles theme =
+    merge
+      [ spin
+      , css
+          { label: str "loading"
+          , "&:after": nested $ mkLoader theme { radius: "16px", borderWidth: "2px" }
+          , "@media (min-width: 860px)":
+            nested case size of
+              Small ->
+                css
+                  { "&:after":
+                    nested
+                      $ mkLoader theme { radius: "12px", borderWidth: "2px" }
+                  }
+              Medium -> mempty
+              Large ->
+                css
+                  { "&:after":
+                    nested
+                      $ mkLoader theme { radius: "24px", borderWidth: "3px" }
+                  }
+              ExtraLarge ->
+                css
+                  { "&:after":
+                    nested
+                      $ mkLoader theme { radius: "34px", borderWidth: "4px" }
+                  }
+          }
+      ]
 
   makeColorShades { hue, white, black } =
     let
