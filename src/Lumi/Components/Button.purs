@@ -116,7 +116,7 @@ linkStyle = defaults
   }
 
 invisibleSpace :: String
-invisibleSpace = fromCharArray $ Array.catMaybes [ fromCharCode 0x2063 ]
+invisibleSpace = "\x2063"
 
 type IconButtonProps = CommonButtonProps
   ( iconLeft :: Maybe IconType

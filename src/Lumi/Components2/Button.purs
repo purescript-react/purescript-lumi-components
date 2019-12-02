@@ -1,16 +1,14 @@
--- | WARNING: not production ready -- this is a demo of react-basic-emotion and LumiComponent
 module Lumi.Components2.Button where
 
 import Prelude
 import Color (Color)
 import Data.Array as Array
-import Data.Char (fromCharCode)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
-import Data.String.CodeUnits (fromCharArray)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
+import Lumi.Components.Button (invisibleSpace)
 import Lumi.Components.Size (Size(..))
 import Lumi.Styles (toCSS)
 import Lumi.Styles.Button (ButtonKind(..), ButtonState(..))
@@ -66,7 +64,7 @@ button =
     pure
       $ E.element lumiButtonElement
           { "aria-label": Nullable.toNullable props.accessibilityLabel
-          , children: props.content
+          , children
           , className: props.className
           , css:
             toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
@@ -101,6 +99,3 @@ linkStyle =
     _
       { kind = Link
       }
-
-invisibleSpace :: String
-invisibleSpace = fromCharArray $ Array.catMaybes [ fromCharCode 0x2063 ]
