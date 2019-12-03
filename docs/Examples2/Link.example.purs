@@ -1,4 +1,4 @@
-module Lumi.Components.Examples.Link2 where
+module Lumi.Components2.Examples.Link where
 
 import Prelude
 import Data.Maybe (Maybe(..))

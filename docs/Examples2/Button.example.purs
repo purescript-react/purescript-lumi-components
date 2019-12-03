@@ -1,4 +1,4 @@
-module Lumi.Components.Examples.Button2 where
+module Lumi.Components2.Examples.Button where
 
 import Prelude
 import Data.Array (intercalate)

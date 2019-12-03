@@ -1,4 +1,4 @@
-module Lumi.Components.Examples.Slat where
+module Lumi.Components2.Examples.Slat where
 
 import Prelude
 import Data.Array (intercalate, replicate)

@@ -1,4 +1,4 @@
-module Lumi.Components.Examples.ButtonGroup2 where
+module Lumi.Components2.Examples.ButtonGroup where
 
 import Prelude
 import Effect.Console (log)
