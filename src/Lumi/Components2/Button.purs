@@ -83,18 +83,15 @@ button =
       else
         props.content
 
-primary :: PropsModifier ButtonProps
-primary = identity
-
-secondary :: PropsModifier ButtonProps
-secondary =
+_secondary :: forall props. PropsModifier ( kind :: ButtonKind | props )
+_secondary =
   propsModifier
     _
       { kind = Secondary
       }
 
-linkStyle :: PropsModifier ButtonProps
-linkStyle =
+_linkStyle :: forall props. PropsModifier ( kind :: ButtonKind | props )
+_linkStyle =
   propsModifier
     _
       { kind = Link

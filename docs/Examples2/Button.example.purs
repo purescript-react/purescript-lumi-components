@@ -9,7 +9,7 @@ import Lumi.Components.Icon (IconType(..), icon)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (h2_, h4_)
-import Lumi.Components2.Button (linkStyle, button, primary, secondary)
+import Lumi.Components2.Button (_linkStyle, button, _secondary)
 import Lumi.Styles.Box (_interactive)
 import Lumi.Styles.Button (ButtonState(..))
 import React.Basic (JSX)
@@ -67,32 +67,30 @@ docs =
                   }
           ]
         , [ h2_ "Color"
-          , h4_ "Primary"
+          , h4_ "Primary (default)"
           , example
               $ lumiElement button
-              $ primary
               $ _interactive
               $ _ { content = [ R.text "Button" ] }
           ]
         , [ h4_ "Primary + Disabled"
           , example
               $ lumiElement button
-              $ primary
               $ _
                   { content = [ R.text "Button" ]
                   , state = Disabled
                   }
           ]
-        , [ h4_ "Secondary Medium (default)"
+        , [ h4_ "Secondary (outline)"
           , example
               $ lumiElement button
-              $ secondary
+              $ _secondary
               $ _ { content = [ R.text "Button" ] }
           ]
         , [ h4_ "Secondary Small"
           , example
               $ lumiElement button
-              $ secondary
+              $ _secondary
               $ _
                   { content = [ R.text "Button" ]
                   , size = Small
@@ -101,7 +99,7 @@ docs =
         , [ h4_ "Secondary Large"
           , example
               $ lumiElement button
-              $ secondary
+              $ _secondary
               $ _
                   { content = [ R.text "Button" ]
                   , size = Large
@@ -110,7 +108,7 @@ docs =
         , [ h4_ "Secondary Extra Large"
           , example
               $ lumiElement button
-              $ secondary
+              $ _secondary
               $ _
                   { content = [ R.text "Button" ]
                   , size = ExtraLarge
@@ -119,7 +117,7 @@ docs =
         , [ h4_ "Secondary + Disabled"
           , example
               $ lumiElement button
-              $ secondary
+              $ _secondary
               $ _
                   { content = [ R.text "Button" ]
                   , state = Disabled
@@ -133,7 +131,7 @@ docs =
         , [ h4_ "Icon button"
           , example
               $ lumiElement button
-              $ secondary
+              $ _secondary
               $ _ { content = [ buttonIcon Plus, hspace S8, R.text "Add new item" ] }
           ]
         , [ h4_ "Icon button"
@@ -144,23 +142,21 @@ docs =
         , [ h4_ "Link style"
           , example
               $ lumiElement button
-              $ linkStyle
+              $ _linkStyle
               $ _ { content = [ R.text "Button w/ link style" ], onPress = alert "asdf" =<< window }
           , example
               $ lumiElement button
-              $ linkStyle
+              $ _linkStyle
               $ _ { state = Disabled, content = [ R.text "Button w/ link style" ], onPress = alert "asdf" =<< window }
           ]
         , [ h4_ "Loading (Medium/default)"
           , example
               $ lumiElement button
-              $ primary
               $ _ { state = Loading }
           ]
         , [ h4_ "Loading (Small) "
           , example
               $ lumiElement button
-              $ primary
               $ _
                   { state = Loading
                   , size = Small
@@ -169,7 +165,6 @@ docs =
         , [ h4_ "Loading (Large) "
           , example
               $ lumiElement button
-              $ primary
               $ _
                   { state = Loading
                   , size = Large
@@ -178,7 +173,6 @@ docs =
         , [ h4_ "Loading (ExtraLarge) "
           , example
               $ lumiElement button
-              $ primary
               $ _
                   { state = Loading
                   , size = ExtraLarge
