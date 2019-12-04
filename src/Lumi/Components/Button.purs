@@ -197,8 +197,8 @@ styles = jss
               , boxShadow: [ "0", "0", "0", "3px", cssStringHSLA colors.primary3 ]
               }
           , "@media (min-width: 860px)":
-           { padding: "6px 16px"
-          , fontSize: "14px"
+              { padding: "6px 16px"
+              , fontSize: "14px"
               , lineHeight: "20px"
               , height: "32px"
               , "&[data-size=\"small\"]":
@@ -220,8 +220,8 @@ styles = jss
                   }
               }
           , "&[data-color=\"secondary\"]":
-          { extend: buttonSecondary
-          , backgroundColor: cssStringHSLA colors.transparent
+              { extend: buttonSecondary
+              , backgroundColor: cssStringHSLA colors.transparent
               , "&:hover":
                   { color: cssStringHSLA colors.primary
                   , borderColor: cssStringHSLA colors.primary
