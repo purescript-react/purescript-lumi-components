@@ -36,7 +36,7 @@ docs =
       _
         { content =
           [ p_ "Box is a simple building block component. Lumi components default to building off of Box and generally expect their JSX arguments to be Box-compatible elements."
-          , p_ "A Box is essentially a div which defaults to a flex column. The most common flex settings are available as prop modifiers. Nested boxes will also stretch to fill their given space by default. If a component shoudn't grow beyond a specific size under any circumstances, be sure to give it a max-width!"
+          , p_ "A Box is essentially a div which defaults to a flex column. The most common flex settings are available as prop modifiers. Nested boxes will also stretch to fill their given space by default. If a component shouldn't grow beyond a specific size under any circumstances, be sure to give it a max-width!"
           , vspace S24
           , h2_ "Defaults"
           , example $ lumiElement box
