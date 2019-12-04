@@ -4,12 +4,10 @@ import Prelude
 
 import Color (cssStringHSLA, darken, desaturate, lighten)
 import Data.Array as Array
-import Data.Char (fromCharCode)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Data.String (null)
-import Data.String.CodeUnits (fromCharArray)
 import Effect.Uncurried (mkEffectFn1)
 import Foreign (isNull, isUndefined, unsafeToForeign)
 import JSS (JSS, jss)
@@ -102,12 +100,12 @@ defaults =
 
 primary :: ButtonProps
 primary = defaults
-  { color = toNullable $ Just $ colorNames.primary
+  { color = toNullable $ Just colorNames.primary
   }
 
 secondary :: ButtonProps
 secondary = defaults
-  { color = toNullable $ Just $ colorNames.secondary
+  { color = toNullable $ Just colorNames.secondary
   }
 
 linkStyle :: ButtonProps
@@ -116,7 +114,7 @@ linkStyle = defaults
   }
 
 invisibleSpace :: String
-invisibleSpace = fromCharArray $ Array.catMaybes [ fromCharCode 0x2063 ]
+invisibleSpace = "\x2063"
 
 type IconButtonProps = CommonButtonProps
   ( iconLeft :: Maybe IconType
@@ -199,8 +197,8 @@ styles = jss
               , boxShadow: [ "0", "0", "0", "3px", cssStringHSLA colors.primary3 ]
               }
           , "@media (min-width: 860px)":
-              { padding: "6px 16px"
-              , fontSize: "14px"
+           { padding: "6px 16px"
+          , fontSize: "14px"
               , lineHeight: "20px"
               , height: "32px"
               , "&[data-size=\"small\"]":
@@ -222,8 +220,8 @@ styles = jss
                   }
               }
           , "&[data-color=\"secondary\"]":
-              { extend: buttonSecondary
-              , backgroundColor: cssStringHSLA colors.transparent
+          { extend: buttonSecondary
+          , backgroundColor: cssStringHSLA colors.transparent
               , "&:hover":
                   { color: cssStringHSLA colors.primary
                   , borderColor: cssStringHSLA colors.primary

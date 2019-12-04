@@ -28,6 +28,7 @@
     "clean:everything": "run-s clean clean:deps"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.21",
     "big-integer": "^1.6.44",
     "jss": "^10.0.0-alpha.16",
     "jss-preset-default": "^10.0.0-alpha.16",
@@ -57,7 +58,7 @@
     "prettier": "^1.18.2",
     "pscid": "^2.8.1",
     "pulp": "^13.0.0",
-    "purescript": "^0.13.3",
+    "purescript": "^0.13.5",
     "purescript-psa": "^0.7.3",
     "react-loadable": "^5.5.0",
     "react-media": "^1.8.0",

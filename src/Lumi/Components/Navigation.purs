@@ -26,6 +26,7 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (ref)
 import React.Basic.DOM.Events (capture_)
+import React.Basic.DOM.SVG as RS
 import Web.DOM (Node)
 import Web.Event.Event (EventType(..))
 import Web.Event.Internal.Types (Event)
@@ -255,7 +256,7 @@ navigation = make component { initialState, render }
                                     Just cartAmount ->
                                       fragment
                                         [ if cartAmount > 0
-                                          then R.svg
+                                          then RS.svg
                                             { xmlns: "http://www.w3.org/2000/svg"
                                             , height: "6"
                                             , width: "6"
@@ -265,7 +266,7 @@ navigation = make component { initialState, render }
                                                 , left: -8
                                                 }
                                             , children:
-                                                [ element (R.unsafeCreateDOMComponent "circle")
+                                                [ RS.circle
                                                     { fill: "#0044e4"
                                                     , fillRule: "evenodd"
                                                     , strokeMiterlimit: "round"

@@ -50,6 +50,23 @@ const fromComponentPath = title => ({
   apiReference: `${pursuitBasePath}/docs/Lumi.Components.${title}`
 });
 
+const fromComponentPathv2 = title => ({
+  docs: Loadable({
+    loader: () =>
+      // Note: The string bits inside `require(...)` need to stay static strings, or Webpack
+      // won't be able to infer which files need to be included in the bundle.
+      import(`purs/Lumi.Components2.Examples.${title}`).then(module_ => () =>
+        module_.docs
+      ),
+    loading: () => null // these load quickly enough that a noisy loader makes it look slower
+  }),
+  title,
+  path: `/v2/${changeCase.hyphen(title)}`,
+  componentSource: `${repoSourceBasePath}/src/Lumi/Components2/${title}.purs`,
+  exampleSource: `${repoSourceBasePath}/docs/Examples2/${title}.example.purs`,
+  apiReference: `${pursuitBasePath}/docs/Lumi.Components2.${title}`
+});
+
 const componentLoaders = [
   "Badge",
   "Border",
@@ -99,14 +116,20 @@ const componentLoaders = [
   "Wizard"
 ].map(fromComponentPath);
 
+const componentv2Loaders = ["Box", "Button", "ButtonGroup", "Link", "Slat"].map(
+  fromComponentPathv2
+);
+
 const App = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(menuOpen => !menuOpen);
   const closeMenu = () => setMenuOpen(false);
 
   const [components, setComponents] = useState(null);
+  const [componentsv2, setComponentsv2] = useState(null);
   useEffect(() => {
     Promise.all(componentLoaders).then(setComponents);
+    Promise.all(componentv2Loaders).then(setComponentsv2);
   }, []);
 
   return (
@@ -116,11 +139,23 @@ const App = () => {
           {isMobile => (
             <Root>
               <Header isMobile={isMobile} toggleMenu={toggleMenu} />
-              {components === null ? (
+              {(components && componentsv2) == null ? (
                 loader({})
               ) : (
                 <Content closeMenu={closeMenu}>
                   <SideNav isMobile={isMobile} menuOpen={menuOpen}>
+                    <NavSubtitle>
+                      Components v2
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: colors.black5
+                        }}
+                      >
+                        (alpha)
+                      </div>
+                    </NavSubtitle>
+                    {componentsv2.map(renderNavLink)}
                     <NavSubtitle>Components</NavSubtitle>
                     {components.map(renderNavLink)}
                   </SideNav>
@@ -129,6 +164,7 @@ const App = () => {
                     <ErrorBoundary>
                       <Switch>
                         <Route exact path="/" render={() => h1_("Welcome")} />
+                        {componentsv2.map(renderRoute)}
                         {components.map(renderRoute)}
                         <Redirect to="/" />
                       </Switch>
@@ -166,7 +202,11 @@ const renderRoute = component => (
     render={() =>
       column_([
         row({
-          style: { alignItems: "center", marginBottom: "24px" },
+          style: {
+            alignItems: "center",
+            marginBottom: "24px",
+            flexWrap: "wrap"
+          },
           children: [
             h1_(component.title),
             <a
@@ -233,7 +273,11 @@ const Root = ({ children }) =>
 const Title = ({ children }) => (
   <Link
     to="/"
-    style={{ color: cssStringHSLA(colors.black1), textDecoration: "none" }}
+    style={{
+      color: cssStringHSLA(colors.black1),
+      textDecoration: "none",
+      whiteSpace: "nowrap"
+    }}
   >
     {mainHeader_(children)}
   </Link>
@@ -244,7 +288,7 @@ const Version = ({ children }) =>
     ...subsectionHeader,
     color: colorNames.black1,
     children: children,
-    style: { marginLeft: 10 }
+    style: { marginLeft: 10, whiteSpace: "nowrap" }
   });
 
 const MenuLink = ({ toggleMenu }) =>
@@ -354,17 +398,17 @@ const SideNav = ({ children, isMobile, menuOpen }) => {
 const NavSubtitle = ({ children }) =>
   text({
     ...sectionHeader,
-    children: children,
+    children,
     style: {
       fontSize: "16px",
       marginBottom: "10px",
-      marginTop: "10px"
+      marginTop: "20px"
     }
   });
 
 const ExampleArea = ({ children }) =>
   column({
-    children: children,
+    children,
     style: {
       width: "100%",
       padding: "20px"
