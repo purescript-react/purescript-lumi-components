@@ -116,7 +116,7 @@ const componentLoaders = [
   "Wizard"
 ].map(fromComponentPath);
 
-const componentv2Loaders = ["Box", "Button", "ButtonGroup", "Link", "Slat"].map(
+const componentv2Loaders = ["Banner", "Box", "Button", "ButtonGroup", "Link", "Slat"].map(
   fromComponentPathv2
 );
 

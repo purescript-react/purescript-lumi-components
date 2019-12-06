@@ -6,6 +6,7 @@ module Lumi.Styles
   ) where
 
 import Prelude
+
 import Lumi.Components (PropsModifier, LumiProps, propsModifier)
 import Lumi.Styles.Theme (LumiTheme)
 import React.Basic.Emotion hiding (element) as Emotion

@@ -25,6 +25,11 @@ _row =
   styleModifier_
     $ css { flexDirection: str "row" }
 
+_column :: forall props. PropsModifier props
+_column =
+  styleModifier_
+    $ css { flexDirection: str "column" }
+
 _wrap :: forall props. PropsModifier props
 _wrap =
   styleModifier_
@@ -60,6 +65,9 @@ _align a = styleModifier_ $ css { alignItems: prop a }
 
 _alignSelf :: forall props. FlexAlign -> PropsModifier props
 _alignSelf a = styleModifier_ $ css { alignSelf: prop a }
+
+_fill :: forall props. PropsModifier props
+_fill = styleModifier_ $ css { flex: str "1" }
 
 _interactive :: forall props. PropsModifier props
 _interactive =
