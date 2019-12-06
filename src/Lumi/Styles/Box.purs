@@ -67,6 +67,9 @@ _align a = style_ $ css { alignItems: prop a }
 _alignSelf :: FlexAlign -> StyleModifier
 _alignSelf a = style_ $ css { alignSelf: prop a }
 
+_flex :: StyleModifier
+_flex = style_ $ css { flex: str "1" }
+
 _interactive :: StyleModifier
 _interactive =
   style_
