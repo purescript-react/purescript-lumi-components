@@ -3,7 +3,7 @@ module Lumi.Styles.Box where
 import Prelude
 import Color (cssStringHSLA)
 import Lumi.Components (PropsModifier)
-import Lumi.Styles (styleModifier, styleModifier_)
+import Lumi.Styles (int, styleModifier, styleModifier_)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (class IsStyleProperty, css, nested, prop, str)
 
@@ -11,14 +11,16 @@ box :: forall props. PropsModifier props
 box =
   styleModifier_
     $ css
-      { label: str "box"
-      , display: str "flex"
-      , flexDirection: str "column"
-      , boxSizing: str "border-box"
-      , minHeight: str "0"
-      , minWidth: str "min-content"
-      , flex: str "0 0 auto"
-      }
+        { label: str "box"
+        , display: str "flex"
+        , flexDirection: str "column"
+        , boxSizing: str "border-box"
+        , minHeight: int 0
+        , minWidth: str "min-content"
+        , flex: str "0 0 auto"
+        , margin: int 0
+        , padding: int 0
+        }
 
 _row :: forall props. PropsModifier props
 _row =

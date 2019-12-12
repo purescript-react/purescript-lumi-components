@@ -48,7 +48,7 @@ slat =
             }
         Just interaction@{ href: Nothing } ->
           E.element R.button'
-            { css: toCSS theme props slatStyle
+            { css: toCSS theme props slatStyleInteractive
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
@@ -56,7 +56,7 @@ slat =
             }
         Just interaction@{ href: Just href } ->
           E.element R.a'
-            { css: toCSS theme props slatStyle
+            { css: toCSS theme props slatStyleInteractive
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
@@ -73,10 +73,13 @@ slat =
     Styles.Slat.Hidden.slat
       >>> styleModifier_ (E.css { appearance: E.none })
 
+  slatStyleInteractive =
+    slatStyle
+      >>> Styles.Slat.Hidden._interactive
+
 _interactive :: SlatInteraction -> PropsModifier SlatProps
 _interactive interaction =
-  Styles.Slat.Hidden._interactive
-    >>> propsModifier
-        _
-          { interaction = Just interaction
-          }
+  propsModifier
+    _
+      { interaction = Just interaction
+      }
