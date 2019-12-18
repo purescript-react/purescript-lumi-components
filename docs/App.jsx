@@ -116,9 +116,14 @@ const componentLoaders = [
   "Wizard"
 ].map(fromComponentPath);
 
-const componentv2Loaders = ["Box", "Button", "ButtonGroup", "Link", "Slat"].map(
-  fromComponentPathv2
-);
+const componentv2Loaders = [
+  "Box",
+  "Button",
+  "ButtonGroup",
+  "Clip",
+  "Link",
+  "Slat"
+].map(fromComponentPathv2);
 
 const App = () => {
   const [menuOpen, setMenuOpen] = useState(false);
