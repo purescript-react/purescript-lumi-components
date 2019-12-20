@@ -66,8 +66,8 @@ _align a = styleModifier_ $ css { alignItems: prop a }
 _alignSelf :: forall props. FlexAlign -> PropsModifier props
 _alignSelf a = styleModifier_ $ css { alignSelf: prop a }
 
-_fill :: forall props. PropsModifier props
-_fill = styleModifier_ $ css { flex: str "1" }
+_flex :: forall props. PropsModifier props
+_flex = styleModifier_ $ css { flex: str "1" }
 
 _interactive :: forall props. PropsModifier props
 _interactive =

@@ -24,7 +24,7 @@ import Lumi.Components2.Box (box)
 import Lumi.Styles (color, css, nested, prop, str, styleModifier, styleModifier_)
 import Lumi.Styles.Banner (banner) as S
 import Lumi.Styles.Border (_listSpaced, _listCompact) as Styles.Banner
-import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _fill, _interactive, _justify, _row) as S
+import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _flex, _interactive, _justify, _row) as S
 import Lumi.Styles.Responsive (desktopQuery)
 import Lumi.Styles.Responsive (onDesktop) as S
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
@@ -58,7 +58,7 @@ banner =
                 [ lumiElement box
                   $ S._align S.Stretch
                   $ S.onDesktop (S._row >>> S._align S.Center)
-                  $ S._fill
+                  $ S._flex
                   $ _ { content = props.content }
                 , Monoid.guard props.dismissable
                     $ lumiElement box
@@ -101,11 +101,11 @@ actionBanner actions f =
     { content =
         [ lumiElement box
           $ S._column
-          $ S._fill
+          $ S._flex
           $ S.onDesktop (S._row >>> S._align S.Center)
           $ _ { content =
                   [ lumiElement box
-                    $ S._fill
+                    $ S._flex
                     $ _ { content = props.content }
                   , lumiElement box
                     $ S._row
