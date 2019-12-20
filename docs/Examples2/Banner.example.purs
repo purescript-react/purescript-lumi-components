@@ -17,37 +17,33 @@ import React.Basic.DOM as R
 docs :: JSX
 docs =
   intercalate (vspace S8)
-    [ p_ "TODO"
+    [ p_ "Banners are small pieces of informative content that draw the attention of the user through color and that may require user action."
 
-    , h2_ "TODO"
+    , h2_ "round (default), spaced list, non-dismissable"
     , example
         $ fragment
         $ allColors
-        $ _alignSelf Stretch
         $ _ { content = loremIpsum }
 
-    , h2_ "TODO"
+    , h2_ "round (default), spaced list, dismissable"
     , example
         $ fragment
         $ allColors
-        $ _alignSelf Stretch
         $ _ { dismissable = true
             , content = importantMessage
             }
 
-    , h2_ "TODO"
+    , h2_ "action banner, round (default), spaced list, non-dismissable"
     , example
         $ fragment
         $ allColors
-        $ _alignSelf Stretch
         $ Banner.actionBanner actions
         $ _ { content = loremIpsum }
 
-    , h2_ "TODO"
+    , h2_ "action banner, round (default), spaced list, dismissable"
     , example
         $ fragment
         $ allColors
-        $ _alignSelf Stretch
         $ Banner.actionBanner actions
         $ _ { dismissable = true
             , content = importantMessage
@@ -58,21 +54,26 @@ docs =
     allColors :: (LumiProps Banner.BannerProps -> LumiProps Banner.BannerProps) -> Array JSX
     allColors props =
       [ lumiElement Banner.banner
+          $ _alignSelf Stretch
           $ Banner._listSpaced
           $ props
       , lumiElement Banner.banner
+          $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.primary
           $ props
       , lumiElement Banner.banner
+          $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.active
           $ props
       , lumiElement Banner.banner
+          $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.warning
           $ props
       , lumiElement Banner.banner
+          $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.error
           $ props
