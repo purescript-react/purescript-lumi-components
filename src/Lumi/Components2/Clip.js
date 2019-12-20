@@ -1,24 +1,35 @@
 "use strict";
 
-const selectElementContents = el => {
+const selectNodeContents = node => {
   const range = document.createRange();
-  range.selectNodeContents(el);
+  range.selectNodeContents(node);
   var sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
-  return sel.toString();
+  return sel;
 };
 
-exports.copyElementContents = el => () => {
-  const content = selectElementContents(el);
-  if (window.navigator.clipboard != null) {
-    window.navigator.clipboard
-      .writeText(content)
-      .then(() => {
-        console.log("copied", content);
-      })
-      .catch(e => console.error("copy failed", e));
-  } else {
-    window.document.execCommand("copy");
+exports.copyNodeContents = (success, failure, node) => {
+  try {
+    const sel = selectNodeContents(node);
+    if (window.navigator.clipboard != null) {
+      window.navigator.clipboard
+        .writeText(sel.toString())
+        .then(() => {
+          sel.removeAllRanges();
+        })
+        .then(success, failure);
+      return;
+    } else {
+      const copyResult = window.document.execCommand("copy");
+      if (copyResult) {
+        sel.removeAllRanges();
+        return success();
+      } else {
+        return failure(new Error("Failed to copy"));
+      }
+    }
+  } catch (e) {
+    failure(e);
   }
 };
