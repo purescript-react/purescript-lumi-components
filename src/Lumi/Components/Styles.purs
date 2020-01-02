@@ -103,7 +103,7 @@ globals = jss
           , margin: "0"
           }
       , "react-basic-ref":
-          { display: "block"
+          { display: "flex"
           , minHeight: "0"
           , minWidth: "0"
           }

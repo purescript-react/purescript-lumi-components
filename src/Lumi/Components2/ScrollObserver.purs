@@ -6,7 +6,7 @@ import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent)
+import Lumi.Components (LumiComponent, lumiComponentFromHook)
 import React.Basic (JSX)
 import React.Basic.Hooks (Hook, UnsafeReference(..), UseEffect, UseState, coerceHook, useEffect, useState, (/\))
 import React.Basic.Hooks as React
@@ -43,17 +43,15 @@ useScrollObserver root =
 
 type ScrollObserverProps
   = ( node :: Nullable Node
-    , content :: { hasScrolledX :: Boolean, hasScrolledY :: Boolean } -> JSX
+    , render :: { hasScrolledX :: Boolean, hasScrolledY :: Boolean } -> JSX
     )
 
 scrollObserver :: LumiComponent ScrollObserverProps
 scrollObserver =
   unsafePerformEffect do
-    lumiComponent "ScrollObserver" defaults \props -> React.do
-      hasScrolled <- useScrollObserver props.node
-      pure $ props.content hasScrolled
+    lumiComponentFromHook "ScrollObserver" defaults (useScrollObserver <<< _.node)
   where
-  defaults = { node: Nullable.null, content: \_ -> mempty }
+  defaults = { node: Nullable.null, render: \_ -> mempty }
 
 foreign import getScrollParent :: Nullable Node -> Effect Element
 

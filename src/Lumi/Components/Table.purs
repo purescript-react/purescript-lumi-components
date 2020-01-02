@@ -268,7 +268,7 @@ table = make component
         renderLumiTable self columns \tableRef ->
           [ lumiElement scrollObserver _
               { node = Nullable.notNull tableRef
-              , content = \{ hasScrolledY, hasScrolledX } ->
+              , render = \{ hasScrolledY, hasScrolledX } ->
                   R.table
                     { className:
                         let

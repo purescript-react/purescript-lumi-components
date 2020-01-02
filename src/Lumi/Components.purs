@@ -1,4 +1,12 @@
-module Lumi.Components where
+module Lumi.Components
+  ( LumiProps
+  , PropsModifier
+  , propsModifier
+  , LumiComponent
+  , lumiComponent
+  , lumiComponentFromHook
+  , lumiElement
+  ) where
 
 import Prelude
 import Data.String (toLower)
@@ -6,7 +14,7 @@ import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
 import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
-import React.Basic.Hooks (JSX, ReactComponent, Render, component, element)
+import React.Basic.Hooks (JSX, ReactComponent, Render, component, componentFromHook, element)
 import Record.Unsafe.Union (unsafeUnion)
 
 type LumiProps props
@@ -46,8 +54,30 @@ lumiComponent name defaults render = do
         { name
         , component: c
         , defaults
-        , className: "lumi-component lumi-" <> toLower name
+        , className: lumiComponentClassName name
         }
+
+lumiComponentFromHook ::
+  forall hooks props r.
+  Lacks "children" props =>
+  Lacks "key" props =>
+  Lacks "ref" props =>
+  String ->
+  { render :: r -> JSX | props } ->
+  (LumiProps ( render :: r -> JSX | props ) -> Render Unit hooks r) ->
+  Effect (LumiComponent ( render :: r -> JSX | props ))
+lumiComponentFromHook name defaults propsToHook = do
+  c <- componentFromHook name propsToHook
+  pure
+    $ LumiComponent
+        { name
+        , component: c
+        , defaults
+        , className: lumiComponentClassName name
+        }
+
+lumiComponentClassName :: String -> String
+lumiComponentClassName name = "lumi-component lumi-" <> toLower name
 
 -- | Render a `LumiComponent`. Similar to `React.Basic.element`, except the second argument
 -- | is an update function rather than a plain record for props. This helps reduce
