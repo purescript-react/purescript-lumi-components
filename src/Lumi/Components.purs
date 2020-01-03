@@ -14,7 +14,7 @@ import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
 import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
-import React.Basic.Hooks (JSX, ReactComponent, Render, component, componentFromHook, element)
+import React.Basic.Hooks (JSX, ReactComponent, Render, Hook, component, componentFromHook, element)
 import Record.Unsafe.Union (unsafeUnion)
 
 type LumiProps props
@@ -64,7 +64,7 @@ lumiComponentFromHook ::
   Lacks "ref" props =>
   String ->
   { render :: r -> JSX | props } ->
-  (LumiProps ( render :: r -> JSX | props ) -> Render Unit hooks r) ->
+  (LumiProps ( render :: r -> JSX | props ) -> Hook hooks r) ->
   Effect (LumiComponent ( render :: r -> JSX | props ))
 lumiComponentFromHook name defaults propsToHook = do
   c <- componentFromHook name propsToHook
