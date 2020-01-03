@@ -14,7 +14,7 @@ exports.copyNodeContents = (success, failure, node) => {
     const sel = selectNodeContents(node);
     if (window.navigator.clipboard != null) {
       window.navigator.clipboard
-        .writeText(sel.toString())
+        .writeText(sel.toString().trim())
         .then(() => {
           sel.removeAllRanges();
         })

@@ -48,7 +48,7 @@ clip =
                 ( E.merge
                     [ E.css
                         { marginLeft: E.prop S16
-                        , lineHeight: E.str "12px"
+                        , lineHeight: E.str "1.2"
                         }
                     , guard copied do
                         E.css
