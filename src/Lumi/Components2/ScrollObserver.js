@@ -19,7 +19,7 @@ exports.getScrollParent = node => () => {
   } else if (isScrollable && node.scrollHeight >= node.clientHeight) {
     return node;
   } else {
-    return getScrollParent(node.parentNode);
+    return exports.getScrollParent(node.parentNode);
   }
 };
 
