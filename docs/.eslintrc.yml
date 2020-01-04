@@ -1,0 +1,12 @@
+extends:
+  - plugin:react/recommended
+parser: babel-eslint
+parserOptions:
+  sourceType: module
+  ecmaFeatures:
+    jsx: true
+settings:
+  react:
+    version: detect
+rules:
+  react/prop-types: 0

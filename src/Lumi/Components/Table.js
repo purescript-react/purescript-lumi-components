@@ -1,7 +1,5 @@
 "use strict";
 
-var React = require("react");
-
 // This is here until we can get rid of Immutable
 exports.dataSize = function(data) {
   return data.size ? data.size : data.length;

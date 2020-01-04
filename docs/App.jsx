@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-key */
+/* global COMMITHASH, VERSION */
+
 import React, { Component, useState, useEffect } from "react";
 import { Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
 import Media from "react-media";
@@ -217,6 +220,7 @@ const renderRoute = component => (
             <a
               className="lumi"
               target="_blank"
+              rel="noopener noreferrer"
               href={component.componentSource}
               style={{
                 marginLeft: "8px",
@@ -229,6 +233,7 @@ const renderRoute = component => (
             <a
               className="lumi"
               target="_blank"
+              rel="noopener noreferrer"
               href={component.exampleSource}
               style={{
                 marginLeft: "8px",
@@ -241,6 +246,7 @@ const renderRoute = component => (
             <a
               className="lumi"
               target="_blank"
+              rel="noopener noreferrer"
               href={component.apiReference}
               style={{
                 marginLeft: "8px"

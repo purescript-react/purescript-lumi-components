@@ -7,7 +7,7 @@ var modalRoot = document.getElementById("modal-root");
 
 function assign(target, from) {
   for (var nextKey in from) {
-    if (from.hasOwnProperty(nextKey)) {
+    if (Object.prototype.hasOwnProperty.call(from, nextKey)) {
       target[nextKey] = from[nextKey];
     }
   }
@@ -15,7 +15,7 @@ function assign(target, from) {
 }
 
 exports.modalBuilder = function(ModalPortal) {
-  var ModalComponent = function constructor(props) {
+  var ModalComponent = function constructor(_props) {
     this.el = document.createElement("div");
     var this_ = this;
     this.requestClose = function(event) {
