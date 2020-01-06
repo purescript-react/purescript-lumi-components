@@ -104,6 +104,7 @@ globals = jss
           }
       , "react-basic-ref":
           { display: "flex"
+          , flexDirection: "column"
           , minHeight: "0"
           , minWidth: "0"
           }
