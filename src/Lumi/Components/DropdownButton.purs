@@ -41,9 +41,12 @@ import Web.HTML.HTMLElement (HTMLElement, fromNode, getBoundingClientRect, toNod
 import Web.HTML.Window (document, innerWidth, scrollX, scrollY) as HTML
 import Web.HTML.Window (requestAnimationFrame)
 
+-- | Props for a DropdownButton component. The argument to the `content` field
+-- | is a callback which may be called to inform the dropdown button that it
+-- | should close itself.
 type DropdownButtonProps =
  { label :: String
- , content :: JSX
+ , content :: Effect Unit -> JSX
  , className :: String
  , onOpen :: Effect Unit
  , alignment :: Nullable String
@@ -153,7 +156,7 @@ dropdownButton =
                                       R.css { left: show (state.position.left - 1.0) <> "px" }
                                   ]
                               , onClick: handler stopPropagation mempty
-                              , children: [ props.content ]
+                              , children: [ props.content (toggleOpen self maybeDropdownButtonRef) ]
                               }
                     ]
               ]
@@ -204,14 +207,14 @@ dropdownMenu = makeStateless dropdownMenuComponent render where
       , className: "lumi-dropdown-menu " <> className
       , alignment: alignment
       , onOpen: pure unit
-      , content:
+      , content: \closeSelf ->
           let
             fromItems xs =
               column_ $ xs <#> \item ->
                 Link.link Link.defaults
                   { className = pure "lumi-dropdown-menu-item"
                   , text = p_ item.label
-                  , navigate = pure $ item.action
+                  , navigate = pure $ closeSelf *> item.action
                   }
           in
             fragment [ intercalate divider_ (map fromItems items) ]
@@ -236,7 +239,7 @@ dropdownMenuDefaults =
 
 type DropdownIconProps =
  { icon :: JSX
- , content :: JSX
+ , content :: Effect Unit -> JSX
  , onOpen :: Effect Unit
  , alignment :: Nullable String
  }
