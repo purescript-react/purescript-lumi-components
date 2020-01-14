@@ -3,7 +3,7 @@ module Lumi.Components.Modal where
 import Prelude
 
 import Color (cssStringHSLA, hsla, toHSLA)
-import Data.Foldable (foldMap)
+import Data.Foldable (foldMap, for_)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Nullable (Nullable, toMaybe, toNullable)
@@ -18,12 +18,18 @@ import Lumi.Components.Link as Link
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (sectionHeader_, subsectionHeader, text)
 import Lumi.Components.ZIndex (ziModal)
+import Prim.Row (class Nub, class Union)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, make, makeStateless, toReactComponent)
 import React.Basic.DOM as R
+import React.Basic.DOM.Components.Ref (ref)
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)
 import React.Basic.Events as Events
 import Record (merge)
-import Prim.Row (class Nub, class Union)
+import Unsafe.Coerce (unsafeCoerce)
+import Web.Event.Event (Event, EventType(..))
+import Web.Event.Event as E
+
+import Effect.Console (log)
 
 foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
 
@@ -229,11 +235,19 @@ modalPortal = toReactComponent identity modalPortalComponent
 
     closeModal = runEffectFn2 toggleBodyClass "react-modal-open" false
 
-    render { props, state } =
+    render self@{ props, state } =
       if not props.modalOpen
       then empty
       else lumiModalContainer
-        { onClick: Events.handler (Events.merge { target, currentTarget })
+        { windowEvent:
+            [ { eventType: EventType "keydown"
+              , options: { capture: false, once: false, passive: false }
+              , handler: \e -> do
+                  log "hola"
+                  keydownEventHandler e
+              }
+            ]
+        , onClick: Events.handler (Events.merge { target, currentTarget })
             \{ target, currentTarget } -> do
                 props.requestClose
                 closeModal
@@ -289,6 +303,16 @@ modalPortal = toReactComponent identity modalPortalComponent
                         }
                   }
         }
+        where
+          keydownEventHandler :: Event -> Effect Unit
+          keydownEventHandler e = do
+            let mKey = eventKey e
+            for_ mKey case _ of
+              "Escape" -> do
+                E.preventDefault e
+                E.stopPropagation e
+                closeModal
+              _ -> pure unit
 
     lumiModalContainer = element (R.unsafeCreateDOMComponent "lumi-modal-container")
     lumiModalOverlay = element (R.unsafeCreateDOMComponent "lumi-modal-overlay")
@@ -466,3 +490,6 @@ styles = jss
   }
   where
     alpha a = toHSLA >>> \{ h, s, l } -> hsla h s l a
+
+eventKey :: Event -> Maybe String
+eventKey = toMaybe <<< _.key <<< unsafeCoerce
