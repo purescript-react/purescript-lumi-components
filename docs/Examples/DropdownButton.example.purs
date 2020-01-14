@@ -6,6 +6,7 @@ import Color (cssStringHSLA)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
 import Effect.Console (log)
+import Effect.Uncurried (mkEffectFn1)
 import Lumi.Components.Button (button, defaults, secondary)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column, column_)
@@ -25,20 +26,23 @@ docs =
     , example $
         dropdownButton dropdownButtonDefaults
           { label = "Dropdown Button"
-          , content = R.div
+          , content = \closeSelf -> R.div
               { style: R.css { width: "328px", padding: "12px" }
               , children:
                 [ button secondary
                   { title = "I can be any element"
                   , style = R.css { width: "100%", marginBottom: "8px" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 , button secondary
                   { title = "I can be any element"
                   , style = R.css { width: "100%", marginBottom: "8px" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 , button defaults
                   { title = "I can be any element"
                   , style = R.css { width: "100%" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 ]
               }
@@ -49,20 +53,23 @@ docs =
         dropdownButton dropdownButtonDefaults
           { label = "Dropdown Button"
           , alignment = toNullable (Just "right")
-          , content = R.div
+          , content = \closeSelf -> R.div
               { style: R.css { width: "328px", padding: "12px" }
               , children:
                 [ button secondary
                   { title = "I can be any element"
                   , style = R.css { width: "100%", marginBottom: "8px" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 , button secondary
                   { title = "I can be any element"
                   , style = R.css { width: "100%", marginBottom: "8px" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 , button defaults
                   { title = "I can be any element"
                   , style = R.css { width: "100%" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 ]
               }
@@ -77,20 +84,23 @@ docs =
                 { children:
                   [ dropdownButton dropdownButtonDefaults
                     { label = "Dropdown Button"
-                    , content = R.div
+                    , content = \closeSelf -> R.div
                         { style: R.css { width: "328px", padding: "12px" }
                         , children:
                           [ button secondary
                             { title = "I can be any element"
                             , style = R.css { width: "100%", marginBottom: "8px" }
+                            , onPress = mkEffectFn1 \_ -> closeSelf
                             }
                           , button secondary
                             { title = "I can be any element"
                             , style = R.css { width: "100%", marginBottom: "8px" }
+                            , onPress = mkEffectFn1 \_ -> closeSelf
                             }
                           , button defaults
                             { title = "I can be any element"
                             , style = R.css { width: "100%" }
+                            , onPress = mkEffectFn1 \_ -> closeSelf
                             }
                           ]
                         }
@@ -102,20 +112,23 @@ docs =
                 { children:
                   [ dropdownButton dropdownButtonDefaults
                     { label = "Dropdown Button"
-                    , content = R.div
+                    , content = \closeSelf -> R.div
                         { style: R.css { width: "328px", padding: "12px" }
                         , children:
                           [ button secondary
                             { title = "I can be any element"
                             , style = R.css { width: "100%", marginBottom: "8px" }
+                            , onPress = mkEffectFn1 \_ -> closeSelf
                             }
                           , button secondary
                             { title = "I can be any element"
                             , style = R.css { width: "100%", marginBottom: "8px" }
+                            , onPress = mkEffectFn1 \_ -> closeSelf
                             }
                           , button defaults
                             { title = "I can be any element"
                             , style = R.css { width: "100%" }
+                            , onPress = mkEffectFn1 \_ -> closeSelf
                             }
                           ]
                         }
@@ -201,20 +214,23 @@ docs =
     , h2_ "using an arbitrary icon in place of the button"
     , example $
         dropdownIcon dropdownIconDefaults
-          { content = R.div
+          { content = \closeSelf -> R.div
               { style: R.css { width: "328px", padding: "12px" }
               , children:
                 [ button secondary
                   { title = "I can be any element"
                   , style = R.css { width: "100%", marginBottom: "8px" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 , button secondary
                   { title = "I can be any element"
                   , style = R.css { width: "100%", marginBottom: "8px" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 , button defaults
                   { title = "I can be any element"
                   , style = R.css { width: "100%" }
+                  , onPress = mkEffectFn1 \_ -> closeSelf
                   }
                 ]
               }

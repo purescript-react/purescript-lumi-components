@@ -4,6 +4,7 @@ import Prelude
 
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
+import Effect.Uncurried (mkEffectFn1)
 import Lumi.Components.Button (ButtonState(..), button, defaults, secondary)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Input (input, text_)
@@ -44,20 +45,23 @@ docs =
                   { children:
                     [ dropdownButton dropdownButtonDefaults
                       { label = "Dropdown Button"
-                      , content = R.div
+                      , content = \closeSelf -> R.div
                           { style: R.css { width: "328px", padding: "12px" }
                           , children:
                             [ button secondary
                               { title = "I can be any element"
                               , style = R.css { width: "100%", marginBottom: "8px" }
+                              , onPress = mkEffectFn1 \_ -> closeSelf
                               }
                             , button secondary
                               { title = "I can be any element"
                               , style = R.css { width: "100%", marginBottom: "8px" }
+                              , onPress = mkEffectFn1 \_ -> closeSelf
                               }
                             , button defaults
                               { title = "I can be any element"
                               , style = R.css { width: "100%" }
+                              , onPress = mkEffectFn1 \_ -> closeSelf
                               }
                             ]
                           }
@@ -69,20 +73,23 @@ docs =
                   { children:
                     [ dropdownButton dropdownButtonDefaults
                       { label = "Dropdown Button"
-                      , content = R.div
+                      , content = \closeSelf -> R.div
                           { style: R.css { width: "328px", padding: "12px" }
                           , children:
                             [ button secondary
                               { title = "I can be any element"
                               , style = R.css { width: "100%", marginBottom: "8px" }
+                              , onPress = mkEffectFn1 \_ -> closeSelf
                               }
                             , button secondary
                               { title = "I can be any element"
                               , style = R.css { width: "100%", marginBottom: "8px" }
+                              , onPress = mkEffectFn1 \_ -> closeSelf
                               }
                             , button defaults
                               { title = "I can be any element"
                               , style = R.css { width: "100%" }
+                              , onPress = mkEffectFn1 \_ -> closeSelf
                               }
                             ]
                           }
