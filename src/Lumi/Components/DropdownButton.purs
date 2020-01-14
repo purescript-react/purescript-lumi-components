@@ -156,7 +156,7 @@ dropdownButton =
                                       R.css { left: show (state.position.left - 1.0) <> "px" }
                                   ]
                               , onClick: handler stopPropagation mempty
-                              , children: [ props.content (toggleOpen self maybeDropdownButtonRef) ]
+                              , children: [ props.content (close self) ]
                               }
                     ]
               ]
