@@ -21,7 +21,7 @@ import Lumi.Components.ZIndex (ziModal)
 import Prim.Row (class Nub, class Union)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, make, makeStateless, toReactComponent)
 import React.Basic.DOM as R
-import React.Basic.DOM.Components.Ref (ref)
+import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)
 import React.Basic.Events as Events
 import Record (merge)
@@ -238,71 +238,69 @@ modalPortal = toReactComponent identity modalPortalComponent
     render self@{ props, state } =
       if not props.modalOpen
       then empty
-      else lumiModalContainer
-        { windowEvent:
-            [ { eventType: EventType "keydown"
-              , options: { capture: false, once: false, passive: false }
-              , handler: \e -> do
-                  log "hola"
-                  keydownEventHandler e
-              }
-            ]
-        , onClick: Events.handler (Events.merge { target, currentTarget })
-            \{ target, currentTarget } -> do
-                props.requestClose
-                closeModal
-            , children:
-                lumiModalOverlay
-                  { "data-variant": props.variant
-                  , children:
-                      lumiModal
-                        { "data-size": show props.size
-                        , onClick: Events.handler stopPropagation \_ -> pure unit
-                        , children:
-                            [ lumiModalHeader
-                                { children:
-                                    [ if props.variant == "dialog"
-                                        then empty
-                                        else lumiModalClose
-                                          { children: icon_ Remove
-                                          , onClick: mkEffectFn1 \_ -> do
-                                              props.requestClose
-                                              closeModal
-                                          }
-                                      , if not null props.title
-                                          then sectionHeader_ props.title
-                                          else empty
-                                    ]
-                                }
-                            , lumiModalContent
-                                { children: props.children
-                                , "data-internal-borders": props.internalBorders
-                                }
-                            , lumiModalFooter
-                                { children:
-                                    [ guard props.closeButton $
-                                        Button.button Button.secondary
-                                          { title =
-                                              case toMaybe props.onActionButtonClick of
-                                                Nothing -> "Close"
-                                                Just _ -> "Cancel"
-                                          , onPress = mkEffectFn1 \_ -> do
-                                              props.requestClose
-                                              closeModal
-                                          }
-                                    , toMaybe props.onActionButtonClick # foldMap \actionFn ->
-                                        Button.button Button.primary
-                                          { title = props.actionButtonTitle
-                                          , buttonState = props.actionButtonState
-                                          , onPress = mkEffectFn1 \_ -> actionFn
-                                          , style = R.css { marginLeft: "12px" }
-                                          }
-                                    ]
-                                }
-                            ]
-                        }
-                  }
+      else windowEvent
+        { eventType: EventType "keydown"
+        , options: { capture: false, once: false, passive: false }
+        , handler: \e -> do
+            keydownEventHandler e
         }
+        $ lumiModalContainer
+          { onClick: Events.handler (Events.merge { target, currentTarget })
+              \{ target, currentTarget } -> do
+                  props.requestClose
+                  closeModal
+              , children:
+                  lumiModalOverlay
+                    { "data-variant": props.variant
+                    , children:
+                        lumiModal
+                          { "data-size": show props.size
+                          , onClick: Events.handler stopPropagation \_ -> pure unit
+                          , children:
+                              [ lumiModalHeader
+                                  { children:
+                                      [ if props.variant == "dialog"
+                                          then empty
+                                          else lumiModalClose
+                                            { children: icon_ Remove
+                                            , onClick: mkEffectFn1 \_ -> do
+                                                props.requestClose
+                                                closeModal
+                                            }
+                                        , if not null props.title
+                                            then sectionHeader_ props.title
+                                            else empty
+                                      ]
+                                  }
+                              , lumiModalContent
+                                  { children: props.children
+                                  , "data-internal-borders": props.internalBorders
+                                  }
+                              , lumiModalFooter
+                                  { children:
+                                      [ guard props.closeButton $
+                                          Button.button Button.secondary
+                                            { title =
+                                                case toMaybe props.onActionButtonClick of
+                                                  Nothing -> "Close"
+                                                  Just _ -> "Cancel"
+                                            , onPress = mkEffectFn1 \_ -> do
+                                                props.requestClose
+                                                closeModal
+                                            }
+                                      , toMaybe props.onActionButtonClick # foldMap \actionFn ->
+                                          Button.button Button.primary
+                                            { title = props.actionButtonTitle
+                                            , buttonState = props.actionButtonState
+                                            , onPress = mkEffectFn1 \_ -> actionFn
+                                            , style = R.css { marginLeft: "12px" }
+                                            }
+                                      ]
+                                  }
+                              ]
+                          }
+                    }
+          }
         where
           keydownEventHandler :: Event -> Effect Unit
           keydownEventHandler e = do
@@ -311,6 +309,7 @@ modalPortal = toReactComponent identity modalPortalComponent
               "Escape" -> do
                 E.preventDefault e
                 E.stopPropagation e
+                props.requestClose
                 closeModal
               _ -> pure unit
 
