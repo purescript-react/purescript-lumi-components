@@ -29,7 +29,6 @@ import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event, EventType(..))
 import Web.Event.Event as E
 
-import Effect.Console (log)
 
 foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
 
