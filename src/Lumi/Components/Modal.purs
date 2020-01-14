@@ -25,9 +25,9 @@ import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)
 import React.Basic.Events as Events
 import Record (merge)
-import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event, EventType(..))
 import Web.Event.Event as E
+import Web.UIEvent.KeyboardEvent (fromEvent, key)
 
 
 foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
@@ -234,7 +234,7 @@ modalPortal = toReactComponent identity modalPortalComponent
 
     closeModal = runEffectFn2 toggleBodyClass "react-modal-open" false
 
-    render self@{ props, state } =
+    render { props, state } =
       if not props.modalOpen
       then empty
       else windowEvent
@@ -490,4 +490,4 @@ styles = jss
     alpha a = toHSLA >>> \{ h, s, l } -> hsla h s l a
 
 eventKey :: Event -> Maybe String
-eventKey = toMaybe <<< _.key <<< unsafeCoerce
+eventKey e = map key (fromEvent e)
