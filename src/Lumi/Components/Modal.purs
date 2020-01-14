@@ -3,7 +3,7 @@ module Lumi.Components.Modal where
 import Prelude
 
 import Color (cssStringHSLA, hsla, toHSLA)
-import Data.Foldable (foldMap)
+import Data.Foldable (foldMap, for_)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Nullable (Nullable, toMaybe, toNullable)
@@ -18,12 +18,17 @@ import Lumi.Components.Link as Link
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (sectionHeader_, subsectionHeader, text)
 import Lumi.Components.ZIndex (ziModal)
+import Prim.Row (class Nub, class Union)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, make, makeStateless, toReactComponent)
 import React.Basic.DOM as R
+import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)
 import React.Basic.Events as Events
 import Record (merge)
-import Prim.Row (class Nub, class Union)
+import Web.Event.Event (Event, EventType(..))
+import Web.Event.Event as E
+import Web.UIEvent.KeyboardEvent (fromEvent, key)
+
 
 foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
 
@@ -232,63 +237,80 @@ modalPortal = toReactComponent identity modalPortalComponent
     render { props, state } =
       if not props.modalOpen
       then empty
-      else lumiModalContainer
-        { onClick: Events.handler (Events.merge { target, currentTarget })
-            \{ target, currentTarget } -> do
+      else windowEvent
+        { eventType: EventType "keydown"
+        , options: { capture: false, once: false, passive: false }
+        , handler: \e -> do
+            keydownEventHandler e
+        }
+        $ lumiModalContainer
+          { onClick: Events.handler (Events.merge { target, currentTarget })
+              \{ target, currentTarget } -> do
+                  props.requestClose
+                  closeModal
+              , children:
+                  lumiModalOverlay
+                    { "data-variant": props.variant
+                    , children:
+                        lumiModal
+                          { "data-size": show props.size
+                          , onClick: Events.handler stopPropagation \_ -> pure unit
+                          , children:
+                              [ lumiModalHeader
+                                  { children:
+                                      [ if props.variant == "dialog"
+                                          then empty
+                                          else lumiModalClose
+                                            { children: icon_ Remove
+                                            , onClick: mkEffectFn1 \_ -> do
+                                                props.requestClose
+                                                closeModal
+                                            }
+                                        , if not null props.title
+                                            then sectionHeader_ props.title
+                                            else empty
+                                      ]
+                                  }
+                              , lumiModalContent
+                                  { children: props.children
+                                  , "data-internal-borders": props.internalBorders
+                                  }
+                              , lumiModalFooter
+                                  { children:
+                                      [ guard props.closeButton $
+                                          Button.button Button.secondary
+                                            { title =
+                                                case toMaybe props.onActionButtonClick of
+                                                  Nothing -> "Close"
+                                                  Just _ -> "Cancel"
+                                            , onPress = mkEffectFn1 \_ -> do
+                                                props.requestClose
+                                                closeModal
+                                            }
+                                      , toMaybe props.onActionButtonClick # foldMap \actionFn ->
+                                          Button.button Button.primary
+                                            { title = props.actionButtonTitle
+                                            , buttonState = props.actionButtonState
+                                            , onPress = mkEffectFn1 \_ -> actionFn
+                                            , style = R.css { marginLeft: "12px" }
+                                            }
+                                      ]
+                                  }
+                              ]
+                          }
+                    }
+          }
+        where
+          keydownEventHandler :: Event -> Effect Unit
+          keydownEventHandler e = do
+            let mKey = eventKey e
+            for_ mKey case _ of
+              "Escape" -> do
+                E.preventDefault e
+                E.stopPropagation e
                 props.requestClose
                 closeModal
-            , children:
-                lumiModalOverlay
-                  { "data-variant": props.variant
-                  , children:
-                      lumiModal
-                        { "data-size": show props.size
-                        , onClick: Events.handler stopPropagation \_ -> pure unit
-                        , children:
-                            [ lumiModalHeader
-                                { children:
-                                    [ if props.variant == "dialog"
-                                        then empty
-                                        else lumiModalClose
-                                          { children: icon_ Remove
-                                          , onClick: mkEffectFn1 \_ -> do
-                                              props.requestClose
-                                              closeModal
-                                          }
-                                      , if not null props.title
-                                          then sectionHeader_ props.title
-                                          else empty
-                                    ]
-                                }
-                            , lumiModalContent
-                                { children: props.children
-                                , "data-internal-borders": props.internalBorders
-                                }
-                            , lumiModalFooter
-                                { children:
-                                    [ guard props.closeButton $
-                                        Button.button Button.secondary
-                                          { title =
-                                              case toMaybe props.onActionButtonClick of
-                                                Nothing -> "Close"
-                                                Just _ -> "Cancel"
-                                          , onPress = mkEffectFn1 \_ -> do
-                                              props.requestClose
-                                              closeModal
-                                          }
-                                    , toMaybe props.onActionButtonClick # foldMap \actionFn ->
-                                        Button.button Button.primary
-                                          { title = props.actionButtonTitle
-                                          , buttonState = props.actionButtonState
-                                          , onPress = mkEffectFn1 \_ -> actionFn
-                                          , style = R.css { marginLeft: "12px" }
-                                          }
-                                    ]
-                                }
-                            ]
-                        }
-                  }
-        }
+              _ -> pure unit
 
     lumiModalContainer = element (R.unsafeCreateDOMComponent "lumi-modal-container")
     lumiModalOverlay = element (R.unsafeCreateDOMComponent "lumi-modal-overlay")
@@ -466,3 +488,6 @@ styles = jss
   }
   where
     alpha a = toHSLA >>> \{ h, s, l } -> hsla h s l a
+
+eventKey :: Event -> Maybe String
+eventKey e = map key (fromEvent e)
