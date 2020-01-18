@@ -64,7 +64,7 @@
     "prettier": "^1.18.2",
     "pscid": "^2.8.1",
     "pulp": "^13.0.0",
-    "purescript": "^0.13.5",
+    "purescript": "^0.13.6",
     "purescript-psa": "^0.7.3",
     "react-loadable": "^5.5.0",
     "react-media": "^1.8.0",
