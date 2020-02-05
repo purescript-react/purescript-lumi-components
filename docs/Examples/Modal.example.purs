@@ -8,9 +8,9 @@ import Data.Nullable (notNull, null)
 import Lumi.Components.Button as Button
 import Lumi.Components.Button (button, secondary)
 import Lumi.Components.Column (column_)
-import Lumi.Components.Modal (dialog, errorModal, modal)
+import Lumi.Components.Modal (dialog, errorModal, modal, modalTitle)
 import Lumi.Components.Size (Size(..))
-import Lumi.Components.Text (body_, subsectionHeader_)
+import Lumi.Components.Text (body_)
 import Lumi.Components.Example (example)
 import React.Basic (Component, JSX, createComponent, fragment, make)
 import React.Basic.DOM.Events (capture_)
@@ -58,7 +58,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Small
-              , title: subsectionHeader_ "Modal title -- Small"
+              , title: modalTitle "Modal title -- Small"
               , variant: ""
               , internalBorders: false
               , children:
@@ -83,7 +83,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Disabled
               , size: Medium
-              , title: subsectionHeader_ "Modal title -- Medium"
+              , title: modalTitle "Modal title -- Medium"
               , variant: ""
               , internalBorders: false
               , children:
@@ -105,7 +105,7 @@ docs = unit # make component
               , actionButtonTitle: ""
               , actionButtonState: Button.Loading
               , size: Medium
-              , title: subsectionHeader_ "Modal title -- Medium"
+              , title: modalTitle "Modal title -- Medium"
               , variant: ""
               , internalBorders: false
               , children:
@@ -127,7 +127,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Large
-              , title: subsectionHeader_ "Modal title -- Large"
+              , title: modalTitle "Modal title -- Large"
               , variant: ""
               , internalBorders: false
               , children:
@@ -156,7 +156,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: ExtraLarge Nothing
-              , title: subsectionHeader_ "Modal title -- Extra Large"
+              , title: modalTitle "Modal title -- Extra Large"
               , variant: ""
               , internalBorders: false
               , children:
@@ -185,7 +185,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: ExtraLarge $ Just { extraExtraLarge: true }
-              , title: subsectionHeader_ "Modal title -- Extra Extra Large"
+              , title: modalTitle "Modal title -- Extra Extra Large"
               , variant: ""
               , internalBorders: false
               , children:
@@ -231,7 +231,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Small
-              , title: subsectionHeader_ "Modal title -- Small"
+              , title: modalTitle "Modal title -- Small"
               , variant: ""
               , internalBorders: false
               , children:
@@ -256,7 +256,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Large
-              , title: subsectionHeader_ "Modal title -- Internall scrolling content"
+              , title: modalTitle "Modal title -- Internall scrolling content"
               , variant: "internal-scrolling"
               , internalBorders: true
               , children:

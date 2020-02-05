@@ -15,7 +15,7 @@ import Lumi.Components.Color (colors)
 import Lumi.Components.Icon (IconType(..), icon_)
 import Lumi.Components.Link as Link
 import Lumi.Components.Size (Size(..))
-import Lumi.Components.Text (sectionHeader_, subsectionHeader, text)
+import Lumi.Components.Text (sectionHeader_, subsectionHeader_, subsectionHeader, text)
 import Lumi.Components.ZIndex (ziModal)
 import Prim.Row (class Nub, class Union)
 import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, make, makeStateless, toReactComponent)
@@ -147,6 +147,9 @@ modal_ = modalBuilder modalPortal
 
 modal :: ModalProps -> JSX
 modal = element modal_
+
+modalTitle :: String -> JSX
+modalTitle s = subsectionHeader_ s
 
 type DialogProps =
   { modalOpen :: Boolean
