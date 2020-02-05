@@ -466,6 +466,7 @@ styles = jss
                           , height: "100%"
                           , width: "100vw"
                           , maxWidth: "100vw"
+                          , borderRadius: "0"
                           , "&[data-size=\"small\"], &[data-size=\"medium\"], &[data-size=\"large\"]":
                               { width: "100vw"
                               }
