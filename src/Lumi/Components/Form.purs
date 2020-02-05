@@ -90,7 +90,7 @@ import Lumi.Components.NativeSelect as NativeSelect
 import Lumi.Components.Orientation (Orientation(..))
 import Lumi.Components.Row (row)
 import Lumi.Components.Select as Select
-import Lumi.Components.Text (body, body_, subsectionHeader, text)
+import Lumi.Components.Text (body, body_, sectionHeader_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
 import Prim.Row (class Nub, class Union)
@@ -796,7 +796,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                               then summary props x
                               else modalLink
                                     { label: summary props x
-                                    , title: addLabel
+                                    , title: sectionHeader_ addLabel
                                     , value: x
                                     , onChange: onChange <<< editAt i <<< const
                                     , actionButtonTitle: addLabel
@@ -813,7 +813,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                         Input.alignToInput $
                           modalLink
                             { label: body_ ("+ " <> addLabel)
-                            , title: addLabel
+                            , title: sectionHeader_ addLabel
                             , value: defaultValue
                             , onChange: \x -> onChange (flip append [x])
                             , actionButtonTitle: addLabel

@@ -7,7 +7,6 @@ import Data.Foldable (foldMap, for_)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Nullable (Nullable, toMaybe, toNullable)
-import Data.String (null)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, mkEffectFn1, runEffectFn2)
 import JSS (JSS, jss)
@@ -34,7 +33,7 @@ foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
 
 type ModalLinkProps value props =
   { label :: JSX
-  , title :: String
+  , title :: JSX
   , component :: { value :: value
                  , onChange :: value -> Effect Unit
                  | props
@@ -135,7 +134,7 @@ type CommonProps rest =
   , children :: JSX
   , internalBorders :: Boolean
   , closeButton :: Boolean
-  , title :: String
+  , title :: JSX
   | rest
   }
 
@@ -180,7 +179,7 @@ dialog = makeStateless dialogComponent render
               , children = [ props.children ]
               }
         , internalBorders: false
-        , title: ""
+        , title: mempty
         }
 
 type ErrorModalProps =
@@ -209,7 +208,7 @@ errorModal = makeStateless errorModalComponent render
         , variant: ""
         , children: props.children
         , internalBorders: false
-        , title: "Error"
+        , title: sectionHeader_ "Error"
         }
 
 type ModalPortalProps = CommonProps (requestClose :: Effect Unit)
@@ -266,9 +265,7 @@ modalPortal = toReactComponent identity modalPortalComponent
                                                 props.requestClose
                                                 closeModal
                                             }
-                                        , if not null props.title
-                                            then sectionHeader_ props.title
-                                            else empty
+                                        , props.title
                                       ]
                                   }
                               , lumiModalContent
