@@ -374,6 +374,9 @@ styles = jss
                   , "&[data-size=\"extra-large\"]":
                       { width: "848px"
                       }
+                  , "&[data-size=\"extra-extra-large\"]":
+                      { width: "1048px"
+                      }
                   , maxWidth: "calc(100vw - (24px * 2))"
                   , background: "rgba(255, 255, 255, 1)"
                   , borderRadius: "4px"

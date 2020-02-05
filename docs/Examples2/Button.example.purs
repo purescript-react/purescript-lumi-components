@@ -58,14 +58,14 @@ docs =
                   , size = Large
                   }
           ]
-        , [ h4_ "Extra Large"
-          , example
-              $ lumiElement button
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = ExtraLarge
-                  }
-          ]
+        -- , [ h4_ "Extra Large"
+        --   , example
+        --       $ lumiElement button
+        --       $ _
+        --           { content = [ R.text "Button" ]
+        --           , size = ExtraLarge
+        --           }
+        --   ]
         , [ h2_ "Color"
           , h4_ "Primary (default)"
           , example
@@ -105,15 +105,15 @@ docs =
                   , size = Large
                   }
           ]
-        , [ h4_ "Secondary Extra Large"
-          , example
-              $ lumiElement button
-              $ _secondary
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = ExtraLarge
-                  }
-          ]
+        -- , [ h4_ "Secondary Extra Large"
+        --   , example
+        --       $ lumiElement button
+        --       $ _secondary
+        --       $ _
+        --           { content = [ R.text "Button" ]
+        --           , size = ExtraLarge
+        --           }
+        --   ]
         , [ h4_ "Secondary + Disabled"
           , example
               $ lumiElement button
@@ -170,14 +170,14 @@ docs =
                   , size = Large
                   }
           ]
-        , [ h4_ "Loading (ExtraLarge) "
-          , example
-              $ lumiElement button
-              $ _
-                  { state = Loading
-                  , size = ExtraLarge
-                  }
-          ]
+        -- , [ h4_ "Loading (ExtraLarge) "
+        --   , example
+        --       $ lumiElement button
+        --       $ _
+        --           { state = Loading
+        --           , size = ExtraLarge
+        --           }
+        --   ]
         ]
   where
   buttonIcon type_ = icon { type_, style: R.css { fontSize: 11 } }
