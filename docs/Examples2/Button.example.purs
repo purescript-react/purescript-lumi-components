@@ -2,6 +2,7 @@ module Lumi.Components2.Examples.Button where
 
 import Prelude
 import Data.Array (intercalate)
+import Data.Maybe (Maybe(..))
 import Lumi.Components (lumiElement)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
@@ -58,14 +59,14 @@ docs =
                   , size = Large
                   }
           ]
-        -- , [ h4_ "Extra Large"
-        --   , example
-        --       $ lumiElement button
-        --       $ _
-        --           { content = [ R.text "Button" ]
-        --           , size = ExtraLarge
-        --           }
-        --   ]
+        , [ h4_ "Extra Large"
+          , example
+              $ lumiElement button
+              $ _
+                  { content = [ R.text "Button" ]
+                  , size = ExtraLarge Nothing
+                  }
+          ]
         , [ h2_ "Color"
           , h4_ "Primary (default)"
           , example
@@ -105,15 +106,15 @@ docs =
                   , size = Large
                   }
           ]
-        -- , [ h4_ "Secondary Extra Large"
-        --   , example
-        --       $ lumiElement button
-        --       $ _secondary
-        --       $ _
-        --           { content = [ R.text "Button" ]
-        --           , size = ExtraLarge
-        --           }
-        --   ]
+        , [ h4_ "Secondary Extra Large"
+          , example
+              $ lumiElement button
+              $ _secondary
+              $ _
+                  { content = [ R.text "Button" ]
+                  , size = ExtraLarge Nothing
+                  }
+          ]
         , [ h4_ "Secondary + Disabled"
           , example
               $ lumiElement button
@@ -170,14 +171,14 @@ docs =
                   , size = Large
                   }
           ]
-        -- , [ h4_ "Loading (ExtraLarge) "
-        --   , example
-        --       $ lumiElement button
-        --       $ _
-        --           { state = Loading
-        --           , size = ExtraLarge
-        --           }
-        --   ]
+        , [ h4_ "Loading (ExtraLarge) "
+          , example
+              $ lumiElement button
+              $ _
+                  { state = Loading
+                  , size = ExtraLarge Nothing
+                  }
+          ]
         ]
   where
   buttonIcon type_ = icon { type_, style: R.css { fontSize: 11 } }
