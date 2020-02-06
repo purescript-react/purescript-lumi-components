@@ -321,6 +321,7 @@ styles = jss
           , boxShadow: "0 2px 4px 0 rgba(12, 0, 51, 0.06)"
           , background: cssStringHSLA colors.white
           , zIndex: ziDropdownButton
+          , minWidth: "70px"
 
           , "& a.lumi.lumi-dropdown-menu-item":
               { boxSizing: "border-box"
