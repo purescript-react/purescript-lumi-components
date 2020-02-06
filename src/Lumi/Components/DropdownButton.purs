@@ -67,6 +67,7 @@ dropdownButton =
     initialState =
       { isOpen: false
       , root: Nothing
+      , width: 0.0
       , position:
           { bottom: 0.0
           , left: 0.0
@@ -110,9 +111,10 @@ dropdownButton =
           then close self
           else do
             p <- getAbsolutePosition el
+            d <- getDimensions el
             when state.isOpen $
               void $ requestAnimationFrame (capturePosition self ref (Just p0')) =<< HTML.window
-            self.setState _{ position = p }
+            self.setState _{ position = p, width = d.width }
 
     toggleOpen self refM = do
       self.setStateThen
@@ -149,6 +151,7 @@ dropdownButton =
                               { style: R.mergeStyles
                                   [ R.css
                                       { top: show (state.position.bottom + 4.0) <> "px"
+                                      , minWidth: show state.width <> "px"
                                       }
                                   , if maybe false (_ == "right") (toMaybe props.alignment) then
                                       R.css { left: "auto", right: show (state.position.right - 1.0) <> "px" }
@@ -269,6 +272,14 @@ dropdownIcon props =
 
 foreign import checkIsEventTargetInTree :: EffectFn2 Node Event Boolean
 
+getDimensions :: HTML.HTMLElement -> Effect { width :: Number, height :: Number }
+getDimensions el = do
+  { width, height } <- HTML.getBoundingClientRect el
+  pure
+    { width: toNumber 0
+    , height: toNumber 0
+    }
+
 getAbsolutePosition :: HTML.HTMLElement -> Effect { bottom :: Number, left :: Number, right :: Number }
 getAbsolutePosition el = do
   window <- HTML.window
@@ -321,7 +332,6 @@ styles = jss
           , boxShadow: "0 2px 4px 0 rgba(12, 0, 51, 0.06)"
           , background: cssStringHSLA colors.white
           , zIndex: ziDropdownButton
-          , minWidth: "70px"
 
           , "& a.lumi.lumi-dropdown-menu-item":
               { boxSizing: "border-box"
