@@ -276,8 +276,8 @@ getDimensions :: HTML.HTMLElement -> Effect { width :: Number, height :: Number 
 getDimensions el = do
   { width, height } <- HTML.getBoundingClientRect el
   pure
-    { width: toNumber 0
-    , height: toNumber 0
+    { width: width
+    , height: height
     }
 
 getAbsolutePosition :: HTML.HTMLElement -> Effect { bottom :: Number, left :: Number, right :: Number }
