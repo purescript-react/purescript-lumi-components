@@ -221,7 +221,7 @@ styles = jss
               }
           , "&[data-color=\"secondary\"]":
               { extend: buttonSecondary
-              , backgroundColor: cssStringHSLA colors.transparent
+              , backgroundColor: cssStringHSLA colors.white
               , "&:hover":
                   { color: cssStringHSLA colors.primary
                   , borderColor: cssStringHSLA colors.primary
@@ -296,7 +296,7 @@ styles = jss
       }
 
     buttonSecondary =
-      { backgroundColor: cssStringHSLA colors.transparent
+      { backgroundColor: cssStringHSLA colors.white
       , color: cssStringHSLA colors.black
       , border: [ "1px", "solid", cssStringHSLA colors.black3 ]
       }
