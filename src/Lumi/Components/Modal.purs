@@ -182,7 +182,7 @@ dialog = makeStateless dialogComponent render
               , children = [ props.children ]
               }
         , internalBorders: false
-        , title: mempty
+        , title: modalTitle ""
         }
 
 type ErrorModalProps =
