@@ -46,7 +46,7 @@ docs =
         ]
       , [ h4_ "Extra Large"
         , example
-            $ button defaults { title = "Button", size = ExtraLarge Nothing }
+            $ button defaults { title = "Button", size = ExtraLarge }
         ]
 
       , [ h2_ "Color"
@@ -72,7 +72,7 @@ docs =
         ]
       , [ h4_ "Secondary Extra Large"
         , example
-            $ button secondary { title = "Button", size = ExtraLarge Nothing }
+            $ button secondary { title = "Button", size = ExtraLarge }
         ]
       , [ h4_ "Secondary + Disabled"
         , example
@@ -112,7 +112,7 @@ docs =
         ]
       , [ h4_ "Loading (ExtraLarge) "
         , example
-            $ button primary { buttonState = Loading, size = ExtraLarge Nothing }
+            $ button primary { buttonState = Loading, size = ExtraLarge }
         ]
       ]
 

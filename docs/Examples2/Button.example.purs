@@ -2,7 +2,6 @@ module Lumi.Components2.Examples.Button where
 
 import Prelude
 import Data.Array (intercalate)
-import Data.Maybe (Maybe(..))
 import Lumi.Components (lumiElement)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
@@ -64,7 +63,7 @@ docs =
               $ lumiElement button
               $ _
                   { content = [ R.text "Button" ]
-                  , size = ExtraLarge Nothing
+                  , size = ExtraLarge
                   }
           ]
         , [ h2_ "Color"
@@ -112,7 +111,7 @@ docs =
               $ _secondary
               $ _
                   { content = [ R.text "Button" ]
-                  , size = ExtraLarge Nothing
+                  , size = ExtraLarge
                   }
           ]
         , [ h4_ "Secondary + Disabled"
@@ -176,7 +175,7 @@ docs =
               $ lumiElement button
               $ _
                   { state = Loading
-                  , size = ExtraLarge Nothing
+                  , size = ExtraLarge
                   }
           ]
         ]

@@ -155,7 +155,7 @@ docs = unit # make component
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
-              , size: ExtraLarge Nothing
+              , size: ExtraLarge
               , title: modalTitle "Modal title -- Extra Large"
               , variant: ""
               , internalBorders: false
@@ -184,7 +184,7 @@ docs = unit # make component
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
-              , size: ExtraLarge $ Just { extraExtraLarge: true }
+              , size: ExtraExtraLarge
               , title: modalTitle "Modal title -- Extra Extra Large"
               , variant: ""
               , internalBorders: false
