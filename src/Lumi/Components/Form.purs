@@ -85,7 +85,7 @@ import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..), labeledField, labeledFieldValidationErrorStyles, labeledFieldValidationWarningStyles)
 import Lumi.Components.Link as Link
 import Lumi.Components.Loader (loader)
-import Lumi.Components.Modal (modalLink)
+import Lumi.Components.Modal (modalLink, modalTitle)
 import Lumi.Components.NativeSelect as NativeSelect
 import Lumi.Components.Orientation (Orientation(..))
 import Lumi.Components.Row (row)
@@ -796,7 +796,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                               then summary props x
                               else modalLink
                                     { label: summary props x
-                                    , title: addLabel
+                                    , title: modalTitle addLabel
                                     , value: x
                                     , onChange: onChange <<< editAt i <<< const
                                     , actionButtonTitle: addLabel
@@ -813,7 +813,7 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
                         Input.alignToInput $
                           modalLink
                             { label: body_ ("+ " <> addLabel)
-                            , title: addLabel
+                            , title: modalTitle addLabel
                             , value: defaultValue
                             , onChange: \x -> onChange (flip append [x])
                             , actionButtonTitle: addLabel

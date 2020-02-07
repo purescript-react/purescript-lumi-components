@@ -214,6 +214,13 @@ button colo kind state size = case kind of
                               , padding: str "16px 32px"
                               , height: int 64
                               }
+                          ExtraExtraLarge ->
+                            css
+                              { fontSize: int 20
+                              , lineHeight: int 32
+                              , padding: str "16px 32px"
+                              , height: int 64
+                              }
                       ]
               }
           )
@@ -240,6 +247,12 @@ button colo kind state size = case kind of
                       $ mkLoader theme { radius: "24px", borderWidth: "3px" }
                   }
               ExtraLarge ->
+                css
+                  { "&:after":
+                    nested
+                      $ mkLoader theme { radius: "34px", borderWidth: "4px" }
+                  }
+              ExtraExtraLarge ->
                 css
                   { "&:after":
                     nested

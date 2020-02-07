@@ -7,7 +7,6 @@ import Data.Foldable (foldMap, for_)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Nullable (Nullable, toMaybe, toNullable)
-import Data.String (null)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, mkEffectFn1, runEffectFn2)
 import JSS (JSS, jss)
@@ -34,7 +33,7 @@ foreign import toggleBodyClass :: EffectFn2 String Boolean Unit
 
 type ModalLinkProps value props =
   { label :: JSX
-  , title :: String
+  , title :: JSX
   , component :: { value :: value
                  , onChange :: value -> Effect Unit
                  | props
@@ -135,7 +134,7 @@ type CommonProps rest =
   , children :: JSX
   , internalBorders :: Boolean
   , closeButton :: Boolean
-  , title :: String
+  , title :: JSX
   | rest
   }
 
@@ -148,6 +147,9 @@ modal_ = modalBuilder modalPortal
 
 modal :: ModalProps -> JSX
 modal = element modal_
+
+modalTitle :: String -> JSX
+modalTitle s = sectionHeader_ s
 
 type DialogProps =
   { modalOpen :: Boolean
@@ -180,7 +182,7 @@ dialog = makeStateless dialogComponent render
               , children = [ props.children ]
               }
         , internalBorders: false
-        , title: ""
+        , title: modalTitle ""
         }
 
 type ErrorModalProps =
@@ -209,7 +211,7 @@ errorModal = makeStateless errorModalComponent render
         , variant: ""
         , children: props.children
         , internalBorders: false
-        , title: "Error"
+        , title: modalTitle "Error"
         }
 
 type ModalPortalProps = CommonProps (requestClose :: Effect Unit)
@@ -266,9 +268,7 @@ modalPortal = toReactComponent identity modalPortalComponent
                                                 props.requestClose
                                                 closeModal
                                             }
-                                        , if not null props.title
-                                            then sectionHeader_ props.title
-                                            else empty
+                                        , props.title
                                       ]
                                   }
                               , lumiModalContent
@@ -374,6 +374,9 @@ styles = jss
                   , "&[data-size=\"extra-large\"]":
                       { width: "848px"
                       }
+                  , "&[data-size=\"extra-extra-large\"]":
+                      { width: "1048px"
+                      }
                   , maxWidth: "calc(100vw - (24px * 2))"
                   , background: "rgba(255, 255, 255, 1)"
                   , borderRadius: "4px"
@@ -463,6 +466,7 @@ styles = jss
                           , height: "100%"
                           , width: "100vw"
                           , maxWidth: "100vw"
+                          , borderRadius: "0"
                           , "&[data-size=\"small\"], &[data-size=\"medium\"], &[data-size=\"large\"]":
                               { width: "100vw"
                               }

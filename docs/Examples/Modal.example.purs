@@ -8,7 +8,7 @@ import Data.Nullable (notNull, null)
 import Lumi.Components.Button as Button
 import Lumi.Components.Button (button, secondary)
 import Lumi.Components.Column (column_)
-import Lumi.Components.Modal (dialog, errorModal, modal)
+import Lumi.Components.Modal (dialog, errorModal, modal, modalTitle)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (body_)
 import Lumi.Components.Example (example)
@@ -20,6 +20,7 @@ data ModalTestId
   | MediumModal
   | LargeModal
   | ExtraLargeModal
+  | ExtraExtraLargeModal
   | DialogModal
   | NoCloseButtonModal
   | LongModal
@@ -57,7 +58,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Small
-              , title: "Modal title -- Small"
+              , title: modalTitle "Modal title -- Small"
               , variant: ""
               , internalBorders: false
               , children:
@@ -82,7 +83,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Disabled
               , size: Medium
-              , title: "Modal title -- Medium"
+              , title: modalTitle "Modal title -- Medium"
               , variant: ""
               , internalBorders: false
               , children:
@@ -104,7 +105,7 @@ docs = unit # make component
               , actionButtonTitle: ""
               , actionButtonState: Button.Loading
               , size: Medium
-              , title: "Modal title -- Medium"
+              , title: modalTitle "Modal title -- Medium"
               , variant: ""
               , internalBorders: false
               , children:
@@ -126,7 +127,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Large
-              , title: "Modal title -- Large"
+              , title: modalTitle "Modal title -- Large"
               , variant: ""
               , internalBorders: false
               , children:
@@ -155,7 +156,36 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: ExtraLarge
-              , title: "Modal title -- Extra Large"
+              , title: modalTitle "Modal title -- Extra Large"
+              , variant: ""
+              , internalBorders: false
+              , children:
+                  fragment
+                    [ body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pretium nec tellus ornare tincidunt. Phasellus ultrices porta finibus. In id mollis diam. Praesent efficitur lectus quis odio convallis placerat. Suspendisse metus tortor, faucibus nec imperdiet quis, iaculis id risus. Pellentesque a auctor turpis, a lacinia nulla. Pellentesque malesuada suscipit ante, sed convallis est pharetra eu. In sed enim nec lacus dignissim malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus arcu, efficitur et magna a, fermentum lacinia nulla. Mauris ligula erat, posuere sed diam a, sodales vestibulum ante."
+                    , body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pretium nec tellus ornare tincidunt. Phasellus ultrices porta finibus. In id mollis diam. Praesent efficitur lectus quis odio convallis placerat. Suspendisse metus tortor, faucibus nec imperdiet quis, iaculis id risus. Pellentesque a auctor turpis, a lacinia nulla. Pellentesque malesuada suscipit ante, sed convallis est pharetra eu. In sed enim nec lacus dignissim malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus arcu, efficitur et magna a, fermentum lacinia nulla. Mauris ligula erat, posuere sed diam a, sodales vestibulum ante."
+                    , body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pretium nec tellus ornare tincidunt. Phasellus ultrices porta finibus. In id mollis diam. Praesent efficitur lectus quis odio convallis placerat. Suspendisse metus tortor, faucibus nec imperdiet quis, iaculis id risus. Pellentesque a auctor turpis, a lacinia nulla. Pellentesque malesuada suscipit ante, sed convallis est pharetra eu. In sed enim nec lacus dignissim malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus arcu, efficitur et magna a, fermentum lacinia nulla. Mauris ligula erat, posuere sed diam a, sodales vestibulum ante."
+                    , body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pretium nec tellus ornare tincidunt. Phasellus ultrices porta finibus. In id mollis diam. Praesent efficitur lectus quis odio convallis placerat. Suspendisse metus tortor, faucibus nec imperdiet quis, iaculis id risus. Pellentesque a auctor turpis, a lacinia nulla. Pellentesque malesuada suscipit ante, sed convallis est pharetra eu. In sed enim nec lacus dignissim malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus arcu, efficitur et magna a, fermentum lacinia nulla. Mauris ligula erat, posuere sed diam a, sodales vestibulum ante."
+                    , body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pretium nec tellus ornare tincidunt. Phasellus ultrices porta finibus. In id mollis diam. Praesent efficitur lectus quis odio convallis placerat. Suspendisse metus tortor, faucibus nec imperdiet quis, iaculis id risus. Pellentesque a auctor turpis, a lacinia nulla. Pellentesque malesuada suscipit ante, sed convallis est pharetra eu. In sed enim nec lacus dignissim malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus arcu, efficitur et magna a, fermentum lacinia nulla. Mauris ligula erat, posuere sed diam a, sodales vestibulum ante."
+                    , body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pretium nec tellus ornare tincidunt. Phasellus ultrices porta finibus. In id mollis diam. Praesent efficitur lectus quis odio convallis placerat. Suspendisse metus tortor, faucibus nec imperdiet quis, iaculis id risus. Pellentesque a auctor turpis, a lacinia nulla. Pellentesque malesuada suscipit ante, sed convallis est pharetra eu. In sed enim nec lacus dignissim malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus arcu, efficitur et magna a, fermentum lacinia nulla. Mauris ligula erat, posuere sed diam a, sodales vestibulum ante."
+                    ]
+              }
+
+        , example $
+            button secondary
+              { onPress = capture_ $ self.setState _ { modalId = Just ExtraExtraLargeModal }
+              , title = "Open modal, extra extra large"
+              }
+
+        , guard (self.state.modalId == Just ExtraExtraLargeModal) $
+            modal
+              { modalOpen: true
+              , closeButton: true
+              , onRequestClose: self.setState _ { modalId = Nothing }
+              , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
+              , actionButtonTitle: "Add clicks"
+              , actionButtonState: Button.Enabled
+              , size: ExtraExtraLarge
+              , title: modalTitle "Modal title -- Extra Extra Large"
               , variant: ""
               , internalBorders: false
               , children:
@@ -201,7 +231,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Small
-              , title: "Modal title -- Small"
+              , title: modalTitle "Modal title -- Small"
               , variant: ""
               , internalBorders: false
               , children:
@@ -226,7 +256,7 @@ docs = unit # make component
               , actionButtonTitle: "Add clicks"
               , actionButtonState: Button.Enabled
               , size: Large
-              , title: "Modal title -- Internall scrolling content"
+              , title: modalTitle "Modal title -- Internall scrolling content"
               , variant: "internal-scrolling"
               , internalBorders: true
               , children:
