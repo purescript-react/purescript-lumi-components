@@ -75,7 +75,11 @@ button = makeStateless component render
                   Enabled -> false
                   Disabled -> false
                   Loading -> true
-            , onClick: props.onPress
+            , onClick:
+                case props.buttonState of
+                  Enabled -> props.onPress
+                  Disabled -> mkEffectFn1 mempty
+                  Loading -> mkEffectFn1 mempty
             , style: props.style
             , type: props.type
             }
