@@ -480,7 +480,11 @@ styles = jss
 
                 -- constrain total height while making the intenal content area flexible and scrollable
               , "&[data-variant=\"internal-scrolling\"]":
-                  { "& lumi-modal lumi-modal-content":
+                  { maxHeight: "100%"
+                  , "& lumi-modal":
+                      { height: "100%"
+                      }
+                  , "& lumi-modal lumi-modal-content":
                       { flex: "1 1 auto"
                       , overflowY: "auto"
                       }
