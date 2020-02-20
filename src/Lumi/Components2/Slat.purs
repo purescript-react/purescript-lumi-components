@@ -1,6 +1,7 @@
 module Lumi.Components2.Slat
   ( SlatProps
   , SlatInteraction
+  , SlatInteractionType(..)
   , slat
   , _interactive
   , module Styles.Slat
@@ -13,8 +14,8 @@ import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
 import Lumi.Styles (styleModifier_, toCSS)
-import Lumi.Styles.Slat (_interactive, slat) as Styles.Slat.Hidden
-import Lumi.Styles.Slat hiding (_interactive, slat) as Styles.Slat
+import Lumi.Styles.Slat (_interactive, _interactiveBg, slat) as Styles.Slat.Hidden
+import Lumi.Styles.Slat hiding (_interactive, _interactiveBg, slat) as Styles.Slat
 import Lumi.Styles.Theme (useTheme)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_)
@@ -28,10 +29,15 @@ type SlatProps
     , interaction :: Maybe SlatInteraction
     )
 
+data SlatInteractionType
+  = BorderInteraction
+  | BackgroundInteraction
+
 type SlatInteraction
   = { onClick :: Effect Unit
     , tabIndex :: Int
     , href :: Maybe URL
+    , _type :: Maybe SlatInteractionType
     }
 
 slat :: LumiComponent SlatProps
@@ -46,17 +52,25 @@ slat =
             , children: props.content
             , className
             }
-        Just interaction@{ href: Nothing } ->
+        Just interaction@{ href: Nothing, _type: t } ->
           E.element R.button'
-            { css: toCSS theme props slatStyleInteractive
+            { css:
+                case t of
+                  Just BorderInteraction -> toCSS theme props slatStyleInteractive
+                  Just BackgroundInteraction -> toCSS theme props slatStyleInteractiveBg
+                  _ -> toCSS theme props slatStyleInteractive
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
             , className
             }
-        Just interaction@{ href: Just href } ->
+        Just interaction@{ href: Just href,  _type: t } ->
           E.element R.a'
-            { css: toCSS theme props slatStyleInteractive
+            { css:
+                case t of
+                  Just BorderInteraction -> toCSS theme props slatStyleInteractive
+                  Just BackgroundInteraction -> toCSS theme props slatStyleInteractiveBg
+                  _ -> toCSS theme props slatStyleInteractive
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
@@ -76,6 +90,10 @@ slat =
   slatStyleInteractive =
     slatStyle
       >>> Styles.Slat.Hidden._interactive
+
+  slatStyleInteractiveBg =
+    slatStyle
+      >>> Styles.Slat.Hidden._interactiveBg
 
 _interactive :: SlatInteraction -> PropsModifier SlatProps
 _interactive interaction =

@@ -13,6 +13,7 @@ import Lumi.Components.Svg (userSvg)
 import Lumi.Components.Text (h2_, p_)
 import Lumi.Components.Text as Text
 import Lumi.Components2.Box (box)
+import Lumi.Components2.Slat (SlatInteractionType(..))
 import Lumi.Components2.Slat as Slat
 import Lumi.Styles (styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..))
@@ -61,6 +62,20 @@ docs =
               { onClick: window >>= alert "click!"
               , tabIndex: 1
               , href: Nothing
+              , _type: Nothing
+              }
+          $ _ { content = exampleSlatContent }
+      , h2_ "square (default), spaced list, interactive (background color), min-width content"
+      , example
+          $ fragment
+          $ replicate 3
+          $ lumiElement Slat.slat
+          $ Slat._listSpaced
+          $ Slat._interactive
+              { onClick: window >>= alert "click!"
+              , tabIndex: 1
+              , href: Nothing
+              , _type: Just BackgroundInteraction
               }
           $ _ { content = exampleSlatContent }
       , h2_ "round, spaced list, non-interactive, min-width 500px"
@@ -81,6 +96,22 @@ docs =
               { onClick: window >>= alert "click!"
               , tabIndex: 1
               , href: Nothing
+              , _type: Nothing
+              }
+          $ Slat._topBottom
+          $ Slat._listCompact
+          $ slatExWidth
+          $ _ { content = exampleSlatContent }
+      , h2_ "top/bottom, compact list, interactive (background color), min-width 500px"
+      , example
+          $ fragment
+          $ replicate 9
+          $ lumiElement Slat.slat
+          $ Slat._interactive
+              { onClick: window >>= alert "click!"
+              , tabIndex: 1
+              , href: Nothing
+              , _type: Just BackgroundInteraction
               }
           $ Slat._topBottom
           $ Slat._listCompact
