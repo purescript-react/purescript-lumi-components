@@ -40,6 +40,6 @@ _interactiveBg =
           { "&:hover":
             nested
               $ css
-                  { backgroundColor: color theme.colors.black4
+                  { backgroundColor: color theme.colors.primary4
                   }
           }
