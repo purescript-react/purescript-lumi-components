@@ -1,6 +1,5 @@
 module Lumi.Styles.Slat
   ( slat
-  , _interactiveBg
   , module Border
   ) where
 
@@ -30,16 +29,3 @@ slat =
             , textDecoration: unset
             }
         )
-
-_interactiveBg :: forall props. PropsModifier props
-_interactiveBg =
-  Box._interactive
-    >>> Box._focusable
-    >>> styleModifier \(LumiTheme theme) ->
-        css
-          { "&:hover":
-            nested
-              $ css
-                  { backgroundColor: color theme.colors.primary4
-                  }
-          }

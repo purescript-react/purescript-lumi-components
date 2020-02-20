@@ -1,9 +1,9 @@
 module Lumi.Components2.Slat
   ( SlatProps
   , SlatInteraction
-  , SlatInteractionType(..)
   , slat
   , _interactive
+  , _interactiveBackground
   , module Styles.Slat
   ) where
 
@@ -13,10 +13,10 @@ import Data.Newtype (un)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
-import Lumi.Styles (styleModifier_, toCSS)
-import Lumi.Styles.Slat (_interactive, _interactiveBg, slat) as Styles.Slat.Hidden
-import Lumi.Styles.Slat hiding (_interactive, _interactiveBg, slat) as Styles.Slat
-import Lumi.Styles.Theme (useTheme)
+import Lumi.Styles (styleModifier, styleModifier_, toCSS)
+import Lumi.Styles.Slat (_interactive, slat) as Styles.Slat.Hidden
+import Lumi.Styles.Slat hiding (_interactive, slat) as Styles.Slat
+import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_)
 import React.Basic.Emotion as E
@@ -29,15 +29,10 @@ type SlatProps
     , interaction :: Maybe SlatInteraction
     )
 
-data SlatInteractionType
-  = BorderInteraction
-  | BackgroundInteraction
-
 type SlatInteraction
   = { onClick :: Effect Unit
     , tabIndex :: Int
     , href :: Maybe URL
-    , _type :: Maybe SlatInteractionType
     }
 
 slat :: LumiComponent SlatProps
@@ -52,25 +47,17 @@ slat =
             , children: props.content
             , className
             }
-        Just interaction@{ href: Nothing, _type: t } ->
+        Just interaction@{ href: Nothing } ->
           E.element R.button'
-            { css:
-                case t of
-                  Just BorderInteraction -> toCSS theme props slatStyleInteractive
-                  Just BackgroundInteraction -> toCSS theme props slatStyleInteractiveBg
-                  _ -> toCSS theme props slatStyleInteractive
+            { css: toCSS theme props slatStyleInteractive
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
             , className
             }
-        Just interaction@{ href: Just href,  _type: t } ->
+        Just interaction@{ href: Just href } ->
           E.element R.a'
-            { css:
-                case t of
-                  Just BorderInteraction -> toCSS theme props slatStyleInteractive
-                  Just BackgroundInteraction -> toCSS theme props slatStyleInteractiveBg
-                  _ -> toCSS theme props slatStyleInteractive
+            { css: toCSS theme props slatStyleInteractive
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
@@ -91,13 +78,25 @@ slat =
     slatStyle
       >>> Styles.Slat.Hidden._interactive
 
-  slatStyleInteractiveBg =
-    slatStyle
-      >>> Styles.Slat.Hidden._interactiveBg
-
 _interactive :: SlatInteraction -> PropsModifier SlatProps
 _interactive interaction =
   propsModifier
     _
       { interaction = Just interaction
       }
+
+_interactiveBackground :: SlatInteraction -> PropsModifier SlatProps
+_interactiveBackground interaction =
+  propsModifier
+    _
+      { interaction = Just interaction
+      }
+    >>> styleModifier \(LumiTheme theme) ->
+        E.css
+          { "&:hover":
+            E.nested
+              $ E.css
+                  { backgroundColor: E.color theme.colors.primary4
+                  , borderColor: E.color theme.colors.black4
+                  }
+          }
