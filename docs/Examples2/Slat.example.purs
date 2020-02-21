@@ -63,6 +63,18 @@ docs =
               , href: Nothing
               }
           $ _ { content = exampleSlatContent }
+      , h2_ "square (default), spaced list, interactive (background color), min-width content"
+      , example
+          $ fragment
+          $ replicate 3
+          $ lumiElement Slat.slat
+          $ Slat._listSpaced
+          $ Slat._interactiveBackground
+              { onClick: window >>= alert "click!"
+              , tabIndex: 1
+              , href: Nothing
+              }
+          $ _ { content = exampleSlatContent }
       , h2_ "round, spaced list, non-interactive, min-width 500px"
       , example
           $ fragment
@@ -78,6 +90,20 @@ docs =
           $ replicate 9
           $ lumiElement Slat.slat
           $ Slat._interactive
+              { onClick: window >>= alert "click!"
+              , tabIndex: 1
+              , href: Nothing
+              }
+          $ Slat._topBottom
+          $ Slat._listCompact
+          $ slatExWidth
+          $ _ { content = exampleSlatContent }
+      , h2_ "top/bottom, compact list, interactive (background color), min-width 500px"
+      , example
+          $ fragment
+          $ replicate 9
+          $ lumiElement Slat.slat
+          $ Slat._interactiveBackground
               { onClick: window >>= alert "click!"
               , tabIndex: 1
               , href: Nothing

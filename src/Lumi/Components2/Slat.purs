@@ -3,6 +3,7 @@ module Lumi.Components2.Slat
   , SlatInteraction
   , slat
   , _interactive
+  , _interactiveBackground
   , module Styles.Slat
   ) where
 
@@ -12,10 +13,10 @@ import Data.Newtype (un)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
-import Lumi.Styles (styleModifier_, toCSS)
+import Lumi.Styles (styleModifier, styleModifier_, toCSS)
 import Lumi.Styles.Slat (_interactive, slat) as Styles.Slat.Hidden
 import Lumi.Styles.Slat hiding (_interactive, slat) as Styles.Slat
-import Lumi.Styles.Theme (useTheme)
+import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_)
 import React.Basic.Emotion as E
@@ -83,3 +84,19 @@ _interactive interaction =
     _
       { interaction = Just interaction
       }
+
+_interactiveBackground :: SlatInteraction -> PropsModifier SlatProps
+_interactiveBackground interaction =
+  propsModifier
+    _
+      { interaction = Just interaction
+      }
+    >>> styleModifier \(LumiTheme theme) ->
+        E.css
+          { "&:hover":
+            E.nested
+              $ E.css
+                  { backgroundColor: E.color theme.colors.primary4
+                  , borderColor: E.color theme.colors.black4
+                  }
+          }
