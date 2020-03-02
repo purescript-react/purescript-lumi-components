@@ -15,6 +15,7 @@ module Lumi.Components.Form
   , passwordBox
   , textarea
   , switch
+  , checkbox
   , radioGroup
   , file
   , genericSelect
