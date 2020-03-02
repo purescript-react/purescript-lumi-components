@@ -91,6 +91,7 @@ import Lumi.Components.NativeSelect as NativeSelect
 import Lumi.Components.Orientation (Orientation(..))
 import Lumi.Components.Row (row)
 import Lumi.Components.Select as Select
+import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
@@ -385,28 +386,41 @@ switch = formBuilder_ \{ readonly } b onChange ->
            }
 
 -- | A `checkbox` is an editor for booleans which displays checked or not checked.
+-- | can also accept JSX to display text to the right of the checkbox
 checkbox
-  :: forall props
-   . FormBuilder
-       { readonly :: Boolean | props }
-       Boolean
-       Boolean
-checkbox = formBuilder_ \{ readonly } b onChange ->
-  Input.label
-    { style: R.css
-        { flexDirection: "row"
-        , alignSelf: "stretch"
-        }
-    , for: null
-    , children:
-        [ if readonly
-            then Input.input Input.checkbox { checked = Input.Off }
-            else Input.input Input.checkbox
-                   { checked = if b then Input.On else Input.Off
-                   , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
-                   }
-        ]
-    }
+  :: Maybe JSX
+  -> forall props
+  . FormBuilder { readonly :: Boolean | props }
+  Boolean
+  Boolean
+checkbox description =
+  formBuilder_ \{ readonly } value onChange ->
+    Input.label
+      { style: R.css
+          { flexDirection: "row"
+          , alignSelf: "stretch"
+          }
+      , for: null
+      , children:
+          [ row
+              { style: R.css { alignItems: "center" }
+              , children:
+                  [ if readonly
+                      then Input.input Input.checkbox { checked = Input.Off }
+                      else Input.input Input.checkbox
+                             { checked = if value then Input.On else Input.Off
+                             , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
+                             }
+                  , case description of
+                      Just d -> fragment
+                        [ hspace S8
+                        , d
+                        ]
+                      _ -> mempty
+                  ]
+              }
+          ]
+      }
 
 -- | A form that edits an optional structure represented by group of radio
 -- | buttons, visually oriented in either horizontal or vertical fashion.
