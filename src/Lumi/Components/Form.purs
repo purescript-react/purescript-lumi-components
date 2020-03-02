@@ -392,12 +392,21 @@ checkbox
        Boolean
        Boolean
 checkbox = formBuilder_ \{ readonly } b onChange ->
-  if readonly
-    then Input.input Input.checkbox { checked = Input.Off }
-    else Input.input Input.checkbox
-           { checked = if b then Input.On else Input.Off
-           , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
-           }
+  Input.label
+    { style: R.css
+        { flexDirection: "row"
+        , alignSelf: "stretch"
+        }
+    , for: null
+    , children:
+        [ if readonly
+            then Input.input Input.checkbox { checked = Input.Off }
+            else Input.input Input.checkbox
+                   { checked = if b then Input.On else Input.Off
+                   , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
+                   }
+        ]
+    }
 
 -- | A form that edits an optional structure represented by group of radio
 -- | buttons, visually oriented in either horizontal or vertical fashion.

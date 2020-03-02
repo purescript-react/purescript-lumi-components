@@ -193,6 +193,7 @@ type User =
       , password2 :: Validated String
       }
   , admin :: Boolean
+  , checkbox :: Boolean
   , height :: Validated String
   , addresses :: Validated (Array Address)
   , pets :: Validated (Array Pet)
@@ -206,6 +207,7 @@ type ValidatedUser =
   , lastName :: NonEmptyString
   , password :: NonEmptyString
   , admin :: Boolean
+  , checkbox :: Boolean
   , height :: Maybe Number
   , addresses :: Array ValidatedAddress
   , pets :: Array ValidatedPet
@@ -272,6 +274,10 @@ userForm = ado
     F.indent "Admin?" Neither
     $ F.focus (prop (SProxy :: SProxy "admin"))
     $ F.switch
+  checkbox <-
+    F.indent "Checked?" Neither
+    $ F.focus (prop (SProxy :: SProxy "checkbox"))
+    $ F.checkbox
 
   F.section "Personal data"
   height <-
@@ -418,6 +424,7 @@ userForm = ado
     , lastName
     , password
     , admin
+    , checkbox
     , height
     , pets
     , leastFavoriteColors
@@ -523,4 +530,3 @@ addressForm = ado
           { label: un State state
           , value: state
           }
-
