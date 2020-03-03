@@ -173,6 +173,32 @@ text_ =
   , variant: None
   }
 
+inputPlaceholderText_ :: String -> InputProps
+inputPlaceholderText_ s =
+  { "type": "text"
+  , autoComplete: "on"
+  , autoFocus: false
+  , checked: Off
+  , disabled: false
+  , max: toNullable Nothing
+  , min: toNullable Nothing
+  , step: toNullable Nothing
+  , name: ""
+  , onBlur: toNullable Nothing
+  , onChange: mkEffectFn1 $ pure <<< const unit
+  , onFocus: toNullable Nothing
+  , onKeyUp: toNullable Nothing
+  , pattern: toNullable Nothing
+  , placeholder: s
+  , required: false
+  , readOnly: false
+  , size: Medium
+  , style: css {}
+  , testId: toNullable Nothing
+  , value: ""
+  , variant: None
+  }
+
 username :: InputProps
 username = text_
   { autoComplete = "username"

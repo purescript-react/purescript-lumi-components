@@ -281,8 +281,10 @@ userForm = ado
     $ F.focus (prop (SProxy :: SProxy "checkbox"))
     $ F.checkbox Nothing
   descriptiveCheckbox <-
-    F.indent "Checked (with description)?" Neither
-    $ F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
+    F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
+    $ F.checkbox (Just $ R.text "This is a right aligned description")
+  descriptiveCheckbox <-
+    F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
     $ F.checkbox (Just $ R.text "This is a right aligned description")
 
   F.section "Personal data"
