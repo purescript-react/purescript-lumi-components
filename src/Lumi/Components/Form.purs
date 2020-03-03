@@ -356,7 +356,6 @@ passwordBox
 passwordBox = inputBox Input.password
 
 -- | A configurable textarea box makes a `FormBuilder` for strings
--- | includes a configurable placeholder
 textarea_
   :: forall props
    . Textarea.TextareaProps
@@ -369,7 +368,6 @@ textarea_ textareaProps = formBuilder_ \{ readonly } s onChange ->
     then Input.alignToInput $ R.text s
     else Textarea.textarea textareaProps
            { value = s
-           , placeholder = textareaProps.placeholder
            , onChange = capture targetValue (traverse_ onChange)
            , style = R.css { width: "100%" }
            }
