@@ -77,6 +77,26 @@ defaults =
   , value: ""
   }
 
+textareaPlaceholderText_ :: String -> TextareaProps
+textareaPlaceholderText_ s =
+  { autoComplete: "on"
+  , disabled: false
+  , lines: 2
+  , maxLength: toNullable Nothing
+  , minLength: toNullable Nothing
+  , name: ""
+  , onBlur: toNullable Nothing
+  , onChange: mkEffectFn1 $ pure <<< const unit
+  , onFocus: toNullable Nothing
+  , placeholder: s
+  , required: false
+  , readOnly: false
+  , resizable: true
+  , style: css {}
+  , testId: toNullable Nothing
+  , value: ""
+  }
+
 styles :: JSS
 styles =
   jss

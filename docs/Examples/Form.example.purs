@@ -33,6 +33,7 @@ import Lumi.Components.LabeledField (RequiredField(..))
 import Lumi.Components.Modal (dialog)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
+import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload (FileId(..))
 import Lumi.Components.Upload as Upload
 import React.Basic.DOM (css)
@@ -320,6 +321,10 @@ userForm = ado
     F.indent "Notes" Optional
     $ F.focus (prop (SProxy :: SProxy "notes"))
     $ F.textarea
+  notes <-
+    F.indent "Notes (with placeholder)" Optional
+    $ F.focus (prop (SProxy :: SProxy "notes"))
+    $ F.textarea_ $ Textarea.textareaPlaceholderText_ "Placeholder text..."
 
   F.section "Pets"
   pets <-

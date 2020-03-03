@@ -14,6 +14,7 @@ module Lumi.Components.Form
   , textbox
   , passwordBox
   , textarea
+  , textarea_
   , switch
   , checkbox
   , radioGroup
@@ -353,6 +354,25 @@ passwordBox
        String
        String
 passwordBox = inputBox Input.password
+
+-- | A configurable textarea box makes a `FormBuilder` for strings
+-- | includes a configurable placeholder
+textarea_
+  :: forall props
+   . Textarea.TextareaProps
+  -> FormBuilder
+       { readonly :: Boolean | props }
+       String
+       String
+textarea_ textareaProps = formBuilder_ \{ readonly } s onChange ->
+  if readonly
+    then Input.alignToInput $ R.text s
+    else Textarea.textarea textareaProps
+           { value = s
+           , placeholder = textareaProps.placeholder
+           , onChange = capture targetValue (traverse_ onChange)
+           , style = R.css { width: "100%" }
+           }
 
 -- | A simple text box makes a `FormBuilder` for strings
 textarea
