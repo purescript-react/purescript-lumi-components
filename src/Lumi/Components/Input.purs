@@ -10,6 +10,7 @@ module Lumi.Components.Input
   , InputProps(..)
   , input
   , text_
+  , inputPlaceholderText_
   , username
   , email
   , password

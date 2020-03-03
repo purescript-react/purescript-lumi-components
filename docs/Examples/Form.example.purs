@@ -284,9 +284,6 @@ userForm = ado
   descriptiveCheckbox <-
     F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
     $ F.checkbox (Just $ R.text "This is a right aligned description")
-  descriptiveCheckbox <-
-    F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
-    $ F.checkbox (Just $ R.text "This is a right aligned description")
 
   F.section "Personal data"
   height <-
