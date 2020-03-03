@@ -75,7 +75,7 @@ import Effect.Class (liftEffect)
 import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
-import Lumi.Components.Column (column)
+import Lumi.Components.Column (column, column_)
 import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
 import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
@@ -90,7 +90,7 @@ import Lumi.Components.Loader (loader)
 import Lumi.Components.Modal (modalLink, modalTitle)
 import Lumi.Components.NativeSelect as NativeSelect
 import Lumi.Components.Orientation (Orientation(..))
-import Lumi.Components.Row (row)
+import Lumi.Components.Row (row, row_)
 import Lumi.Components.Select as Select
 import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
@@ -406,12 +406,15 @@ switch = formBuilder_ \{ readonly } b onChange ->
 -- | A `checkbox` is an editor for booleans which displays checked or not checked.
 -- | can also accept JSX to display text to the right of the checkbox
 checkbox
-  :: Maybe JSX
+  :: Maybe
+     { title :: JSX
+     , subtitle :: JSX
+     }
   -> forall props
   . FormBuilder { readonly :: Boolean | props }
   Boolean
   Boolean
-checkbox description =
+checkbox props =
   formBuilder_ \{ readonly } value onChange ->
     Input.label
       { style: R.css
@@ -420,23 +423,35 @@ checkbox description =
           }
       , for: null
       , children:
-          [ row
-              { style: R.css { alignItems: "center" }
-              , children:
-                  [ if readonly
-                      then Input.input Input.checkbox { checked = Input.Off }
-                      else Input.input Input.checkbox
-                             { checked = if value then Input.On else Input.Off
-                             , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
-                             }
-                  , case description of
-                      Just d -> fragment
-                        [ hspace S8
-                        , d
-                        ]
-                      _ -> mempty
-                  ]
-              }
+          [ column_
+              [ row
+                  { style: R.css { alignItems: "center" }
+                  , children:
+                      [ if readonly
+                          then Input.input Input.checkbox
+                                { style = R.css { marginBottom: "0" }
+                                , checked = Input.Off
+                                }
+                          else Input.input Input.checkbox
+                                 { style = R.css { marginBottom: "0" }
+                                 , checked = if value then Input.On else Input.Off
+                                 , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
+                                 }
+                      , case props of
+                          Just p -> fragment
+                            [ hspace S8
+                            , p.title
+                            ]
+                          _ -> mempty
+                      ]
+                  }
+              ,  case props of
+                  Just p -> R.div
+                    { style: R.css { marginLeft: "28px" }
+                    , children: [ p.subtitle ]
+                    }
+                  _ -> mempty
+              ]
           ]
       }
 

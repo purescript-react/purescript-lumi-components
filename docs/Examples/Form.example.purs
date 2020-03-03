@@ -33,6 +33,7 @@ import Lumi.Components.LabeledField (RequiredField(..))
 import Lumi.Components.Modal (dialog)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
+import Lumi.Components.Text as T
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload (FileId(..))
 import Lumi.Components.Upload as Upload
@@ -283,7 +284,8 @@ userForm = ado
     $ F.checkbox Nothing
   descriptiveCheckbox <-
     F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
-    $ F.checkbox (Just $ R.text "This is a right aligned description")
+    $ F.checkbox
+    $ Just $ { title: T.body_ "This is a right aligned description", subtitle: T.subtext_ "with a sublabel" }
 
   F.section "Personal data"
   height <-
