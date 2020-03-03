@@ -546,11 +546,6 @@ upload = make component { initialState, render }
                         }
                     _ ->
                       case variant of
-                        Avatar ->
-                          lumiUploadAvatarImage
-                            { style: R.css {}
-                            , children: [ userSvg ]
-                            }
                         Logo ->
                           lumiUploadAvatarImage
                             { style: R.css { backgroundColor: cssStringHSLA colors.black4 }
@@ -564,11 +559,6 @@ upload = make component { initialState, render }
 
                 _, _ ->
                   case variant of
-                    Avatar ->
-                      lumiUploadAvatarImage
-                        { style: R.css {}
-                        , children: [ userSvg ]
-                        }
                     Logo ->
                       lumiUploadAvatarImage
                         { style: R.css { backgroundColor: cssStringHSLA colors.black4 }
