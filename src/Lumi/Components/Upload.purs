@@ -190,7 +190,7 @@ upload = make component { initialState, render }
                 Images -> Just "image/"
                 Files  -> Nothing
                 Avatar -> Just "image/"
-                Logo -> Nothing
+                Logo -> Just "image/"
           in
             case mimeFilter of
               Nothing ->
@@ -316,8 +316,8 @@ upload = make component { initialState, render }
             [ case stuff.variant of
                 Images -> renderImageList stuff self
                 Files  -> renderFileList stuff self
-                Avatar -> renderAvatarImage stuff self Avatar
-                Logo -> renderAvatarImage stuff self Logo
+                Avatar -> renderAvatarImage stuff self stuff.variant
+                Logo -> renderAvatarImage stuff self stuff.variant
             ]
         }
 
