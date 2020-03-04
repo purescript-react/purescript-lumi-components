@@ -4,13 +4,13 @@ import Data.Newtype (class Newtype)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Color (Color, ColorMap, ColorName, colorNames, colors)
 import React.Basic (ReactContext, createContext)
-import React.Basic.Hooks (Render, UseContext, useContext)
+import React.Basic.Hooks (Hook, UseContext, useContext)
 
 newtype LumiTheme
   = LumiTheme
-      { colors :: ColorMap Color
-      , colorNames :: ColorMap ColorName
-      }
+  { colors :: ColorMap Color
+  , colorNames :: ColorMap ColorName
+  }
 
 derive instance newtypeLumiTheme :: Newtype LumiTheme _
 
@@ -18,8 +18,9 @@ defaultTheme :: LumiTheme
 defaultTheme = LumiTheme { colors, colorNames }
 
 lumiThemeContext :: ReactContext LumiTheme
-lumiThemeContext = unsafePerformEffect do
-  createContext defaultTheme
+lumiThemeContext =
+  unsafePerformEffect do
+    createContext defaultTheme
 
-useTheme :: forall hooks. Render hooks (UseContext LumiTheme hooks) LumiTheme
+useTheme :: Hook (UseContext LumiTheme) LumiTheme
 useTheme = useContext lumiThemeContext

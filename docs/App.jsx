@@ -125,6 +125,7 @@ const componentv2Loaders = [
   "ButtonGroup",
   "Clip",
   "Link",
+  "QRCode",
   "Slat"
 ].map(fromComponentPathv2);
 
