@@ -170,6 +170,25 @@ docs = unit # make component { initialState, didMount, render }
                       }
                   ]
               }
+        , h2_ "Logo"
+        , example $
+            column
+              { style: R.css { alignSelf: "stretch" }
+              , children:
+                  [ upload defaults
+                      { value = maybe [] pure self.state.avatar
+                      , variant = Logo
+                      , onChange = send self <<< AvatarEx <<< head
+                      , readonly = self.state.readonly
+                      , backend =
+                          { fetch: \id@(FileId name) -> do
+                              pure { id, name: FileName name, previewUri: Nothing }
+                          , upload: \file -> produceAff \emitter ->
+                              uploadWithRandomPauses emitter file
+                          }
+                      }
+                  ]
+              }
         ]
 
     randomPause = do
