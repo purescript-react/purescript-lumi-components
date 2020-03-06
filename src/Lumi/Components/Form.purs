@@ -428,15 +428,20 @@ checkbox props =
                   { style: R.css { alignItems: "center" }
                   , children:
                       [ if readonly
-                          then Input.input Input.checkbox
-                                { style = R.css { marginBottom: "0" }
-                                , checked = Input.Off
-                                }
-                          else Input.input Input.checkbox
-                                 { style = R.css { marginBottom: "0" }
-                                 , checked = if value then Input.On else Input.Off
-                                 , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
-                                 }
+                          then
+                            Input.input Input.checkbox
+                              { style = R.css { marginBottom: "0" }
+                              , checked = if value then Input.On else Input.Off
+                              , disabled = true
+                              , onChange = Events.handler Events.syntheticEvent \_ -> pure unit
+                              }
+                          else
+                            Input.input Input.checkbox
+                              { style = R.css { marginBottom: "0" }
+                              , checked = if value then Input.On else Input.Off
+                              , disabled = false
+                              , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
+                              }
                       , case props of
                           Just p -> fragment
                             [ hspace S8
