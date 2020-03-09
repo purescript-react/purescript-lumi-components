@@ -33,6 +33,7 @@
     "big-integer": "^1.6.44",
     "jss": "^10.0.0-alpha.16",
     "jss-preset-default": "^10.0.0-alpha.16",
+    "qrcode.react": "^1.0.0",
     "react": "^16.6.1",
     "react-dnd": "^2.6.0",
     "react-dnd-html5-backend": "^2.6.0",
