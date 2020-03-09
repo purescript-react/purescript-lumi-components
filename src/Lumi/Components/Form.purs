@@ -90,7 +90,7 @@ import Lumi.Components.Loader (loader)
 import Lumi.Components.Modal (modalLink, modalTitle)
 import Lumi.Components.NativeSelect as NativeSelect
 import Lumi.Components.Orientation (Orientation(..))
-import Lumi.Components.Row (row, row_)
+import Lumi.Components.Row (row)
 import Lumi.Components.Select as Select
 import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text (body, body_, subsectionHeader, text)
@@ -427,21 +427,15 @@ checkbox props =
               [ row
                   { style: R.css { alignItems: "center" }
                   , children:
-                      [ if readonly
-                          then
-                            Input.input Input.checkbox
-                              { style = R.css { marginBottom: "0" }
-                              , checked = if value then Input.On else Input.Off
-                              , disabled = true
-                              , onChange = Events.handler Events.syntheticEvent \_ -> pure unit
-                              }
-                          else
-                            Input.input Input.checkbox
-                              { style = R.css { marginBottom: "0" }
-                              , checked = if value then Input.On else Input.Off
-                              , disabled = false
-                              , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
-                              }
+                      [ Input.input Input.checkbox
+                          { style = R.css { marginBottom: "0" }
+                          , checked = if value then Input.On else Input.Off
+                          , disabled = if readonly then true else false
+                          , onChange =
+                              if readonly
+                                then Events.handler Events.syntheticEvent \_ -> pure unit
+                                else Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
+                          }
                       , case props of
                           Just p -> fragment
                             [ hspace S8
