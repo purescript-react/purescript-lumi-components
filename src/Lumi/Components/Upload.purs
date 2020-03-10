@@ -131,6 +131,7 @@ data UploadVariant
   = Images
   | Files
   | Avatar
+  | Logo
 
 defaults :: UploadProps
 defaults =
@@ -189,6 +190,7 @@ upload = make component { initialState, render }
                 Images -> Just "image/"
                 Files  -> Nothing
                 Avatar -> Just "image/"
+                Logo -> Just "image/"
           in
             case mimeFilter of
               Nothing ->
@@ -300,6 +302,7 @@ upload = make component { initialState, render }
 
     shouldAllowMultiple { allowMultiple, variant } = allowMultiple && case variant of
       Avatar -> false
+      Logo -> false
       _      -> true
 
     renderUI stuff self =
@@ -313,7 +316,8 @@ upload = make component { initialState, render }
             [ case stuff.variant of
                 Images -> renderImageList stuff self
                 Files  -> renderFileList stuff self
-                Avatar -> renderAvatarImage stuff self
+                Avatar -> renderAvatarImage stuff self stuff.variant
+                Logo -> renderAvatarImage stuff self stuff.variant
             ]
         }
 
@@ -349,6 +353,7 @@ upload = make component { initialState, render }
               Images -> "image/*"
               Files  -> ""
               Avatar -> "image/*"
+              Logo -> "image/*"
         , onChange: handler target \e -> do
             mFiles <- getEventFiles e
             for_ mFiles (send self <<< AddNewFiles)
@@ -507,7 +512,7 @@ upload = make component { initialState, render }
       | bytes >= 1024 = show (Int.round (toNumber bytes / 1024.0)) <> "kb"
       | otherwise = show (Int.round (toNumber bytes)) <> "b"
 
-    renderAvatarImage stuff self =
+    renderAvatarImage stuff self variant =
       lumiUploadAvatar
         { onDrop:
             if stuff.readonly
@@ -540,16 +545,30 @@ upload = make component { initialState, render }
                         , children: []
                         }
                     _ ->
+                      case variant of
+                        Logo ->
+                          lumiUploadAvatarImage
+                            { style: R.css { backgroundColor: cssStringHSLA colors.black4 }
+                            , children: []
+                            }
+                        _ ->
+                          lumiUploadAvatarImage
+                            { style: R.css {}
+                            , children: [ userSvg ]
+                            }
+
+                _, _ ->
+                  case variant of
+                    Logo ->
+                      lumiUploadAvatarImage
+                        { style: R.css { backgroundColor: cssStringHSLA colors.black4 }
+                        , children: []
+                        }
+                    _ ->
                       lumiUploadAvatarImage
                         { style: R.css {}
                         , children: [ userSvg ]
                         }
-
-                _, _ ->
-                  lumiUploadAvatarImage
-                    { style: R.css {}
-                    , children: [ userSvg ]
-                    }
             , if stuff.readonly
                 then empty
                 else

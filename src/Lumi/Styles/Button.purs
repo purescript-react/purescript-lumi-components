@@ -58,17 +58,17 @@ button colo kind state size = case kind of
                   , color: color white
                   , backgroundColor: color hue
                   , "&:hover":
-                    nested
-                      $ css
-                          { borderColor: color hueDarker
-                          , backgroundColor: color hueDarker
-                          }
+                      nested
+                        $ css
+                            { borderColor: color hueDarker
+                            , backgroundColor: color hueDarker
+                            }
                   , "&:active":
-                    nested
-                      $ css
-                          { borderColor: color hueDarkest
-                          , backgroundColor: color hueDarkest
-                          }
+                      nested
+                        $ css
+                            { borderColor: color hueDarkest
+                            , backgroundColor: color hueDarkest
+                            }
                   , "&:disabled": nested disabledStyles
                   }
               Disabled -> disabledStyles
@@ -103,19 +103,19 @@ button colo kind state size = case kind of
                   , color: color black
                   , backgroundColor: color white
                   , "&:hover":
-                    nested
-                      $ css
-                          { borderColor: color hueDarker
-                          , color: color hueDarker
-                          , backgroundColor: color white
-                          }
+                      nested
+                        $ css
+                            { borderColor: color hueDarker
+                            , color: color hueDarker
+                            , backgroundColor: color white
+                            }
                   , "&:active":
-                    nested
-                      $ css
-                          { borderColor: color hueDarkest
-                          , color: color hueDarkest
-                          , backgroundColor: color white
-                          }
+                      nested
+                        $ css
+                            { borderColor: color hueDarkest
+                            , color: color hueDarkest
+                            , backgroundColor: color white
+                            }
                   , "&:disabled": nested disabledStyles
                   }
               Disabled -> disabledStyles
@@ -140,11 +140,11 @@ button colo kind state size = case kind of
                 { cursor: str "default"
                 , color: color hueDisabled
                 , "&:hover, &:active":
-                  nested
-                    $ css
-                        { cursor: str "default"
-                        , textDecoration: none
-                        }
+                    nested
+                      $ css
+                          { cursor: str "default"
+                          , textDecoration: none
+                          }
                 }
           in
             merge
@@ -177,7 +177,7 @@ button colo kind state size = case kind of
               , minWidth: int 70
               , padding: str "10px 20px"
               , fontSize: int 14
-              , lineHeight: int 20
+              , lineHeight: int 1
               , whiteSpace: str "nowrap"
               , textOverflow: str "ellipsis"
               , overflow: str "hidden"
@@ -186,42 +186,38 @@ button colo kind state size = case kind of
               , borderWidth: int 1
               , borderStyle: str "solid"
               , "@media (min-width: 860px)":
-                nested
-                  $ fold
-                      [ css
-                          { padding: str "6px 16px"
-                          , height: int 32
-                          }
-                      , case size of
-                          Small ->
-                            css
-                              { fontSize: int 12
-                              , lineHeight: int 16
-                              , height: int 28
-                              }
-                          Medium -> mempty
-                          Large ->
-                            css
-                              { fontSize: int 15
-                              , lineHeight: int 24
-                              , padding: str "12px 24px"
-                              , height: int 48
-                              }
-                          ExtraLarge ->
-                            css
-                              { fontSize: int 20
-                              , lineHeight: int 32
-                              , padding: str "16px 32px"
-                              , height: int 64
-                              }
-                          ExtraExtraLarge ->
-                            css
-                              { fontSize: int 20
-                              , lineHeight: int 32
-                              , padding: str "16px 32px"
-                              , height: int 64
-                              }
-                      ]
+                  nested
+                    $ fold
+                        [ css
+                            { padding: str "6px 16px"
+                            , height: int 32
+                            }
+                        , case size of
+                            Small ->
+                              css
+                                { fontSize: int 12
+                                , height: int 28
+                                }
+                            Medium -> mempty
+                            Large ->
+                              css
+                                { fontSize: int 15
+                                , padding: str "12px 24px"
+                                , height: int 48
+                                }
+                            ExtraLarge ->
+                              css
+                                { fontSize: int 20
+                                , padding: str "16px 32px"
+                                , height: int 64
+                                }
+                            ExtraExtraLarge ->
+                              css
+                                { fontSize: int 20
+                                , padding: str "16px 32px"
+                                , height: int 64
+                                }
+                        ]
               }
           )
 
@@ -232,32 +228,32 @@ button colo kind state size = case kind of
           { label: str "loading"
           , "&:after": nested $ mkLoader theme { radius: "16px", borderWidth: "2px" }
           , "@media (min-width: 860px)":
-            nested case size of
-              Small ->
-                css
-                  { "&:after":
-                    nested
-                      $ mkLoader theme { radius: "12px", borderWidth: "2px" }
-                  }
-              Medium -> mempty
-              Large ->
-                css
-                  { "&:after":
-                    nested
-                      $ mkLoader theme { radius: "24px", borderWidth: "3px" }
-                  }
-              ExtraLarge ->
-                css
-                  { "&:after":
-                    nested
-                      $ mkLoader theme { radius: "34px", borderWidth: "4px" }
-                  }
-              ExtraExtraLarge ->
-                css
-                  { "&:after":
-                    nested
-                      $ mkLoader theme { radius: "34px", borderWidth: "4px" }
-                  }
+              nested case size of
+                Small ->
+                  css
+                    { "&:after":
+                        nested
+                          $ mkLoader theme { radius: "12px", borderWidth: "2px" }
+                    }
+                Medium -> mempty
+                Large ->
+                  css
+                    { "&:after":
+                        nested
+                          $ mkLoader theme { radius: "24px", borderWidth: "3px" }
+                    }
+                ExtraLarge ->
+                  css
+                    { "&:after":
+                        nested
+                          $ mkLoader theme { radius: "34px", borderWidth: "4px" }
+                    }
+                ExtraExtraLarge ->
+                  css
+                    { "&:after":
+                        nested
+                          $ mkLoader theme { radius: "34px", borderWidth: "4px" }
+                    }
           }
       ]
 
@@ -285,30 +281,30 @@ buttonGroup joined =
           css
             { label: str "notJoined"
             , "& > *:not(:last-child)":
-              nested
-                $ css
-                    { marginRight: int 8
-                    }
+                nested
+                  $ css
+                      { marginRight: int 8
+                      }
             }
         else
           css
             { label: str "joined"
             , "& > *:not(:last-child)":
-              nested
-                $ css
-                    { marginRight: int (-1)
-                    , borderTopRightRadius: int 0
-                    , borderBottomRightRadius: int 0
-                    }
+                nested
+                  $ css
+                      { marginRight: int (-1)
+                      , borderTopRightRadius: int 0
+                      , borderBottomRightRadius: int 0
+                      }
             , "& > *:not(:first-child)":
-              nested
-                $ css
-                    { borderTopLeftRadius: int 0
-                    , borderBottomLeftRadius: int 0
-                    }
+                nested
+                  $ css
+                      { borderTopLeftRadius: int 0
+                      , borderBottomLeftRadius: int 0
+                      }
             , "& > *:focus, & > *:hover":
-              nested
-                $ css
-                    { zIndex: int ziButtonGroup
-                    }
+                nested
+                  $ css
+                      { zIndex: int ziButtonGroup
+                      }
             }

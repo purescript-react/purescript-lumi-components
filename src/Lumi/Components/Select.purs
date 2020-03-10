@@ -537,7 +537,6 @@ styles = jss
                   { width: 0
                   , minWidth: 0
                   , padding: 0
-                  , margin: 0
                   , flex: "0 1 0%"
                   }
               }
