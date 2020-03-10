@@ -2,6 +2,7 @@ module Lumi.Components.Examples.Form where
 
 import Prelude
 
+import Color (cssStringHSLA)
 import Control.Coroutine.Aff (close, emit, produceAff)
 import Control.MonadZero (guard)
 import Data.Array as Array
@@ -22,6 +23,7 @@ import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Button as Button
+import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Form (FormBuilder, Validated)
@@ -281,11 +283,20 @@ userForm = ado
   checkbox <-
     F.indent "Checked?" Neither
     $ F.focus (prop (SProxy :: SProxy "checkbox"))
-    $ F.checkbox Nothing
+    $ F.checkbox
   descriptiveCheckbox <-
     F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
-    $ F.checkbox
-    $ Just $ { title: T.body_ "This is a right aligned description", subtitle: T.subtext_ "with a sublabel" }
+    $ F.labeledCheckbox
+    $ column
+        { style: R.css { maxWidth: "300px" }
+        , children:
+            [ T.body_ "This is a right aligned description"
+            , T.text T.subtext
+                { style = R.css { color: cssStringHSLA colors.black1 }
+                , children = [ R.text "with a sublabel that reads \"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\"" ]
+                }
+            ]
+        }
 
   F.section "Personal data"
   height <-
