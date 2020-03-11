@@ -24,6 +24,7 @@ type LinkProps
     , navigate :: Maybe (Effect Unit)
     , tabIndex :: Int
     , target :: Maybe String
+    , rel :: Maybe String
     , download :: Maybe String
     , content :: Array JSX
     , className :: String
@@ -41,6 +42,7 @@ link =
         , navigate: Nothing
         , tabIndex: 0
         , target: Nothing
+        , rel: Nothing
         , download: Nothing
         , content: []
         }
@@ -64,6 +66,7 @@ link =
                         (handler stopPropagation mempty)
                         syntheticEvent
             , target: toNullable props.target
+            , rel: toNullable props.rel
             , tabIndex: props.tabIndex
             , download: toNullable props.download
             }
