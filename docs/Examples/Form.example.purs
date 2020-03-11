@@ -256,7 +256,7 @@ userForm = ado
           (pure "First name should be longer than two characters (but it doesn't have to be).")
       )
     $ F.validated (F.nonEmpty "First name")
-    $ F.textbox
+    $ F.inputBox $ Input.text_ { placeholder = "First name" }
   lastName <-
     F.indent "Last Name" Required
     $ F.focus (prop (SProxy :: SProxy "lastName"))
@@ -334,7 +334,7 @@ userForm = ado
   notes <-
     F.indent "Notes (with placeholder)" Optional
     $ F.focus (prop (SProxy :: SProxy "notes"))
-    $ F.textarea_ $ Textarea.textareaPlaceholderText_ "Placeholder text..."
+    $ F.textarea_ $ Textarea.defaults { placeholder = "Placeholder text..." }
 
   F.section "Pets"
   pets <-

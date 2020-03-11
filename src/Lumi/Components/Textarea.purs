@@ -77,10 +77,6 @@ defaults =
   , value: ""
   }
 
-textareaPlaceholderText_ :: String -> TextareaProps
-textareaPlaceholderText_ s =
-  defaults { placeholder = s }
-
 styles :: JSS
 styles =
   jss
