@@ -27,6 +27,11 @@ _row =
   styleModifier_
     $ css { flexDirection: str "row" }
 
+_column :: forall props. PropsModifier props
+_column =
+  styleModifier_
+    $ css { flexDirection: str "column" }
+
 _wrap :: forall props. PropsModifier props
 _wrap =
   styleModifier_

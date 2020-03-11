@@ -15,7 +15,7 @@ import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
 import Lumi.Styles (styleModifier, styleModifier_, toCSS)
 import Lumi.Styles.Slat (_interactive, slat) as Styles.Slat.Hidden
-import Lumi.Styles.Slat hiding (_interactive, slat) as Styles.Slat
+import Lumi.Styles.Slat hiding (_interactive,slat) as Styles.Slat
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_)
@@ -37,7 +37,7 @@ type SlatInteraction
 
 slat :: LumiComponent SlatProps
 slat =
-  unsafePerformEffect do
+  unsafePerformEffect do 
     lumiComponent "Slat" defaults \props@{ className } -> React.do
       theme <- useTheme
       pure case props.interaction of

@@ -1,11 +1,12 @@
 module Lumi.Components2.Examples.Slat where
 
 import Prelude
+
 import Data.Array (intercalate, replicate)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, lumiElement)
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent)
 import Lumi.Components.Example (example)
 import Lumi.Components.Lockup (userLockup)
 import Lumi.Components.Spacing (Space(..), vspace)
@@ -28,20 +29,16 @@ docs :: JSX
 docs =
   let
     exampleSlatContent =
-      [ lumiElement box
+      [ box
           $ slatColumn 4
-          $ _
-              { content =
-                [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg }
-                ]
-              }
-      , lumiElement labeledInfo
+          $ _ { content = [ userLockup { name: "Xiamen, China", description: Nothing, image: userSvg } ] }
+      , labeledInfo
           $ slatColumn 1
           $ _
               { title = R.text "Lead time"
               , value = R.text "11 weeks"
               }
-      , lumiElement labeledInfo
+      , labeledInfo
           $ slatColumn 1
           $ _
               { title = R.text "Quantities"
@@ -55,7 +52,7 @@ docs =
       , example
           $ fragment
           $ replicate 3
-          $ lumiElement Slat.slat
+          $ Slat.slat
           $ Slat._listSpaced
           $ Slat._interactive
               { onClick: window >>= alert "click!"
@@ -67,7 +64,7 @@ docs =
       , example
           $ fragment
           $ replicate 3
-          $ lumiElement Slat.slat
+          $ Slat.slat
           $ Slat._listSpaced
           $ Slat._interactiveBackground
               { onClick: window >>= alert "click!"
@@ -79,7 +76,7 @@ docs =
       , example
           $ fragment
           $ replicate 3
-          $ lumiElement Slat.slat
+          $ Slat.slat
           $ slatExWidth
           $ Slat._round
           $ Slat._listSpaced
@@ -88,7 +85,7 @@ docs =
       , example
           $ fragment
           $ replicate 9
-          $ lumiElement Slat.slat
+          $ Slat.slat
           $ Slat._interactive
               { onClick: window >>= alert "click!"
               , tabIndex: 1
@@ -102,7 +99,7 @@ docs =
       , example
           $ fragment
           $ replicate 9
-          $ lumiElement Slat.slat
+          $ Slat.slat
           $ Slat._interactiveBackground
               { onClick: window >>= alert "click!"
               , tabIndex: 1
@@ -136,7 +133,7 @@ labeledInfo =
     lumiComponent "LabeledInfo" defaults \{ className, css, title, value } -> React.do
       theme@(LumiTheme { colorNames }) <- useTheme
       pure
-        $ lumiElement box
+        $ box
         $ styleModifier_ (E.css { label: E.str "labeledInfo" })
         $ _
             { css = css

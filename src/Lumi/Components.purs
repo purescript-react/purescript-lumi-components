@@ -5,11 +5,11 @@ module Lumi.Components
   , LumiComponent
   , lumiComponent
   , lumiComponentFromHook
-  , lumiElement
   , withContent, ($$$)
   ) where
 
 import Prelude
+
 import Data.String (toLower)
 import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
@@ -17,6 +17,20 @@ import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
 import React.Basic.Hooks (JSX, ReactComponent, Render, Hook, component, componentFromHook, element)
 import Record.Unsafe.Union (unsafeUnion)
+
+-- | A `LumiComponent` takes a function that updates its default props instead
+-- | of the plain record of props itself. This helps reduce the surface area for
+-- | API updates:
+-- |
+-- | ```purs
+-- | React.Basic.element reactComponent
+-- |   { relevantProp, otherProp1: mempty, otherProp2: mempty, ...etc }
+-- |
+-- | -- vs
+-- |
+-- | lumiComponent _{ relevantProp = relevantProp }
+-- | ```
+type LumiComponent props = (LumiProps props -> LumiProps props) -> JSX
 
 type LumiProps props
   = { css :: LumiTheme -> Emotion.Style, className :: String | props }
@@ -28,14 +42,6 @@ type PropsModifier props
 -- | Lift a `props -> props` function for composition with other `PropsModifier` functions.
 propsModifier :: forall props. (LumiProps props -> LumiProps props) -> PropsModifier props
 propsModifier = (>>>)
-
-newtype LumiComponent props
-  = LumiComponent
-  { name :: String
-  , component :: ReactComponent (LumiProps props)
-  , defaults :: { | props }
-  , className :: String
-  }
 
 -- | Create a `LumiComponent` from a name, set of defaults, and a render function.
 -- | The render function behaves the same as in the [hooks API](https://github.com/spicydonuts/purescript-react-basic-hooks/blob/master/examples/counter/src/Counter.purs#L12).
@@ -51,13 +57,17 @@ lumiComponent ::
 lumiComponent name defaults render = do
   c <- component name render
   pure
-    $ LumiComponent
+    $ lumiElement
+    $ LumiInternalComponent
         { name
         , component: c
         , defaults
         , className: lumiComponentClassName name
         }
 
+-- | Create a `LumiComponent` from a [react hook](https://github.com/spicydonuts/purescript-react-basic-hooks).
+-- | This operation is useful for creating components that enhance a JSX tree
+-- | with capabilities given by the Hook used.
 lumiComponentFromHook ::
   forall hooks props r.
   Lacks "children" props =>
@@ -70,7 +80,8 @@ lumiComponentFromHook ::
 lumiComponentFromHook name defaults propsToHook = do
   c <- componentFromHook name propsToHook
   pure
-    $ LumiComponent
+    $ lumiElement
+    $ LumiInternalComponent
         { name
         , component: c
         , defaults
@@ -93,24 +104,18 @@ withContent m content = m _{ content = content }
 lumiComponentClassName :: String -> String
 lumiComponentClassName name = "lumi-component lumi-" <> toLower name
 
--- | Render a `LumiComponent`. Similar to `React.Basic.element`, except the second argument
--- | is an update function rather than a plain record for props. This helps reduce
--- | the surface area for API updates:
--- |
--- | ```purs
--- | React.Basic.element reactComponent
--- |   { relevantProp, otherProp1: mempty, otherProp2: mempty, ...etc }
--- |
--- | -- vs
--- |
--- | lumiElement lumiComponent _{ relevantProp = relevantProp }
--- | ```
-lumiElement ::
-  forall props.
-  LumiComponent props ->
-  (LumiProps props -> LumiProps props) ->
-  JSX
-lumiElement (LumiComponent { component, defaults, className }) modifyProps =
+newtype LumiInternalComponent props
+  = LumiInternalComponent
+  { name :: String
+  , component :: ReactComponent (LumiProps props)
+  , defaults :: { | props }
+  , className :: String
+  }
+
+-- | Render a `LumiInternalComponent`. Similar to `React.Basic.element`, except
+-- | the second argument is an update function rather than a plain record of props.
+lumiElement :: forall props. LumiInternalComponent props -> LumiComponent props
+lumiElement (LumiInternalComponent { component, defaults, className }) modifyProps =
   element component
     $ appendClassName
     $ modifyProps

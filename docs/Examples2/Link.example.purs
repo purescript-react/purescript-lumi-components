@@ -4,7 +4,6 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Effect.Console (log)
 import Effect.Uncurried (mkEffectFn1)
-import Lumi.Components (lumiElement)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Text (body_)
@@ -21,13 +20,13 @@ docs =
             { onClick: mkEffectFn1 \_ -> log "Propagated"
             , style: R.css { display: "flex", flexDirection: "column" }
             , children:
-              [ lumiElement link
+              [ link
                   _
                     { href = URL "#/link"
                     , navigate = pure $ log "link clicked"
                     , content = [ body_ "Click here" ]
                     }
-              , lumiElement link
+              , link
                   _
                     { href = URL "#/input"
                     , target = Just "_blank"
