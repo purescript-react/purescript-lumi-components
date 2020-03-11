@@ -372,14 +372,20 @@ styles = jss
                       , lineHeight: "1"
                       }
                   }
+              , "&::before":
+                  { content: "'•'"
+                  , visibility: "hidden"
+                  }
               , "&:checked":
                   { "&::before":
                       { content: "'✓'"
+                      , visibility: "visible"
                       }
                   }
               , "&:indeterminate":
                   { "&::before":
                       { content: "'⎻'"
+                      , visibility: "visible"
                       }
                   }
               , "&:disabled":
