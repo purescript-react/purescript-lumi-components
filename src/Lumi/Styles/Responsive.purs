@@ -8,9 +8,10 @@ import Lumi.Styles (Style, css, nested, styleModifier)
 -- | Create a style modifier that, only in a desktop-sized screen, applies the
 -- | styles accumulated in the modifier passed in as argument.
 -- |
--- | NOTE: the value passed in as argument must be a props modifier that works
--- | on any set of props, a property that currently defines style modifiers.
-onDesktop :: forall props. (forall a. PropsModifier a) -> PropsModifier props
+-- | NOTE: the value passed in as argument must be a props modifier that touches
+-- | no component-specific props, a property that currently defines style
+-- | modifiers.
+onDesktop :: forall props. PropsModifier () -> PropsModifier props
 onDesktop m =
   styleModifier \theme ->
     desktopQuery
