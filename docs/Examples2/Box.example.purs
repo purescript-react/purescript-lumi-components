@@ -2,7 +2,7 @@ module Lumi.Components2.Examples.Box where
 
 import Prelude
 import Color.Scheme.MaterialDesign (blue, green, red)
-import Lumi.Components (lumiElement)
+import Lumi.Components (lumiElement, ($$$))
 import Lumi.Components.Example (example)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (h2_, p_)
@@ -40,22 +40,22 @@ docs =
           , vspace S24
           , h2_ "Defaults"
           , example $ lumiElement box
-              $ _ { content = exampleContent }
+              $$$ exampleContent
           , h2_ "Row"
           , example $ lumiElement box
               $ _row
-              $ _ { content = exampleContent }
+              $$$ exampleContent
           , h2_ "Align/justify"
           , example $ lumiElement box
               $ _row
               $ _alignSelf Stretch -- only necessary because `example` isn't a Box
               $ _justify End
-              $ _ { content = exampleContent }
+              $$$ exampleContent
           , h2_ "Space evenly"
           , example $ lumiElement box
               $ _row
               $ _alignSelf Stretch -- only necessary because `example` isn't a Box
               $ _justify SpaceEvenly
-              $ _ { content = exampleContent }
+              $$$ exampleContent
           ]
         }
