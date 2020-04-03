@@ -6,6 +6,7 @@ module Lumi.Components
   , lumiComponent
   , lumiComponentFromHook
   , lumiElement
+  , withContent, ($$$)
   ) where
 
 import Prelude
@@ -75,6 +76,19 @@ lumiComponentFromHook name defaults propsToHook = do
         , defaults
         , className: lumiComponentClassName name
         }
+
+-- | A convenient alias for setting the `content` property of a Lumi component
+-- | if it exists.
+infixr 0 withContent as $$$
+
+withContent ::
+  forall props content r.
+  ((LumiProps (content :: content | props) -> LumiProps (content :: content | props)) -> r) ->
+  content ->
+  r
+withContent m content = m _{ content = content }
+
+-- # Internal
 
 lumiComponentClassName :: String -> String
 lumiComponentClassName name = "lumi-component lumi-" <> toLower name
