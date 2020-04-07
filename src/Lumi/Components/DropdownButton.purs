@@ -6,8 +6,10 @@ import Color (cssStringHSLA)
 import Control.MonadZero (guard)
 import Data.Foldable (fold, foldMap, intercalate)
 import Data.Int (toNumber)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, isNothing, maybe)
+import Data.Monoid as Monoid
 import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.Traversable (for_)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import JSS (JSS, jss)
@@ -195,7 +197,7 @@ type DropdownMenuProps =
   , items ::
      Array (Array
        { label :: String
-       , action :: Effect Unit
+       , action :: Maybe (Effect Unit)
        })
   }
 
@@ -215,9 +217,14 @@ dropdownMenu = makeStateless dropdownMenuComponent render where
             fromItems xs =
               column_ $ xs <#> \item ->
                 Link.link Link.defaults
-                  { className = pure "lumi-dropdown-menu-item"
+                  { className = pure $ fold
+                      [ "lumi-dropdown-menu-item"
+                      , Monoid.guard (isNothing item.action) " disabled"
+                      ]
                   , text = p_ item.label
-                  , navigate = pure $ closeSelf *> item.action
+                  , navigate = pure $ for_ item.action \action -> do
+                      closeSelf
+                      action
                   }
           in
             fragment [ intercalate divider_ (map fromItems items) ]
@@ -343,7 +350,10 @@ styles = jss
               , whiteSpace: "nowrap"
               , color: cssStringHSLA colors.black
               , textDecoration: "none"
-              , "&:hover":
+              , "&.disabled":
+                  { color: cssStringHSLA colors.black1
+                  }
+              , "&:not(.disabled):hover":
                   { backgroundColor: cssStringHSLA colors.black7
                   }
               }

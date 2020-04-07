@@ -143,11 +143,11 @@ docs =
         dropdownMenu dropdownMenuDefaults
           { label = "Dropdown Menu"
           , items =
-              [ [ { label: "Export all results to CSV", action: log "hello" }
-                , { label: "Export selected results to CSV", action: log "hola" }
-                , { label: "Assign manager", action: log "bonjour" }
+              [ [ { label: "Export all results to CSV", action: Just $ log "hello" }
+                , { label: "Export selected results to CSV", action: Just $ log "hola" }
+                , { label: "Assign manager", action: Nothing }
                 ]
-              , [ { label: "Archive", action: log "olá" }
+              , [ { label: "Archive", action: Just $ log "olá" }
                 ]
               ]
           }
@@ -156,11 +156,11 @@ docs =
           { label = "Dropdown Menu (right)"
           , alignment = toNullable (Just "right")
           , items =
-              [ [ { label: "Export all results to CSV", action: log "hello" }
-                , { label: "Export selected results to CSV", action: log "hola" }
-                , { label: "Assign manager", action: log "bonjour" }
+              [ [ { label: "Export all results to CSV", action: Just $ log "hello" }
+                , { label: "Export selected results to CSV", action: Just $ log "hola" }
+                , { label: "Assign manager", action: Nothing }
                 ]
-              , [ { label: "Archive", action: log "olá" }
+              , [ { label: "Archive", action: Just $ log "olá" }
                 ]
               ]
           }
@@ -194,9 +194,9 @@ docs =
               , dropdownMenu dropdownMenuDefaults
                   { label = "Dropdown Menu"
                   , items =
-                      [ [ { label: "Export all results to CSV", action: log "hello" }
-                        , { label: "Export selected results to CSV", action: log "hola" }
-                        , { label: "Assign manager", action: log "bonjour" }
+                      [ [ { label: "Export all results to CSV", action: Just $ log "hello" }
+                        , { label: "Export selected results to CSV", action: Just $ log "hola" }
+                        , { label: "Assign manager", action: Nothing }
                         ]
                       ]
                   }
