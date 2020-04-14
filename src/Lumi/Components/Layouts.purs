@@ -39,6 +39,13 @@ styles = jss
           , margin: "5vh auto"
           }
 
+      , "lumi-layout-centered-full-width":
+          { display: "block"
+          , width: "90%"
+          , maxWidth: "90%"
+          , margin: "5vh auto"
+          }
+
       , "lumi-layout > lumi-layout-view-body, lumi-layout-centered, .lumi-layout-content":
           { "& lumi-section-header":
               { paddingTop: "32px"

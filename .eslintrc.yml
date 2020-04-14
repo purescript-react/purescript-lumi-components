@@ -1,0 +1,22 @@
+env:
+  browser: true
+  commonjs: true
+  es6: true
+  node: true
+extends:
+  - eslint:recommended
+  - plugin:prettier/recommended
+globals:
+  Atomics: readonly
+  SharedArrayBuffer: readonly
+parserOptions:
+  ecmaFeatures:
+    jsx: false
+  ecmaVersion: 2018
+rules:
+  strict:
+    - error
+    - global
+  no-unused-vars:
+    - error
+    - argsIgnorePattern: ^_

@@ -2,6 +2,7 @@ module Lumi.Components.Examples.Form where
 
 import Prelude
 
+import Color (cssStringHSLA)
 import Control.Coroutine.Aff (close, emit, produceAff)
 import Control.MonadZero (guard)
 import Data.Array as Array
@@ -22,6 +23,7 @@ import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Button as Button
+import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Form (FormBuilder, Validated)
@@ -33,6 +35,8 @@ import Lumi.Components.LabeledField (RequiredField(..))
 import Lumi.Components.Modal (dialog)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
+import Lumi.Components.Text as T
+import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload (FileId(..))
 import Lumi.Components.Upload as Upload
 import React.Basic.DOM (css)
@@ -193,6 +197,8 @@ type User =
       , password2 :: Validated String
       }
   , admin :: Boolean
+  , checkbox :: Boolean
+  , descriptiveCheckbox :: Boolean
   , height :: Validated String
   , addresses :: Validated (Array Address)
   , pets :: Validated (Array Pet)
@@ -206,6 +212,8 @@ type ValidatedUser =
   , lastName :: NonEmptyString
   , password :: NonEmptyString
   , admin :: Boolean
+  , checkbox :: Boolean
+  , descriptiveCheckbox :: Boolean
   , height :: Maybe Number
   , addresses :: Array ValidatedAddress
   , pets :: Array ValidatedPet
@@ -248,7 +256,7 @@ userForm = ado
           (pure "First name should be longer than two characters (but it doesn't have to be).")
       )
     $ F.validated (F.nonEmpty "First name")
-    $ F.textbox
+    $ F.inputBox $ Input.text_ { placeholder = "First name" }
   lastName <-
     F.indent "Last Name" Required
     $ F.focus (prop (SProxy :: SProxy "lastName"))
@@ -272,6 +280,23 @@ userForm = ado
     F.indent "Admin?" Neither
     $ F.focus (prop (SProxy :: SProxy "admin"))
     $ F.switch
+  checkbox <-
+    F.indent "Checked?" Neither
+    $ F.focus (prop (SProxy :: SProxy "checkbox"))
+    $ F.checkbox
+  descriptiveCheckbox <-
+    F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
+    $ F.labeledCheckbox
+    $ column
+        { style: R.css { maxWidth: "300px" }
+        , children:
+            [ T.body_ "This is a right aligned description"
+            , T.text T.subtext
+                { style = R.css { color: cssStringHSLA colors.black1 }
+                , children = [ R.text "with a sublabel that reads \"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\"" ]
+                }
+            ]
+        }
 
   F.section "Personal data"
   height <-
@@ -306,6 +331,10 @@ userForm = ado
     F.indent "Notes" Optional
     $ F.focus (prop (SProxy :: SProxy "notes"))
     $ F.textarea
+  notes <-
+    F.indent "Notes (with placeholder)" Optional
+    $ F.focus (prop (SProxy :: SProxy "notes"))
+    $ F.textarea_ $ Textarea.defaults { placeholder = "Placeholder text..." }
 
   F.section "Pets"
   pets <-
@@ -418,6 +447,8 @@ userForm = ado
     , lastName
     , password
     , admin
+    , checkbox
+    , descriptiveCheckbox
     , height
     , pets
     , leastFavoriteColors
@@ -523,4 +554,3 @@ addressForm = ado
           { label: un State state
           , value: state
           }
-

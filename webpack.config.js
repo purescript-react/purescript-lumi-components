@@ -1,3 +1,5 @@
+"use strict";
+
 const path = require("path");
 const Webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -91,15 +93,10 @@ module.exports = (_env, options) => ({
   module: {
     rules: [
       {
-        test: /\.js$/,
-        loader: "source-map-loader",
-        exclude: /node_modules|bower_components/
-      },
-      {
         oneOf: [
           {
             test: /\.jsx?$/,
-            exclude: /node_modules|bower_components/,
+            exclude: /node_modules|bower_components|output|src/,
             use: {
               loader: "babel-loader",
               options: {

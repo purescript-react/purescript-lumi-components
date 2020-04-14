@@ -1,6 +1,7 @@
 module Lumi.Components2.Button where
 
 import Prelude
+
 import Color (Color)
 import Data.Array as Array
 import Data.Maybe (Maybe(..))
@@ -16,8 +17,8 @@ import Lumi.Styles.Button as Styles.Button
 import Lumi.Styles.Theme (useTheme)
 import Prim.Row (class Union)
 import React.Basic.DOM as R
-import React.Basic.DOM.Events (capture_)
 import React.Basic.Emotion as E
+import React.Basic.Events (handler_)
 import React.Basic.Hooks (JSX, ReactComponent)
 import React.Basic.Hooks as React
 
@@ -68,7 +69,7 @@ button =
           , className: props.className
           , css:
             toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
-          , onClick: capture_ props.onPress
+          , onClick: handler_ props.onPress
           , type: props.type
           , disabled:
             case props.state of

@@ -154,19 +154,23 @@ docs = unit # make component
             [ hspace S16
             , dropdownIcon dropdownIconDefaults
                 { alignment = Nullable.notNull "right"
-                , content = R.div
+                , content = \closeSelf -> R.div
                     { style: R.css { width: "328px", padding: "12px" }
                     , children:
                         [ Link.link Link.defaults
                             { className = pure "lumi-dropdown-menu-item"
                             , text = p_ "Do something with this row"
-                            , navigate = pure $ log $ "Did something: " <> show row
+                            , navigate = Just do
+                                closeSelf
+                                log $ "Did something: " <> show row
                             }
                         , onRemove # Array.foldMap \onRemove' ->
                             Link.link Link.defaults
                               { className = pure "lumi-dropdown-menu-item"
                               , text = p_ "Remove this row"
-                              , navigate = pure $ onRemove' row
+                              , navigate = Just do
+                                  closeSelf
+                                  onRemove' row
                               }
                         ]
                     }

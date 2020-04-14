@@ -24,17 +24,13 @@ type LinkProps
     , navigate :: Maybe (Effect Unit)
     , tabIndex :: Int
     , target :: Maybe String
+    , rel :: Maybe String
+    , download :: Maybe String
     , content :: Array JSX
+    , className :: String
     )
 
-link ::
-  LumiComponent
-    ( className :: String
-    , content :: Array JSX
-    , href :: URL
-    , navigate :: Maybe (Effect Unit)
-    , target :: Maybe String
-    )
+link :: LumiComponent LinkProps
 link =
   unsafePerformEffect do
     let
@@ -44,7 +40,10 @@ link =
         { className: ""
         , href: URL ""
         , navigate: Nothing
+        , tabIndex: 0
         , target: Nothing
+        , rel: Nothing
+        , download: Nothing
         , content: []
         }
     lumiComponent "Link" defaults \props@{ className } -> React.do
@@ -56,15 +55,18 @@ link =
             , className
             , href: un URL props.href
             , onClick:
-              handler (merge { button, metaKey, altKey, ctrlKey, shiftKey, syntheticEvent }) \{ button, metaKey, altKey, ctrlKey, shiftKey, syntheticEvent } -> do
-                case props.navigate, button, metaKey, altKey, ctrlKey, shiftKey of
-                  Just n', Just 0, Just false, Just false, Just false, Just false ->
-                    runEffectFn1
-                      (handler (stopPropagation <<< preventDefault) $ const n')
-                      syntheticEvent
-                  _, _, _, _, _, _ ->
-                    runEffectFn1
-                      (handler stopPropagation mempty)
-                      syntheticEvent
+                handler (merge { button, metaKey, altKey, ctrlKey, shiftKey, syntheticEvent }) \{ button, metaKey, altKey, ctrlKey, shiftKey, syntheticEvent } -> do
+                  case props.navigate, button, metaKey, altKey, ctrlKey, shiftKey of
+                    Just n', Just 0, Just false, Just false, Just false, Just false ->
+                      runEffectFn1
+                        (handler (stopPropagation <<< preventDefault) $ const n')
+                        syntheticEvent
+                    _, _, _, _, _, _ ->
+                      runEffectFn1
+                        (handler stopPropagation mempty)
+                        syntheticEvent
             , target: toNullable props.target
+            , rel: toNullable props.rel
+            , tabIndex: props.tabIndex
+            , download: toNullable props.download
             }

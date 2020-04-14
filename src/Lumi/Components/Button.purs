@@ -75,7 +75,11 @@ button = makeStateless component render
                   Enabled -> false
                   Disabled -> false
                   Loading -> true
-            , onClick: props.onPress
+            , onClick:
+                case props.buttonState of
+                  Enabled -> props.onPress
+                  Disabled -> mkEffectFn1 mempty
+                  Loading -> mkEffectFn1 mempty
             , style: props.style
             , type: props.type
             }
@@ -221,7 +225,7 @@ styles = jss
               }
           , "&[data-color=\"secondary\"]":
               { extend: buttonSecondary
-              , backgroundColor: cssStringHSLA colors.transparent
+              , backgroundColor: cssStringHSLA colors.white
               , "&:hover":
                   { color: cssStringHSLA colors.primary
                   , borderColor: cssStringHSLA colors.primary
@@ -296,7 +300,7 @@ styles = jss
       }
 
     buttonSecondary =
-      { backgroundColor: cssStringHSLA colors.transparent
+      { backgroundColor: cssStringHSLA colors.white
       , color: cssStringHSLA colors.black
       , border: [ "1px", "solid", cssStringHSLA colors.black3 ]
       }

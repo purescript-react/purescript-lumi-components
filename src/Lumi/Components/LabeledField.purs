@@ -110,24 +110,6 @@ styles = jss
           { display: "flex"
           , flexFlow: "row nowrap"
 
-          , "&[data-force-top-label=\"true\"]":
-              { flexFlow: "column nowrap"
-
-              , "& .labeled-field--left":
-                  { flex: "initial"
-                  , whiteSpace: "normal"
-                  }
-
-              , "& .labeled-field--right":
-                  { flex: "initial"
-                  , maxWidth: "none"
-                  }
-              }
-
-          , "@media (max-width: 448px)":
-              { flexFlow: "column nowrap"
-              }
-
           , "& .labeled-field--left":
               { flex: "0 1 30%"
               , whiteSpace: "nowrap"
@@ -138,10 +120,29 @@ styles = jss
               , maxWidth: "70%"
               }
 
+          , "&[data-force-top-label=\"true\"]": labeledFieldTopLabelStyles
+
+          , "@media (max-width: 448px)": labeledFieldTopLabelStyles
+
           , "& .labeled-field--validation-error": labeledFieldValidationErrorStyles
 
           , "& .labeled-field--validation-warning": labeledFieldValidationWarningStyles
           }
+      }
+  }
+
+labeledFieldTopLabelStyles :: JSS
+labeledFieldTopLabelStyles = jss
+  { flexFlow: "column nowrap"
+
+  , "& .labeled-field--left":
+      { flex: "initial"
+      , whiteSpace: "normal"
+      }
+
+  , "& .labeled-field--right":
+      { flex: "initial"
+      , maxWidth: "none"
       }
   }
 

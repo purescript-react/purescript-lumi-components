@@ -1,8 +1,10 @@
 module Lumi.Components.InputGroup where
 
+import Color (cssStringHSLA)
 import Data.Array (fromFoldable)
 import Data.Nullable (Nullable, toMaybe)
 import JSS (JSS, jss)
+import Lumi.Components.Color (colors)
 import Lumi.Components.ZIndex (ziInputGroup)
 import React.Basic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
@@ -75,8 +77,11 @@ styles = jss
               }
 
           , "& input-group-addon button.lumi":
-              { "&:focus, &:hover": { zIndex: ziInputGroup }
-              }
+                { "&[data-color=\"secondary\"]":
+                    { background: cssStringHSLA colors.transparent
+                    }
+                , "&:focus, &:hover": { zIndex: ziInputGroup }
+                }
           }
       }
   }

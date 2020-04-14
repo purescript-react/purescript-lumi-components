@@ -48,6 +48,7 @@ styles = jss
           , borderRadius: "20px"
           , fontSize: "13px"
           , border: "1px solid"
+          , whiteSpace: "nowrap"
 
           , "&[data-status=\"active\"]":
               { color: cssStringHSLA colors.accent1

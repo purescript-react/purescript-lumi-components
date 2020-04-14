@@ -14,7 +14,9 @@ exports.urlParts = function(href) {
     var hashParts = a.hash.split("?");
     hash.path = hashParts[0] || "";
     hash.query = hashParts[1] != null ? "?" + hashParts[1] : "";
-  } catch (err) {}
+  } catch (err) {
+    console.warn(err);
+  }
   return {
     base: base,
     path: path,

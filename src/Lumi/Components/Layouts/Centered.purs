@@ -10,3 +10,11 @@ layout content =
     }
   where
     lumiLayoutCentered = element (unsafeCreateDOMComponent "lumi-layout-centered")
+
+layoutFullWidth :: JSX -> JSX
+layoutFullWidth content =
+  lumiLayoutCentered
+    { children: [content]
+    }
+  where
+    lumiLayoutCentered = element (unsafeCreateDOMComponent "lumi-layout-centered-full-width")

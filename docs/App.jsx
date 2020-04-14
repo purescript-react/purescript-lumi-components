@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-key */
+/* global COMMITHASH, VERSION */
+
 import React, { Component, useState, useEffect } from "react";
 import { Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
 import Media from "react-media";
@@ -116,9 +119,16 @@ const componentLoaders = [
   "Wizard"
 ].map(fromComponentPath);
 
-const componentv2Loaders = ["Banner", "Box", "Button", "ButtonGroup", "Link", "Slat"].map(
-  fromComponentPathv2
-);
+const componentv2Loaders = [
+  "Banner",
+  "Box",
+  "Button",
+  "ButtonGroup",
+  "Clip",
+  "Link",
+  "QRCode",
+  "Slat"
+].map(fromComponentPathv2);
 
 const App = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -212,6 +222,7 @@ const renderRoute = component => (
             <a
               className="lumi"
               target="_blank"
+              rel="noopener noreferrer"
               href={component.componentSource}
               style={{
                 marginLeft: "8px",
@@ -224,6 +235,7 @@ const renderRoute = component => (
             <a
               className="lumi"
               target="_blank"
+              rel="noopener noreferrer"
               href={component.exampleSource}
               style={{
                 marginLeft: "8px",
@@ -236,6 +248,7 @@ const renderRoute = component => (
             <a
               className="lumi"
               target="_blank"
+              rel="noopener noreferrer"
               href={component.apiReference}
               style={{
                 marginLeft: "8px"

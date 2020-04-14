@@ -6,8 +6,10 @@ import Color (cssStringHSLA)
 import Control.MonadZero (guard)
 import Data.Foldable (fold, foldMap, intercalate)
 import Data.Int (toNumber)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, isNothing, maybe)
+import Data.Monoid as Monoid
 import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.Traversable (for_)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import JSS (JSS, jss)
@@ -41,9 +43,12 @@ import Web.HTML.HTMLElement (HTMLElement, fromNode, getBoundingClientRect, toNod
 import Web.HTML.Window (document, innerWidth, scrollX, scrollY) as HTML
 import Web.HTML.Window (requestAnimationFrame)
 
+-- | Props for a DropdownButton component. The argument to the `content` field
+-- | is a callback which may be called to inform the dropdown button that it
+-- | should close itself.
 type DropdownButtonProps =
  { label :: String
- , content :: JSX
+ , content :: Effect Unit -> JSX
  , className :: String
  , onOpen :: Effect Unit
  , alignment :: Nullable String
@@ -64,6 +69,7 @@ dropdownButton =
     initialState =
       { isOpen: false
       , root: Nothing
+      , width: 0.0
       , position:
           { bottom: 0.0
           , left: 0.0
@@ -107,9 +113,10 @@ dropdownButton =
           then close self
           else do
             p <- getAbsolutePosition el
+            d <- getDimensions el
             when state.isOpen $
               void $ requestAnimationFrame (capturePosition self ref (Just p0')) =<< HTML.window
-            self.setState _{ position = p }
+            self.setState _{ position = p, width = d.width }
 
     toggleOpen self refM = do
       self.setStateThen
@@ -146,6 +153,7 @@ dropdownButton =
                               { style: R.mergeStyles
                                   [ R.css
                                       { top: show (state.position.bottom + 4.0) <> "px"
+                                      , minWidth: show state.width <> "px"
                                       }
                                   , if maybe false (_ == "right") (toMaybe props.alignment) then
                                       R.css { left: "auto", right: show (state.position.right - 1.0) <> "px" }
@@ -153,7 +161,7 @@ dropdownButton =
                                       R.css { left: show (state.position.left - 1.0) <> "px" }
                                   ]
                               , onClick: handler stopPropagation mempty
-                              , children: [ props.content ]
+                              , children: [ props.content (close self) ]
                               }
                     ]
               ]
@@ -189,7 +197,7 @@ type DropdownMenuProps =
   , items ::
      Array (Array
        { label :: String
-       , action :: Effect Unit
+       , action :: Maybe (Effect Unit)
        })
   }
 
@@ -204,14 +212,19 @@ dropdownMenu = makeStateless dropdownMenuComponent render where
       , className: "lumi-dropdown-menu " <> className
       , alignment: alignment
       , onOpen: pure unit
-      , content:
+      , content: \closeSelf ->
           let
             fromItems xs =
               column_ $ xs <#> \item ->
                 Link.link Link.defaults
-                  { className = pure "lumi-dropdown-menu-item"
+                  { className = pure $ fold
+                      [ "lumi-dropdown-menu-item"
+                      , Monoid.guard (isNothing item.action) " disabled"
+                      ]
                   , text = p_ item.label
-                  , navigate = pure $ item.action
+                  , navigate = pure $ for_ item.action \action -> do
+                      closeSelf
+                      action
                   }
           in
             fragment [ intercalate divider_ (map fromItems items) ]
@@ -236,7 +249,7 @@ dropdownMenuDefaults =
 
 type DropdownIconProps =
  { icon :: JSX
- , content :: JSX
+ , content :: Effect Unit -> JSX
  , onOpen :: Effect Unit
  , alignment :: Nullable String
  }
@@ -265,6 +278,14 @@ dropdownIcon props =
     }
 
 foreign import checkIsEventTargetInTree :: EffectFn2 Node Event Boolean
+
+getDimensions :: HTML.HTMLElement -> Effect { width :: Number, height :: Number }
+getDimensions el = do
+  { width, height } <- HTML.getBoundingClientRect el
+  pure
+    { width: width
+    , height: height
+    }
 
 getAbsolutePosition :: HTML.HTMLElement -> Effect { bottom :: Number, left :: Number, right :: Number }
 getAbsolutePosition el = do
@@ -329,7 +350,10 @@ styles = jss
               , whiteSpace: "nowrap"
               , color: cssStringHSLA colors.black
               , textDecoration: "none"
-              , "&:hover":
+              , "&.disabled":
+                  { color: cssStringHSLA colors.black1
+                  }
+              , "&:not(.disabled):hover":
                   { backgroundColor: cssStringHSLA colors.black7
                   }
               }

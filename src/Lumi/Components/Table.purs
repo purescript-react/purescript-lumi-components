@@ -17,10 +17,12 @@ import Data.Maybe (Maybe(..), fromMaybe, isJust, isNothing, maybe)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype, un)
 import Data.Nullable (Nullable, toMaybe)
+import Data.Nullable as Nullable
 import Data.String (contains, joinWith, Pattern(..))
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn1, runEffectFn2)
 import JSS (JSS, jss)
+import Lumi.Components (lumiElement)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Icon (IconType(ArrowUp, ArrowDown), icon_)
 import Lumi.Components.Input (CheckboxState(..), checkbox, input)
@@ -28,7 +30,8 @@ import Lumi.Components.Link as Link
 import Lumi.Components.Table.FilterDropdown (Item, filterDropdown)
 import Lumi.Components.Text (subtext_)
 import Lumi.Components.ZIndex (ziTableHeader, ziTableHeaderMenu, ziTableLockedColumn, ziTableLockedColumnHeader)
-import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, keyed, make, readProps, readState)
+import Lumi.Components2.ScrollObserver (scrollObserver)
+import React.Basic (Component, JSX, createComponent, element, empty, keyed, make, readProps, readState)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (QuerySelector(..), selectorRef)
@@ -263,9 +266,9 @@ table = make component
             else self.props.columns
       in
         renderLumiTable self columns \tableRef ->
-          [ element scrollObserver
-              { node: tableRef
-              , render: \{ hasScrolledY, hasScrolledX } ->
+          [ lumiElement scrollObserver _
+              { node = Nullable.notNull tableRef
+              , render = \{ hasScrolledY, hasScrolledX } ->
                   R.table
                     { className:
                         let
@@ -611,12 +614,6 @@ foreign import checkIsEventTargetInTree :: EffectFn2 Node Event Boolean
 foreign import isRightClick :: Event -> Boolean
 
 foreign import hasWindowSelection :: Effect Boolean
-
-foreign import scrollObserver
-  :: ReactComponent
-      { node :: Node
-      , render :: { hasScrolledY :: Boolean, hasScrolledX :: Boolean } -> JSX
-      }
 
 styles :: JSS
 styles = jss
