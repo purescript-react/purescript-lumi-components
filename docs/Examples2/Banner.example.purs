@@ -10,7 +10,6 @@ import Lumi.Components.Images (avatar)
 import Lumi.Components.Size (large)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (h2_, p_, subsectionHeader_)
-import Lumi.Components2.Box (box)
 import Lumi.Components2.Banner as Banner
 import Lumi.Styles.Box (FlexAlign(..), _alignSelf)
 import React.Basic (JSX, fragment)
@@ -25,13 +24,13 @@ docs =
     , example
         $ fragment
         $ allColors
-        $ _ { content = loremIpsum }
+        $ _ { content = loremIpsum_ }
 
     , h2_ "round (default), spaced list, non-dismissable with icon"
     , example
         $ fragment
         $ allColors
-        $ _ { content = loremIpsum
+        $ _ { content = loremIpsum_
             , icon = bannerIcon
             }
 
@@ -40,7 +39,8 @@ docs =
         $ fragment
         $ allColors
         $ _ { dismissable = true
-            , content = importantMessage
+            , title = bannerTitle
+            , content = loremIpsum
             }
 
     , h2_ "action banner, round (default), spaced list, non-dismissable"
@@ -48,7 +48,7 @@ docs =
         $ fragment
         $ allColors
         $ Banner.actionBanner simpleActions
-        $ _ { content = loremIpsum }
+        $ _ { content = loremIpsum_ }
 
     , h2_ "action banner, round (default), spaced list, dismissable"
     , example
@@ -56,7 +56,8 @@ docs =
         $ allColors
         $ Banner.actionBanner simpleActions
         $ _ { dismissable = true
-            , content = importantMessage
+            , title = bannerTitle
+            , content = loremIpsum
             }
 
     , h2_ "action banner, round (default), spaced list, non-dismissable"
@@ -64,7 +65,7 @@ docs =
         $ fragment
         $ allColors
         $ Banner.actionBanner twoButtonActions
-        $ _ { content = loremIpsum }
+        $ _ { content = loremIpsum_ }
 
     , h2_ "action banner, round (default), spaced list, dismissable"
     , example
@@ -72,7 +73,8 @@ docs =
         $ allColors
         $ Banner.actionBanner twoButtonActions
         $ _ { dismissable = true
-            , content = importantMessage
+            , title = bannerTitle
+            , content = loremIpsum
             }
 
     , h2_ "action banner, round (default), spaced list, non-dismissable"
@@ -80,7 +82,7 @@ docs =
         $ fragment
         $ allColors
         $ Banner.actionBanner actions
-        $ _ { content = loremIpsum }
+        $ _ { content = loremIpsum_ }
 
     , h2_ "action banner, round (default), spaced list, dismissable"
     , example
@@ -88,7 +90,8 @@ docs =
         $ allColors
         $ Banner.actionBanner actions
         $ _ { dismissable = true
-            , content = importantMessage
+            , title = bannerTitle
+            , content = loremIpsum
             }
 
     ]
@@ -121,17 +124,17 @@ docs =
           $ props
       ]
 
-    loremIpsum :: Array JSX
-    loremIpsum = [ R.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit." ]
+    loremIpsum_ :: Array JSX
+    loremIpsum_ = [ R.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit." ]
 
-    importantMessage :: Array JSX
-    importantMessage =
-      [ lumiElement box
-        $ _ { content =
-                [ subsectionHeader_ "An important title"
-                , R.text "Here's some important message about your account."
-                ]
-            }
+    loremIpsum :: Array JSX
+    loremIpsum =
+      [ R.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam varius erat a purus fermentum luctus. Sed porta nisi eget mauris facilisis, a accumsan erat feugiat. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque maximus mauris nulla."
+      ]
+
+    bannerTitle :: Array JSX
+    bannerTitle =
+      [ subsectionHeader_ "Lorem ipsum dolor sit amet"
       ]
 
     bannerIcon :: Array JSX

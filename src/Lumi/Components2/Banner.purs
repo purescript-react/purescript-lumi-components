@@ -41,6 +41,7 @@ type BannerProps =
   ( component :: Banner
   , dismissable :: Boolean
   , icon :: Array JSX
+  , title :: Array JSX
   , content :: Array JSX
   )
 
@@ -67,10 +68,26 @@ banner =
                     $ _ { content = props.icon
                         }
                 , lumiElement box
-                  $ S._align S.Stretch
-                  $ S.onDesktop (S._row >>> S._align S.Center)
+                  $ S._column
                   $ S._flex
-                  $ _ { content = props.content }
+                  $ _ { content =
+                          [ Monoid.guard (not Array.null props.title)
+                              $ lumiElement box
+                              $ S._alignSelf S.Start
+                              $ styleModifier_
+                                  ( css
+                                    { marginBottom: int 8
+                                    }
+                                  )
+                              $ _ { content = props.title
+                                  }
+                          , lumiElement box
+                            $ S._align S.Stretch
+                            $ S.onDesktop (S._row >>> S._align S.Center)
+                            $ S._flex
+                            $ _ { content = props.content }
+                          ]
+                      }
                 , Monoid.guard props.dismissable
                     $ lumiElement box
                     $ S._alignSelf S.Start
@@ -90,6 +107,7 @@ banner =
     defaults :: Record BannerProps
     defaults =
       { component: Banner
+      , title: []
       , content: []
       , dismissable: false
       , icon: []
@@ -114,7 +132,19 @@ actionBanner actions f =
         [ lumiElement box
           $ S._column
           $ S._flex
-          $ S.onDesktop (S._row >>> S._align S.Center)
+          $ S.onDesktop (S._row)
+          $ styleModifier_
+              ( fold
+                  [ css
+                      { alignItems: str "flex-end"
+                      }
+                  , desktopQuery $ css
+                      { alignItems: if (not Array.null props.title)
+                          then str "flex-end"
+                          else str "center"
+                      }
+                  ]
+              )
           $ _ { content =
                   [ lumiElement box
                     $ S._flex
