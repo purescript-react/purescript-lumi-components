@@ -13,6 +13,7 @@ module Lumi.Components2.Banner
 import Prelude
 
 import Color (lighten)
+import Data.Array as Array
 import Data.Foldable (fold)
 import Data.Monoid as Monoid
 import Data.Tuple.Nested ((/\))
@@ -21,7 +22,7 @@ import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, lumiElement
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
-import Lumi.Styles (color, css, nested, prop, str, styleModifier, styleModifier_)
+import Lumi.Styles (color, css, int, nested, prop, str, styleModifier, styleModifier_)
 import Lumi.Styles.Banner (banner) as S
 import Lumi.Styles.Border (_listSpaced, _listCompact) as Styles.Banner
 import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _flex, _interactive, _justify, _row) as S
@@ -39,6 +40,7 @@ data Banner = Banner
 type BannerProps =
   ( component :: Banner
   , dismissable :: Boolean
+  , icon :: Array JSX
   , content :: Array JSX
   )
 
@@ -55,7 +57,16 @@ banner =
         $ S.banner
         $ _ { className = props.className
             , content =
-                [ lumiElement box
+                [ Monoid.guard (not Array.null props.icon)
+                    $ lumiElement box
+                    $ styleModifier_
+                        ( css
+                          { marginRight: int 16
+                          }
+                        )
+                    $ _ { content = props.icon
+                        }
+                , lumiElement box
                   $ S._align S.Stretch
                   $ S.onDesktop (S._row >>> S._align S.Center)
                   $ S._flex
@@ -81,6 +92,7 @@ banner =
       { component: Banner
       , content: []
       , dismissable: false
+      , icon: []
       }
 
     dismissButtonStyle :: forall props. PropsModifier props
@@ -114,12 +126,14 @@ actionBanner actions f =
                     $ styleModifier_
                         ( fold
                             [ css
-                                { margin: str "8px 0 0"
+                                { margin: str "16px 0 0"
                                 , "& :not(:first-child)": nested $ css
                                     { marginLeft: prop S8
                                     }
                                 }
-                            , desktopQuery $ css { margin: str "0 0 0 8px" }
+                            , desktopQuery $ css
+                                { margin: str "0 0 0 40px"
+                                }
                             ]
                         )
                     $ _ { content = actions }

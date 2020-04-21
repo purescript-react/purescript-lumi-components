@@ -21,9 +21,9 @@ banner =
           [ css
               { backgroundColor: color colors.black4
               , color: color colors.black
-              , padding: str "12px 16px"
+              , padding: str "16px"
               }
           , desktopQuery $ css
-              { padding: str "12px 24px"
+              { padding: str "16px 24px"
               }
           ]
