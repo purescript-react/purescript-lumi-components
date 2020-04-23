@@ -36,7 +36,7 @@ pagination = makeStateless (createComponent "Pagination") render
       let
         boundedPage = clamp 0 (props.pages - 1) props.currentPage
         rangeMin = max 0 (boundedPage - (props.focusWindow / 2))
-        rangeMax = min (props.pages - 1) (boundedPage + (props.focusWindow / 2))
+        rangeMax = max 0 $ min (props.pages - 1) (boundedPage + (props.focusWindow / 2))
 
         prevButton =
           keyed "prev" $ R.li_
