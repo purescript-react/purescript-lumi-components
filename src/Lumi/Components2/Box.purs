@@ -1,6 +1,7 @@
 module Lumi.Components2.Box where
 
 import Prelude
+
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles (toCSS)
@@ -25,3 +26,9 @@ box =
             , className: props.className
             , css: toCSS theme props Styles.Box.box
             }
+
+row :: LumiComponent BoxProps
+row = box <<< Styles.Box._row
+
+column :: LumiComponent BoxProps
+column = box <<< Styles.Box._column

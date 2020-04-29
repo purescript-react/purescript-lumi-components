@@ -4,7 +4,6 @@ import Prelude
 import Data.Foldable (traverse_)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (lumiElement)
 import Lumi.Components.Example (example)
 import Lumi.Components.Input as Input
 import Lumi.Components.Spacing (Space(..), vspace)
@@ -28,7 +27,7 @@ docs =
         component "QRCodeExample" \_ -> React.do
           value /\ setValue <- useState "https://www.lumi.com"
           pure
-            $ lumiElement box
+            $ box
                 _
                   { content =
                     [ Input.input
@@ -48,11 +47,11 @@ qrcodeExample =
     component "QRCode" \props -> React.do
       { qrcode, url } <- useQRCode ECLLow props.value
       pure
-        $ lumiElement box
+        $ box
         <<< Box._align Center
         $ _
             { content =
-              [ lumiElement qrcode
+              [ qrcode
                   <<< Border.border
                   >>> Border._round
                   >>> S.styleModifier_
@@ -63,7 +62,7 @@ qrcodeExample =
                       )
                   $ identity
               , vspace S8
-              , lumiElement link
+              , link
                   _
                     { href = fromMaybe (URL "") url
                     , download = Just "qrcode.svg"

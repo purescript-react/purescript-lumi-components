@@ -1,6 +1,7 @@
 module Lumi.Components2.Clip where
 
 import Prelude
+
 import Data.Foldable (for_)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype)
@@ -12,7 +13,7 @@ import Effect.Class (liftEffect)
 import Effect.Console as Console
 import Effect.Uncurried (EffectFn1, EffectFn3, mkEffectFn1, runEffectFn3)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent, lumiElement)
+import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Button (_linkStyle, button)
@@ -42,7 +43,7 @@ clip =
       { copied, copy } <- useClip ref
       let
         copyButton =
-          lumiElement button
+          button
             $ _linkStyle
             $ styleModifier_
                 ( E.merge
@@ -75,7 +76,7 @@ clip =
                   , ref
                   , children: props.content
                   }
-              , lumiElement box
+              , box
                   $ _justify Center
                   $ _ { content = [ copyButton ] }
               ]
