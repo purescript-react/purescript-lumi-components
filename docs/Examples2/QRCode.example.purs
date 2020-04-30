@@ -54,7 +54,7 @@ qrcodeExample =
               [ qrcode
                   <<< Border.border
                   >>> Border._round
-                  >>> S.styleModifier_
+                  >>> S.style_
                       ( S.css
                           { padding: S.int 16
                           , width: S.int 140

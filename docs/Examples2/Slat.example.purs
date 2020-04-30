@@ -6,7 +6,7 @@ import Data.Array (intercalate, replicate)
 import Data.Maybe (Maybe(..))
 import Data.Nullable as Nullable
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, PropsModifier, lumiComponent)
+import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Components.Example (example)
 import Lumi.Components.Lockup (userLockup)
 import Lumi.Components.Spacing (Space(..), vspace)
@@ -15,7 +15,7 @@ import Lumi.Components.Text (h2_, p_)
 import Lumi.Components.Text as Text
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Slat as Slat
-import Lumi.Styles (StyleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, style_)
 import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic (JSX, fragment)
@@ -112,11 +112,11 @@ docs =
       ]
 
 slatExWidth :: StyleModifier
-slatExWidth = styleModifier_ $ E.css { maxWidth: E.int 500, width: E.str "100%" }
+slatExWidth = style_ $ E.css { maxWidth: E.int 500, width: E.str "100%" }
 
 slatColumn :: Int -> StyleModifier
 slatColumn flexGrow =
-  styleModifier_
+  style_
     $ E.css
     $ { flexGrow: E.int flexGrow
       , "&:not(:first-child)":
@@ -134,7 +134,7 @@ labeledInfo =
       theme@(LumiTheme { colorNames }) <- useTheme
       pure
         $ box
-        $ styleModifier_ (E.css { label: E.str "labeledInfo" })
+        $ style_ (E.css { label: E.str "labeledInfo" })
         $ _
             { css = css
             , className = className

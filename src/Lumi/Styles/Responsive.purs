@@ -2,7 +2,7 @@ module Lumi.Styles.Responsive where
 
 import Prelude
 
-import Lumi.Styles (Style, StyleModifier, css, nested, styleModifier)
+import Lumi.Styles (Style, StyleModifier, css, nested, style)
 
 -- | Create a style modifier that, only in a desktop-sized screen, applies the
 -- | styles accumulated in the modifier passed in as argument.
@@ -12,7 +12,7 @@ import Lumi.Styles (Style, StyleModifier, css, nested, styleModifier)
 -- | modifiers.
 onDesktop :: StyleModifier -> StyleModifier
 onDesktop m =
-  styleModifier \theme ->
+  style \theme ->
     desktopQuery
       $ (m identity { className: "", css: mempty }).css
       $ theme

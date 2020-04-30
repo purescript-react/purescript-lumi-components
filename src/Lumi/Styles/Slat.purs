@@ -5,7 +5,7 @@ module Lumi.Styles.Slat
 
 import Prelude
 
-import Lumi.Styles (StyleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, style_)
 import Lumi.Styles.Box (FlexAlign(..), _align, _justify, _row)
 import Lumi.Styles.Border (border)
 import Lumi.Styles.Border hiding (border) as Border
@@ -17,7 +17,7 @@ slat =
     >>> _row
     >>> _align Center
     >>> _justify SpaceBetween
-    >>> styleModifier_
+    >>> style_
         ( css
             { label: str "slat"
             , flex: str "0 0 content"
