@@ -34,7 +34,7 @@ button ::
 button colo kind state size = case kind of
   Primary ->
     buttonStyle
-      >>> styleModifier \theme@(LumiTheme { colors }) ->
+      <<< styleModifier \theme@(LumiTheme { colors }) ->
           let
             { hue, hueDarker, hueDarkest, hueDisabled, white } =
               makeColorShades
@@ -79,7 +79,7 @@ button colo kind state size = case kind of
                   ]
   Secondary ->
     buttonStyle
-      >>> styleModifier \theme@(LumiTheme { colors }) ->
+      <<< styleModifier \theme@(LumiTheme { colors }) ->
           let
             { hueDarker, hueDarkest, grey1, grey2, white, black } =
               makeColorShades
@@ -126,7 +126,7 @@ button colo kind state size = case kind of
                   ]
   Link ->
     Link.link
-      >>> styleModifier \(LumiTheme { colors }) ->
+      <<< styleModifier \(LumiTheme { colors }) ->
           let
             { hueDisabled } =
               makeColorShades
@@ -163,14 +163,14 @@ button colo kind state size = case kind of
   where
   buttonStyle =
     box
-      >>> _row
-      >>> _align Center
-      >>> _justify Center
-      >>> case state of
+      <<< _row
+      <<< _align Center
+      <<< _justify Center
+      <<< case state of
           Disabled -> identity
           Loading -> identity
-          Enabled -> _interactive >>> _focusable
-      >>> styleModifier_
+          Enabled -> _interactive <<< _focusable
+      <<< styleModifier_
           ( css
               { label: str "button"
               , appearance: none
@@ -274,9 +274,9 @@ button colo kind state size = case kind of
 buttonGroup :: forall props. Boolean -> PropsModifier props
 buttonGroup joined =
   box
-    >>> _row
-    >>> styleModifier_ (css { label: str "buttonGroup" })
-    >>> styleModifier_
+    <<< _row
+    <<< styleModifier_ (css { label: str "buttonGroup" })
+    <<< styleModifier_
         if not joined then
           css
             { label: str "notJoined"

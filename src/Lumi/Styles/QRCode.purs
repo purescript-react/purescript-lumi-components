@@ -9,7 +9,7 @@ import React.Basic.Emotion (css, str)
 qrcode :: forall props. PropsModifier props
 qrcode =
   box
-    >>> styleModifier_
+    <<< styleModifier_
         ( css
             { label: str "qrcode"
             }
