@@ -72,11 +72,11 @@ slat =
 
   slatStyle =
     Styles.Slat.Hidden.slat
-      >>> style_ (E.css { appearance: E.none })
+      <<< style_ (E.css { appearance: E.none })
 
   slatStyleInteractive =
     slatStyle
-      >>> Styles.Slat.Hidden._interactive
+      <<< Styles.Slat.Hidden._interactive
 
 _interactive :: SlatInteraction -> PropsModifier SlatProps
 _interactive interaction =
@@ -91,7 +91,7 @@ _interactiveBackground interaction =
     _
       { interaction = Just interaction
       }
-    >>> style \(LumiTheme theme) ->
+    <<< style \(LumiTheme theme) ->
         E.css
           { "&:hover":
             E.nested

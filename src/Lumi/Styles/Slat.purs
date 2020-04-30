@@ -14,10 +14,10 @@ import React.Basic.Emotion (css, str, unset)
 slat :: StyleModifier
 slat =
   border
-    >>> _row
-    >>> _align Center
-    >>> _justify SpaceBetween
-    >>> style_
+    <<< _row
+    <<< _align Center
+    <<< _justify SpaceBetween
+    <<< style_
         ( css
             { label: str "slat"
             , flex: str "0 0 content"

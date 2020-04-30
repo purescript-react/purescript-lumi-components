@@ -12,7 +12,7 @@ import React.Basic.Emotion (color, css, int, nested, none, prop, str)
 border :: StyleModifier
 border =
   box
-    >>> style \(LumiTheme theme) ->
+    <<< style \(LumiTheme theme) ->
       css
         { label: str "border"
         , borderWidth: int 1
@@ -43,8 +43,8 @@ _topBottom =
 _interactive :: StyleModifier
 _interactive =
   Box._interactive
-    >>> Box._focusable
-    >>> style \(LumiTheme theme) ->
+    <<< Box._focusable
+    <<< style \(LumiTheme theme) ->
         css
           { "&:hover":
             nested
