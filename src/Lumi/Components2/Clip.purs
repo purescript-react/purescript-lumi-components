@@ -72,7 +72,7 @@ clip =
                   , css:
                     toCSS theme props
                       $ Styles.Box.box
-                      >>> Styles.Box._justify Center
+                      <<< Styles.Box._justify Center
                   , ref
                   , children: props.content
                   }

@@ -15,10 +15,10 @@ import React.Basic.Emotion (css, str, unset)
 slat :: forall props. PropsModifier props
 slat =
   border
-    >>> _row
-    >>> _align Center
-    >>> _justify SpaceBetween
-    >>> styleModifier_
+    <<< _row
+    <<< _align Center
+    <<< _justify SpaceBetween
+    <<< styleModifier_
         ( css
             { label: str "slat"
             , flex: str "0 0 content"

@@ -40,8 +40,14 @@ type PropsModifier props
     (LumiProps props -> LumiProps props)
 
 -- | Lift a `props -> props` function for composition with other `PropsModifier` functions.
+-- |
+-- | NOTE: The composition of `PropsModifier`s should be read like that of an
+-- | optic, that is, from left to right. As an example, if you have props
+-- | modifiers `a` and `b`, where both modify the same property, their
+-- | composition `a <<< b` favours the modifications in `b`, as it first applies
+-- | `a`, and then `b`.
 propsModifier :: forall props. (LumiProps props -> LumiProps props) -> PropsModifier props
-propsModifier = (>>>)
+propsModifier = (<<<)
 
 -- | Create a `LumiComponent` from a name, set of defaults, and a render function.
 -- | The render function behaves the same as in the [hooks API](https://github.com/spicydonuts/purescript-react-basic-hooks/blob/master/examples/counter/src/Counter.purs#L12).

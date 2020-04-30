@@ -10,7 +10,7 @@ import React.Basic.Emotion (css)
 link :: forall props. PropsModifier props
 link =
   box
-    >>> styleModifier \(LumiTheme theme) ->
+    <<< styleModifier \(LumiTheme theme) ->
         css
           { color: color theme.colors.primary
           , textDecoration: none

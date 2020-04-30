@@ -48,13 +48,13 @@ qrcodeExample =
       { qrcode, url } <- useQRCode ECLLow props.value
       pure
         $ box
-        <<< Box._align Center
+        $ Box._align Center
         $ _
             { content =
               [ qrcode
-                  <<< Border.border
-                  >>> Border._round
-                  >>> S.styleModifier_
+                  $ Border.border
+                  $ Border._round
+                  $ S.styleModifier_
                       ( S.css
                           { padding: S.int 16
                           , width: S.int 140
