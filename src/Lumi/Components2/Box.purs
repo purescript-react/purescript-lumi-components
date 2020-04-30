@@ -24,7 +24,7 @@ box =
         $ E.element R.div'
             { children: props.content
             , className: props.className
-            , css: toCSS theme props Styles.Box.box
+            , css: theme # toCSS Styles.Box.box <> props.css
             }
 
 row :: LumiComponent BoxProps

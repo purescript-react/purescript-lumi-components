@@ -43,13 +43,13 @@ slat =
       pure case props.interaction of
         Nothing ->
           E.element R.div'
-            { css: toCSS theme props slatStyle
+            { css: theme # toCSS slatStyle <> props.css
             , children: props.content
             , className
             }
         Just interaction@{ href: Nothing } ->
           E.element R.button'
-            { css: toCSS theme props slatStyleInteractive
+            { css: theme # toCSS slatStyleInteractive <> props.css
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
@@ -57,7 +57,7 @@ slat =
             }
         Just interaction@{ href: Just href } ->
           E.element R.a'
-            { css: toCSS theme props slatStyleInteractive
+            { css: theme # toCSS slatStyleInteractive <> props.css
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex

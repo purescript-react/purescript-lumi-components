@@ -50,7 +50,7 @@ link =
       theme <- useTheme
       pure
         $ lumiAnchorElement
-            { css: toCSS theme props Styles.Link.link
+            { css: theme # toCSS Styles.Link.link <> props.css
             , children: props.content
             , className
             , href: un URL props.href

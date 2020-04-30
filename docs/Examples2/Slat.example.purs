@@ -15,7 +15,7 @@ import Lumi.Components.Text (h2_, p_)
 import Lumi.Components.Text as Text
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Slat as Slat
-import Lumi.Styles (styleModifier_)
+import Lumi.Styles (StyleModifier, styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic (JSX, fragment)
@@ -111,10 +111,10 @@ docs =
           $ _ { content = exampleSlatContent }
       ]
 
-slatExWidth :: forall props. PropsModifier props
+slatExWidth :: StyleModifier
 slatExWidth = styleModifier_ $ E.css { maxWidth: E.int 500, width: E.str "100%" }
 
-slatColumn :: forall props. Int -> PropsModifier props
+slatColumn :: Int -> StyleModifier
 slatColumn flexGrow =
   styleModifier_
     $ E.css

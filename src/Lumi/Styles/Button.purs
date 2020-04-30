@@ -4,10 +4,9 @@ import Prelude
 import Color (Color, darken, desaturate, lighten)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe, fromMaybe)
-import Lumi.Components (PropsModifier)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.ZIndex (ziButtonGroup)
-import Lumi.Styles (merge, none, styleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, merge, none, styleModifier, styleModifier_)
 import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
 import Lumi.Styles.Link as Link
 import Lumi.Styles.Loader (mkLoader, spin)
@@ -25,12 +24,11 @@ data ButtonState
   | Loading
 
 button ::
-  forall props.
   Maybe Color ->
   ButtonKind ->
   ButtonState ->
   Size ->
-  PropsModifier props
+  StyleModifier
 button colo kind state size = case kind of
   Primary ->
     buttonStyle
@@ -271,7 +269,7 @@ button colo kind state size = case kind of
     in
       { hue, hueDarker, hueDarkest, hueDisabled, grey1, grey2, white, black }
 
-buttonGroup :: forall props. Boolean -> PropsModifier props
+buttonGroup :: Boolean -> StyleModifier
 buttonGroup joined =
   box
     >>> _row

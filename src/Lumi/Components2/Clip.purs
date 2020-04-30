@@ -65,14 +65,14 @@ clip =
       pure
         $ E.element R.div'
             { className: props.className
-            , css: toCSS theme props Styles.Clip.clip
+            , css: theme # toCSS Styles.Clip.clip <> props.css
             , children:
               [ E.element R.div'
                   { className: ""
                   , css:
-                    toCSS theme props
-                      $ Styles.Box.box
-                      >>> Styles.Box._justify Center
+                    theme
+                      # toCSS (Styles.Box.box >>> Styles.Box._justify Center)
+                      <> props.css
                   , ref
                   , children: props.content
                   }
