@@ -68,7 +68,7 @@ button =
           , children
           , className: props.className
           , css:
-            toCSS theme props (Styles.Button.button props.color props.kind props.state props.size)
+            theme # toCSS (Styles.Button.button props.color props.kind props.state props.size) <> props.css
           , onClick: handler_ props.onPress
           , type: props.type
           , disabled:

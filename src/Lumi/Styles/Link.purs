@@ -1,16 +1,15 @@
 module Lumi.Styles.Link where
 
 import Prelude
-import Lumi.Components (PropsModifier)
-import Lumi.Styles (color, nested, none, str, styleModifier)
+import Lumi.Styles (StyleModifier, color, nested, none, str, style)
 import Lumi.Styles.Box (box)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (css)
 
-link :: forall props. PropsModifier props
+link :: StyleModifier
 link =
   box
-    >>> styleModifier \(LumiTheme theme) ->
+    <<< style \(LumiTheme theme) ->
         css
           { color: color theme.colors.primary
           , textDecoration: none

@@ -1,14 +1,13 @@
 module Lumi.Styles.Loader where
 
 import Prelude
-import Lumi.Components (PropsModifier)
-import Lumi.Styles (Style, color, css, merge, str, styleModifier)
+import Lumi.Styles (Style, StyleModifier, color, css, merge, str, style)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (nested)
 
-loader :: forall props. PropsModifier props
+loader :: StyleModifier
 loader =
-  styleModifier \theme ->
+  style \theme ->
     ( merge
         [ mkLoader theme { radius: "38px", borderWidth: "5px" }
         , spin

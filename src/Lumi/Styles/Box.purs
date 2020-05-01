@@ -2,14 +2,13 @@ module Lumi.Styles.Box where
 
 import Prelude
 import Color (cssStringHSLA)
-import Lumi.Components (PropsModifier)
-import Lumi.Styles (int, styleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, int, style, style_)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (class IsStyleProperty, css, nested, prop, str)
 
-box :: forall props. PropsModifier props
+box :: StyleModifier
 box =
-  styleModifier_
+  style_
     $ css
         { label: str "box"
         , display: str "flex"
@@ -22,19 +21,19 @@ box =
         , padding: int 0
         }
 
-_row :: forall props. PropsModifier props
+_row :: StyleModifier
 _row =
-  styleModifier_
+  style_
     $ css { flexDirection: str "row" }
 
-_column :: forall props. PropsModifier props
+_column :: StyleModifier
 _column =
-  styleModifier_
+  style_
     $ css { flexDirection: str "column" }
 
-_wrap :: forall props. PropsModifier props
+_wrap :: StyleModifier
 _wrap =
-  styleModifier_
+  style_
     $ css { flexWrap: str "wrap" }
 
 data FlexAlign
@@ -59,27 +58,27 @@ instance isStylePropertyFlexAlign :: IsStyleProperty FlexAlign where
       SpaceBetween -> "space-between"
       SpaceEvenly -> "space-evenly"
 
-_justify :: forall props. FlexAlign -> PropsModifier props
-_justify a = styleModifier_ $ css { justifyContent: prop a }
+_justify :: FlexAlign -> StyleModifier
+_justify a = style_ $ css { justifyContent: prop a }
 
-_align :: forall props. FlexAlign -> PropsModifier props
-_align a = styleModifier_ $ css { alignItems: prop a }
+_align :: FlexAlign -> StyleModifier
+_align a = style_ $ css { alignItems: prop a }
 
-_alignSelf :: forall props. FlexAlign -> PropsModifier props
-_alignSelf a = styleModifier_ $ css { alignSelf: prop a }
+_alignSelf :: FlexAlign -> StyleModifier
+_alignSelf a = style_ $ css { alignSelf: prop a }
 
-_interactive :: forall props. PropsModifier props
+_interactive :: StyleModifier
 _interactive =
-  styleModifier_
+  style_
     $ css
     $ { touchAction: str "manipulation"
       , userSelect: str "none"
       , cursor: str "pointer"
       }
 
-_focusable :: forall props. PropsModifier props
+_focusable :: StyleModifier
 _focusable =
-  styleModifier \(LumiTheme theme) ->
+  style \(LumiTheme theme) ->
     css
       { "&:focus, &:active":
         nested

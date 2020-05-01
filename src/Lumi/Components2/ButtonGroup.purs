@@ -26,5 +26,5 @@ buttonGroup =
         $ E.element R.div'
             { className: props.className
             , children: props.content
-            , css: toCSS theme props (Styles.Button.buttonGroup props.joined)
+            , css: theme # toCSS (Styles.Button.buttonGroup props.joined) <> props.css
             }

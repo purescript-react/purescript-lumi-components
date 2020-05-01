@@ -72,7 +72,7 @@ useQRCode level value =
                       ]
                   , ref
                   , className: props.className
-                  , css: toCSS theme props Styles.QRCode.qrcode
+                  , css: theme # toCSS Styles.QRCode.qrcode <> props.css
                   }
     url /\ setUrl <- useState Nothing
     useEffect (UnsafeReference qrcode) do
