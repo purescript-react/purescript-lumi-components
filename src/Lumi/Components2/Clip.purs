@@ -71,7 +71,7 @@ clip =
                   { className: ""
                   , css:
                     theme
-                      # toCSS (Styles.Box.box >>> Styles.Box._justify Center)
+                      # toCSS (Styles.Box.box <<< Styles.Box._justify Center)
                       <> props.css
                   , ref
                   , children: props.content

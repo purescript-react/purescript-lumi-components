@@ -8,7 +8,7 @@ import React.Basic.Emotion (css, str)
 qrcode :: StyleModifier
 qrcode =
   box
-    >>> style_
+    <<< style_
         ( css
             { label: str "qrcode"
             }

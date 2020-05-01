@@ -15,7 +15,7 @@ type StyleModifier = forall props. PropsModifier props
 
 -- | Lift a themed set of styles into a `StyleModifier` for composition with other modifiers.
 style :: (LumiTheme -> Emotion.Style) -> StyleModifier
-style f = propsModifier \props -> props { css = f <> props.css }
+style f = propsModifier \props -> props { css = props.css <> f }
 
 -- | Lift a static set of styles into a `StyleModifier` for composition with other modifiers.
 style_ :: Emotion.Style -> StyleModifier

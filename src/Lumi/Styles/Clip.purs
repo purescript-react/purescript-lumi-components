@@ -10,10 +10,10 @@ import React.Basic.Emotion (color, css)
 clip :: StyleModifier
 clip =
   border
-    >>> _round
-    >>> _row
-    >>> _justify SpaceBetween
-    >>> style \(LumiTheme { colors }) ->
+    <<< _round
+    <<< _row
+    <<< _justify SpaceBetween
+    <<< style \(LumiTheme { colors }) ->
         css
           { borderColor: color colors.black5
           , backgroundColor: color colors.black5
