@@ -10,7 +10,6 @@ import Lumi.Styles.Theme (useTheme)
 import React.Basic (JSX)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
-import React.Basic.Events (EventHandler, handler_)
 import React.Basic.Hooks as React
 
 type BoxProps
