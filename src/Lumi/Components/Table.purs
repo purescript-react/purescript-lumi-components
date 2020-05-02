@@ -22,7 +22,6 @@ import Data.String (contains, joinWith, Pattern(..))
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn1, runEffectFn2)
 import JSS (JSS, jss)
-import Lumi.Components (lumiElement)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Icon (IconType(ArrowUp, ArrowDown), icon_)
 import Lumi.Components.Input (CheckboxState(..), checkbox, input)
@@ -266,7 +265,7 @@ table = make component
             else self.props.columns
       in
         renderLumiTable self columns \tableRef ->
-          [ lumiElement scrollObserver _
+          [ scrollObserver _
               { node = Nullable.notNull tableRef
               , render = \{ hasScrolledY, hasScrolledX } ->
                   R.table

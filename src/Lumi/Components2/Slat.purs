@@ -13,9 +13,9 @@ import Data.Newtype (un)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
-import Lumi.Styles (styleModifier, styleModifier_, toCSS)
+import Lumi.Styles (style, style_, toCSS)
 import Lumi.Styles.Slat (_interactive, slat) as Styles.Slat.Hidden
-import Lumi.Styles.Slat hiding (_interactive, slat) as Styles.Slat
+import Lumi.Styles.Slat hiding (_interactive,slat) as Styles.Slat
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_)
@@ -37,19 +37,19 @@ type SlatInteraction
 
 slat :: LumiComponent SlatProps
 slat =
-  unsafePerformEffect do
+  unsafePerformEffect do 
     lumiComponent "Slat" defaults \props@{ className } -> React.do
       theme <- useTheme
       pure case props.interaction of
         Nothing ->
           E.element R.div'
-            { css: toCSS theme props slatStyle
+            { css: theme # toCSS slatStyle <> props.css
             , children: props.content
             , className
             }
         Just interaction@{ href: Nothing } ->
           E.element R.button'
-            { css: toCSS theme props slatStyleInteractive
+            { css: theme # toCSS slatStyleInteractive <> props.css
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
@@ -57,7 +57,7 @@ slat =
             }
         Just interaction@{ href: Just href } ->
           E.element R.a'
-            { css: toCSS theme props slatStyleInteractive
+            { css: theme # toCSS slatStyleInteractive <> props.css
             , children: props.content
             , onClick: capture_ interaction.onClick
             , tabIndex: interaction.tabIndex
@@ -72,11 +72,11 @@ slat =
 
   slatStyle =
     Styles.Slat.Hidden.slat
-      >>> styleModifier_ (E.css { appearance: E.none })
+      <<< style_ (E.css { appearance: E.none })
 
   slatStyleInteractive =
     slatStyle
-      >>> Styles.Slat.Hidden._interactive
+      <<< Styles.Slat.Hidden._interactive
 
 _interactive :: SlatInteraction -> PropsModifier SlatProps
 _interactive interaction =
@@ -91,7 +91,7 @@ _interactiveBackground interaction =
     _
       { interaction = Just interaction
       }
-    >>> styleModifier \(LumiTheme theme) ->
+    <<< style \(LumiTheme theme) ->
         E.css
           { "&:hover":
             E.nested

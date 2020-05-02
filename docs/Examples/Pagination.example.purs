@@ -40,6 +40,14 @@ docs = unit # make (createComponent "PaginationExample")
         , example
           $ pagination defaults
               { currentPage = self.state.currentPage
+              , pages = 0
+              , onChange = self.setState <<< flip _{ currentPage = _ }
+              , details = Just $ R.text "0 results"
+              }
+
+        , example
+          $ pagination defaults
+              { currentPage = self.state.currentPage
               , pages = 40
               , onChange = self.setState <<< flip _{ currentPage = _ }
               , focusWindow = 4

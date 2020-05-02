@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Foldable (fold)
 import Lumi.Components (PropsModifier)
-import Lumi.Styles (color, css, str, styleModifier)
+import Lumi.Styles (color, css, str, style)
 import Lumi.Styles.Border (_round) as S
 import Lumi.Styles.Box (FlexAlign(..), _align, _row, box) as S
 import Lumi.Styles.Responsive (desktopQuery)
@@ -13,10 +13,10 @@ import Lumi.Styles.Theme (LumiTheme(..))
 banner :: forall props. PropsModifier props
 banner =
   S.box
-  >>> S._row
-  >>> S._align S.Center
-  >>> S._round
-  >>> styleModifier \(LumiTheme { colors }) ->
+  <<< S._row
+  <<< S._align S.Center
+  <<< S._round
+  <<< style \(LumiTheme { colors }) ->
         fold
           [ css
               { backgroundColor: color colors.black4

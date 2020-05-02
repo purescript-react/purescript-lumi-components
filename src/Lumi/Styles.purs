@@ -1,41 +1,41 @@
 module Lumi.Styles
-  ( styleModifier
-  , styleModifier_
+  ( StyleModifier
+  , style
+  , style_
   , toCSS
   , module Emotion
   ) where
 
 import Prelude
 
-import Lumi.Components (PropsModifier, LumiProps, propsModifier)
+import Data.Foldable (fold)
+import Lumi.Components (PropsModifier, propsModifier)
 import Lumi.Styles.Theme (LumiTheme)
-import React.Basic.Emotion hiding (element) as Emotion
+import React.Basic.Emotion hiding (element,style) as Emotion
 
--- | Lift a themed set of styles into a `PropsModifier` for composition with other modifiers.
--- |
--- | Note: A style modifier should generally leave the `props` type unconstrained and take
--- |   configuration as regular arguments instead. Adding constraints to `props` makes it
--- |   difficult to compose style and prop modifiers together across different components,
--- |   where the same field name could mean different things.
-styleModifier :: forall props. (LumiTheme -> Emotion.Style) -> PropsModifier props
-styleModifier f = propsModifier \props -> props { css = f <> props.css }
+type StyleModifier = forall props. PropsModifier props
 
--- | Lift a static set of styles into a `PropsModifier` for composition with other modifiers.
--- |
--- | Note: A style modifier should generally leave the `props` type unconstrained and take
--- |   configuration as regular arguments instead. Adding constraints to `props` makes it
--- |   difficult to compose style and prop modifiers together across different components,
--- |   where the same field name could mean different things.
-styleModifier_ :: forall props. Emotion.Style -> PropsModifier props
-styleModifier_ = styleModifier <<< const
+-- | Lift a themed set of styles into a `StyleModifier` for composition with other modifiers.
+style :: (LumiTheme -> Emotion.Style) -> StyleModifier
+style f = propsModifier \props -> props { css = props.css <> f }
+
+-- | Lift a static set of styles into a `StyleModifier` for composition with other modifiers.
+style_ :: Emotion.Style -> StyleModifier
+style_ = style <<< const
+
+-- | Lift an array of themed styles into a `StyleModifier` for composition with other modifiers.
+styles :: Array (LumiTheme -> Emotion.Style) -> StyleModifier
+styles = style <<< fold
+
+-- | Lift an array of static styles into a `StyleModifier` for composition with other modifiers.
+styles_ :: Array Emotion.Style -> StyleModifier
+styles_ = style_ <<< fold
 
 -- | Flatten a `PropsModifier` and extract the Emotion styles for use with `React.Basic.Emotion.element`.
 -- | This function is mainly used inside component implementations where the `LumiComponent` boundary
 -- | gives way to DOM components or other `ReactComponent`s.
 toCSS ::
-  forall props.
+  PropsModifier () ->
   LumiTheme ->
-  LumiProps props ->
-  PropsModifier props ->
   Emotion.Style
-toCSS theme props m = (m identity props).css theme
+toCSS m = (m identity { className: "", css: mempty }).css

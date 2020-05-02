@@ -18,14 +18,14 @@ import Data.Foldable (fold)
 import Data.Monoid as Monoid
 import Data.Tuple.Nested ((/\))
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, lumiElement)
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent)
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
-import Lumi.Styles (color, css, int, nested, prop, str, styleModifier, styleModifier_)
+import Lumi.Styles (color, css, int, nested, prop, str, style, style_)
 import Lumi.Styles.Banner (banner) as S
 import Lumi.Styles.Border (_listSpaced, _listCompact) as Styles.Banner
-import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _flex, _interactive, _justify, _row) as S
+import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _interactive, _justify, _row) as S
 import Lumi.Styles.Responsive (desktopQuery)
 import Lumi.Styles.Responsive (onDesktop) as S
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
@@ -53,45 +53,51 @@ banner =
       visible /\ setVisible <- useState true
       pure
         $ Monoid.guard visible
-        $ lumiElement box
-        $ styleModifier props.css
+        $ box
+        $ style props.css
         $ S.banner
         $ _ { className = props.className
             , content =
                 [ Monoid.guard (not Array.null props.icon)
-                    $ lumiElement box
-                    $ styleModifier_
+                    $ box
+                    $ style_
                         ( css
                           { marginRight: int 16
                           }
                         )
                     $ _ { content = props.icon
                         }
-                , lumiElement box
+                , box
                   $ S._column
-                  $ S._flex
+                  $ style_
+                      ( css
+                        { flex: str "1" }
+                      )
                   $ _ { content =
                           [ Monoid.guard (not Array.null props.title)
-                              $ lumiElement box
+                              $ box
                               $ S._alignSelf S.Start
-                              $ styleModifier_
+                              $ style_
                                   ( css
                                     { marginBottom: int 8
                                     }
                                   )
                               $ _ { content = props.title
                                   }
-                          , lumiElement box
+                          , box
                             $ S._align S.Stretch
                             $ S.onDesktop (S._row >>> S._align S.Center)
-                            $ S._flex
+                            $ style_
+                                ( css
+                                  { flex: str "1" }
+                                )
                             $ _ { content = props.content }
                           ]
                       }
                 , Monoid.guard props.dismissable
-                    $ lumiElement box
+                    $ box
                     $ S._alignSelf S.Start
-                    $ S.onDesktop (S._alignSelf S.Center)
+                    -- $ S.onDesktop (S._alignSelf S.Center)
                     $ dismissButtonStyle
                     $ _ { content =
                             [ Icon.icon
@@ -99,7 +105,7 @@ banner =
                                 , type_: Icon.Remove
                                 }
                             ]
-                        , onClick = capture_ $ setVisible \_ -> false
+                        -- , onClick = capture_ $ setVisible \_ -> false
                         }
                 ]
             }
@@ -116,7 +122,7 @@ banner =
     dismissButtonStyle :: forall props. PropsModifier props
     dismissButtonStyle =
       S._interactive
-      >>> styleModifier \(LumiTheme { colors }) ->
+      <<< style \(LumiTheme { colors }) ->
             css
               { padding: str "8px"
               , margin: str "0 -8px 0 8px"
@@ -129,11 +135,14 @@ actionBanner :: Array JSX -> PropsModifier BannerProps
 actionBanner actions f =
   f >>> \props -> props
     { content =
-        [ lumiElement box
+        [ box
           $ S._column
-          $ S._flex
+          $ style_
+              ( css
+                { flex: str "1" }
+              )
           $ S.onDesktop (S._row)
-          $ styleModifier_
+          $ style_
               ( fold
                   [ css
                       { alignItems: str "flex-end"
@@ -146,14 +155,17 @@ actionBanner actions f =
                   ]
               )
           $ _ { content =
-                  [ lumiElement box
-                    $ S._flex
+                  [ box
+                    $ style_
+                        ( css
+                          { flex: str "1" }
+                        )
                     $ _ { content = props.content }
-                  , lumiElement box
+                  , box
                     $ S._row
                     $ S._align S.Center
                     $ S._justify S.End
-                    $ styleModifier_
+                    $ style_
                         ( fold
                             [ css
                                 { margin: str "16px 0 0"
@@ -174,28 +186,28 @@ actionBanner actions f =
 
 primary :: forall props. PropsModifier (component :: Banner | props)
 primary =
-  styleModifier \(LumiTheme { colors }) ->
+  style \(LumiTheme { colors }) ->
     css
       { backgroundColor: color colors.primary3
       }
 
 active :: forall props. PropsModifier (component :: Banner | props)
 active =
-  styleModifier \(LumiTheme { colors }) ->
+  style \(LumiTheme { colors }) ->
     css
       { backgroundColor: color $ lighten 0.4137 $ colors.accent1
       }
 
 warning :: forall props. PropsModifier (component :: Banner | props)
 warning =
-  styleModifier \(LumiTheme { colors }) ->
+  style \(LumiTheme { colors }) ->
     css
       { backgroundColor: color $ lighten 0.4137 $ colors.accent2
       }
 
 error :: forall props. PropsModifier (component :: Banner | props)
 error =
-  styleModifier \(LumiTheme { colors }) ->
+  style \(LumiTheme { colors }) ->
     css
       { backgroundColor: color $ lighten 0.4137 $ colors.accent3
       }

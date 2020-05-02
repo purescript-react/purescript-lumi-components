@@ -14,25 +14,22 @@ import React.Basic.Events (EventHandler, handler_)
 import React.Basic.Hooks as React
 
 type BoxProps
-  = ( content :: Array JSX
-    , onClick :: EventHandler
-    )
+  = ( content :: Array JSX )
 
 box :: LumiComponent BoxProps
 box =
   unsafePerformEffect do
-    lumiComponent "Box" defaults \props -> React.do
+    lumiComponent "Box" { content: [] } \props -> React.do
       theme <- useTheme
       pure
         $ E.element R.div'
             { children: props.content
             , className: props.className
-            , css: toCSS theme props Styles.Box.box
-            , onClick: props.onClick
+            , css: theme # toCSS Styles.Box.box <> props.css
             }
-  where
-    defaults :: Record BoxProps
-    defaults =
-      { content: []
-      , onClick: handler_ mempty
-      }
+
+row :: LumiComponent BoxProps
+row = box <<< Styles.Box._row
+
+column :: LumiComponent BoxProps
+column = box <<< Styles.Box._column

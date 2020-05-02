@@ -1,6 +1,7 @@
 module Lumi.Components2.Clip where
 
 import Prelude
+
 import Data.Foldable (for_)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype)
@@ -12,11 +13,11 @@ import Effect.Class (liftEffect)
 import Effect.Console as Console
 import Effect.Uncurried (EffectFn1, EffectFn3, mkEffectFn1, runEffectFn3)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent, lumiElement)
+import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Button (_linkStyle, button)
-import Lumi.Styles (styleModifier_, toCSS)
+import Lumi.Styles (style_, toCSS)
 import Lumi.Styles.Box (FlexAlign(..), _justify)
 import Lumi.Styles.Box as Styles.Box
 import Lumi.Styles.Clip as Styles.Clip
@@ -42,9 +43,9 @@ clip =
       { copied, copy } <- useClip ref
       let
         copyButton =
-          lumiElement button
+          button
             $ _linkStyle
-            $ styleModifier_
+            $ style_
                 ( E.merge
                     [ E.css
                         { marginLeft: E.prop S16
@@ -64,18 +65,18 @@ clip =
       pure
         $ E.element R.div'
             { className: props.className
-            , css: toCSS theme props Styles.Clip.clip
+            , css: theme # toCSS Styles.Clip.clip <> props.css
             , children:
               [ E.element R.div'
                   { className: ""
                   , css:
-                    toCSS theme props
-                      $ Styles.Box.box
-                      >>> Styles.Box._justify Center
+                    theme
+                      # toCSS (Styles.Box.box <<< Styles.Box._justify Center)
+                      <> props.css
                   , ref
                   , children: props.content
                   }
-              , lumiElement box
+              , box
                   $ _justify Center
                   $ _ { content = [ copyButton ] }
               ]

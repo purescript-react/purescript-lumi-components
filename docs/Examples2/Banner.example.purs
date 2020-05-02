@@ -3,7 +3,7 @@ module Lumi.Components2.Examples.Banner where
 import Prelude
 
 import Data.Array (intercalate)
-import Lumi.Components (LumiProps, lumiElement)
+import Lumi.Components (LumiProps)
 import Lumi.Components.Button as Button
 import Lumi.Components.Example (example)
 import Lumi.Components.Images (avatar)
@@ -98,26 +98,26 @@ docs =
   where
     allColors :: (LumiProps Banner.BannerProps -> LumiProps Banner.BannerProps) -> Array JSX
     allColors props =
-      [ lumiElement Banner.banner
+      [ Banner.banner
           $ _alignSelf Stretch
           $ Banner._listSpaced
           $ props
-      , lumiElement Banner.banner
+      , Banner.banner
           $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.primary
           $ props
-      , lumiElement Banner.banner
+      , Banner.banner
           $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.active
           $ props
-      , lumiElement Banner.banner
+      , Banner.banner
           $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.warning
           $ props
-      , lumiElement Banner.banner
+      , Banner.banner
           $ _alignSelf Stretch
           $ Banner._listSpaced
           $ Banner.error

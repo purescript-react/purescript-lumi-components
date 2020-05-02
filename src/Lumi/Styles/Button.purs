@@ -4,10 +4,9 @@ import Prelude
 import Color (Color, darken, desaturate, lighten)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe, fromMaybe)
-import Lumi.Components (PropsModifier)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.ZIndex (ziButtonGroup)
-import Lumi.Styles (merge, none, styleModifier, styleModifier_)
+import Lumi.Styles (StyleModifier, merge, none, style, style_)
 import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
 import Lumi.Styles.Link as Link
 import Lumi.Styles.Loader (mkLoader, spin)
@@ -25,16 +24,15 @@ data ButtonState
   | Loading
 
 button ::
-  forall props.
   Maybe Color ->
   ButtonKind ->
   ButtonState ->
   Size ->
-  PropsModifier props
+  StyleModifier
 button colo kind state size = case kind of
   Primary ->
     buttonStyle
-      >>> styleModifier \theme@(LumiTheme { colors }) ->
+      <<< style \theme@(LumiTheme { colors }) ->
           let
             { hue, hueDarker, hueDarkest, hueDisabled, white } =
               makeColorShades
@@ -79,7 +77,7 @@ button colo kind state size = case kind of
                   ]
   Secondary ->
     buttonStyle
-      >>> styleModifier \theme@(LumiTheme { colors }) ->
+      <<< style \theme@(LumiTheme { colors }) ->
           let
             { hueDarker, hueDarkest, grey1, grey2, white, black } =
               makeColorShades
@@ -126,7 +124,7 @@ button colo kind state size = case kind of
                   ]
   Link ->
     Link.link
-      >>> styleModifier \(LumiTheme { colors }) ->
+      <<< style \(LumiTheme { colors }) ->
           let
             { hueDisabled } =
               makeColorShades
@@ -163,14 +161,14 @@ button colo kind state size = case kind of
   where
   buttonStyle =
     box
-      >>> _row
-      >>> _align Center
-      >>> _justify Center
-      >>> case state of
+      <<< _row
+      <<< _align Center
+      <<< _justify Center
+      <<< case state of
           Disabled -> identity
           Loading -> identity
-          Enabled -> _interactive >>> _focusable
-      >>> styleModifier_
+          Enabled -> _interactive <<< _focusable
+      <<< style_
           ( css
               { label: str "button"
               , appearance: none
@@ -271,12 +269,12 @@ button colo kind state size = case kind of
     in
       { hue, hueDarker, hueDarkest, hueDisabled, grey1, grey2, white, black }
 
-buttonGroup :: forall props. Boolean -> PropsModifier props
+buttonGroup :: Boolean -> StyleModifier
 buttonGroup joined =
   box
-    >>> _row
-    >>> styleModifier_ (css { label: str "buttonGroup" })
-    >>> styleModifier_
+    <<< _row
+    <<< style_ (css { label: str "buttonGroup" })
+    <<< style_
         if not joined then
           css
             { label: str "notJoined"
