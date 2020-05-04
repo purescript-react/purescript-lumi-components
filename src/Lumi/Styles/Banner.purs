@@ -6,7 +6,7 @@ import Data.Foldable (fold)
 import Lumi.Components (PropsModifier)
 import Lumi.Styles (color, css, str, style)
 import Lumi.Styles.Border (_round) as S
-import Lumi.Styles.Box (FlexAlign(..), _align, _row, box) as S
+import Lumi.Styles.Box (FlexAlign(..), _align, _column, _row, box) as S
 import Lumi.Styles.Responsive (desktopQuery)
 import Lumi.Styles.Theme (LumiTheme(..))
 

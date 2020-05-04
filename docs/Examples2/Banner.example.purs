@@ -26,11 +26,28 @@ docs =
         $ allColors
         $ _ { content = loremIpsum_ }
 
+    , h2_ "round (default), spaced list, dismissable"
+    , example
+        $ fragment
+        $ allColors
+        $ _ { content = loremIpsum_
+            , dismissable = true
+            }
+
     , h2_ "round (default), spaced list, non-dismissable with icon"
     , example
         $ fragment
         $ allColors
         $ _ { content = loremIpsum_
+            , icon = bannerIcon
+            }
+
+    , h2_ "round (default), spaced list, dismissable with icon"
+    , example
+        $ fragment
+        $ allColors
+        $ _ { dismissable = true
+            , content = loremIpsum_
             , icon = bannerIcon
             }
 
@@ -41,6 +58,15 @@ docs =
         $ _ { dismissable = true
             , title = bannerTitle
             , content = loremIpsum
+            }
+
+    , h2_ "action banner, round (default), spaced list, non-dismissable with icon"
+    , example
+        $ fragment
+        $ allColors
+        $ Banner.actionBanner simpleActions
+        $ _ { content = loremIpsum_
+            , icon = bannerIcon
             }
 
     , h2_ "action banner, round (default), spaced list, non-dismissable"
@@ -58,6 +84,17 @@ docs =
         $ _ { dismissable = true
             , title = bannerTitle
             , content = loremIpsum
+            }
+
+    , h2_ "action banner, round (default), spaced list, dismissable with icon"
+    , example
+        $ fragment
+        $ allColors
+        $ Banner.actionBanner simpleActions
+        $ _ { dismissable = true
+            , title = bannerTitle
+            , content = loremIpsum
+            , icon = bannerIcon
             }
 
     , h2_ "action banner, round (default), spaced list, non-dismissable"

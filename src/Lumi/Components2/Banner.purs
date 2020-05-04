@@ -58,20 +58,12 @@ banner =
         $ S.banner
         $ _ { className = props.className
             , content =
-                [ Monoid.guard (not Array.null props.icon)
-                    $ box
-                    $ style_
-                        ( css
-                          { marginRight: int 16
-                          }
-                        )
-                    $ _ { content = props.icon
-                        }
-                , box
+                [ box
                   $ S._column
+                  $ S._alignSelf S.Center
                   $ style_
                       ( css
-                        { flex: str "1" }
+                        { flex: str "1", width: str "100%" }
                       )
                   $ _ { content =
                           [ Monoid.guard (not Array.null props.title)
@@ -85,19 +77,37 @@ banner =
                               $ _ { content = props.title
                                   }
                           , box
-                            $ S._align S.Stretch
-                            $ S.onDesktop (S._row >>> S._align S.Center)
+                            $ S._align S.Center
+                            $ S._row
                             $ style_
                                 ( css
                                   { flex: str "1" }
                                 )
-                            $ _ { content = props.content }
+                            $ _ { content =
+                                    [ Monoid.guard (not Array.null props.icon)
+                                        $ box
+                                        $ S._alignSelf S.Start
+                                        $ S.onDesktop (S._alignSelf S.Center)
+                                        $ style_
+                                            ( fold
+                                                [ css
+                                                    { marginRight: int 16
+                                                    }
+                                                , desktopQuery $ css
+                                                    { alignSelf: str "center"
+                                                    }
+                                                ]
+                                            )
+                                        $ _ { content = props.icon
+                                            }
+                                    ]
+                                    <> props.content
+                                }
                           ]
                       }
                 , Monoid.guard props.dismissable
                     $ box
                     $ S._alignSelf S.Start
-                    -- $ S.onDesktop (S._alignSelf S.Center)
                     $ dismissButtonStyle
                     $ _ { content =
                             [ Icon.icon
@@ -105,7 +115,7 @@ banner =
                                 , type_: Icon.Remove
                                 }
                             ]
-                        -- , onClick = capture_ $ setVisible \_ -> false
+                        , onClick = capture_ $ setVisible \_ -> false
                         }
                 ]
             }
@@ -148,6 +158,7 @@ actionBanner actions f =
                       { alignItems: str "flex-end"
                       }
                   , desktopQuery $ css
+                      -- @NOTE positioning of the action button changes dependent on if there is a banner title or not
                       { alignItems: if (not Array.null props.title)
                           then str "flex-end"
                           else str "center"
