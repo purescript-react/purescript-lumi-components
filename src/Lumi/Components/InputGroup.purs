@@ -78,7 +78,7 @@ styles = jss
 
           , "& input-group-addon button.lumi":
                 { "&[data-color=\"secondary\"]":
-                    { background: cssStringHSLA colors.transparent
+                    { backgroundColor: cssStringHSLA colors.transparent
                     }
                 , "&:focus, &:hover": { zIndex: ziInputGroup }
                 }
