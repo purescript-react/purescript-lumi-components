@@ -22,7 +22,7 @@ import Lumi.Components (LumiComponent, PropsModifier, lumiComponent)
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
-import Lumi.Styles (color, css, int, nested, prop, str, style, style_)
+import Lumi.Styles (color, css, int, nested, prop, str, style, style_, toCSS)
 import Lumi.Styles.Banner (banner) as S
 import Lumi.Styles.Border (_listSpaced, _listCompact) as Styles.Banner
 import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _interactive, _justify, _row) as S
@@ -31,6 +31,7 @@ import Lumi.Styles.Responsive (onDesktop) as S
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic (JSX)
 import React.Basic.DOM as R
+import React.Basic.Emotion as E
 import React.Basic.DOM.Events (capture_)
 import React.Basic.Hooks (useState)
 import React.Basic.Hooks as React
@@ -73,6 +74,7 @@ banner =
                                 $ style_
                                     ( css
                                       { marginBottom: int 8
+                                      , maxWidth: str "calc(100% - 24px)"
                                       }
                                     )
                                 $ _ { content = [ title ]
@@ -109,18 +111,18 @@ banner =
                                 }
                           ]
                       }
-                , Monoid.guard props.dismissable
-                    $ box
-                    $ S._alignSelf S.Start
-                    $ dismissButtonStyle
-                    $ _ { content =
-                            [ Icon.icon
-                                { style: R.css { fontSize: "12px" }
-                                , type_: Icon.Remove
-                                }
-                            ]
-                        -- , onClick = capture_ $ setVisible \_ -> false
-                        }
+                ,  Monoid.guard props.dismissable
+                    $ E.element R.div'
+                      { children:
+                          [ Icon.icon
+                              { style: R.css { fontSize: "12px" }
+                              , type_: Icon.Remove
+                              }
+                          ]
+                      , className: ""
+                      , css: theme # toCSS dismissButtonStyle
+                      , onClick: capture_ $ setVisible \_ -> false
+                      }
                 ]
             }
   where
@@ -138,11 +140,9 @@ banner =
       S._interactive
       <<< style \(LumiTheme { colors }) ->
             css
-              { padding: str "8px"
-              , margin: str "0 -8px 0 8px"
-              , position: str "absolute"
-              , top: int 8
-              , right: int 16
+              { position: str "absolute"
+              , top: int 16
+              , right: int 24
               , "&:hover": nested $ css
                   { color: color colors.black1
                   }
