@@ -13,8 +13,8 @@ module Lumi.Components2.Banner
 import Prelude
 
 import Color (lighten)
-import Data.Array as Array
 import Data.Foldable (fold)
+import Data.Maybe (Maybe(..), isJust)
 import Data.Monoid as Monoid
 import Data.Tuple.Nested ((/\))
 import Effect.Unsafe (unsafePerformEffect)
@@ -40,8 +40,8 @@ data Banner = Banner
 type BannerProps =
   ( component :: Banner
   , dismissable :: Boolean
-  , icon :: Array JSX
-  , title :: Array JSX
+  , icon :: Maybe JSX
+  , title :: Maybe JSX
   , content :: Array JSX
   )
 
@@ -66,16 +66,18 @@ banner =
                         { flex: str "1", width: str "100%" }
                       )
                   $ _ { content =
-                          [ Monoid.guard (not Array.null props.title)
-                              $ box
-                              $ S._alignSelf S.Start
-                              $ style_
-                                  ( css
-                                    { marginBottom: int 8
+                          [ case props.title of
+                              Just title ->
+                                box
+                                $ S._alignSelf S.Start
+                                $ style_
+                                    ( css
+                                      { marginBottom: int 8
+                                      }
+                                    )
+                                $ _ { content = [ title ]
                                     }
-                                  )
-                              $ _ { content = props.title
-                                  }
+                              _ -> mempty
                           , box
                             $ S._align S.Center
                             $ S._row
@@ -84,22 +86,24 @@ banner =
                                   { flex: str "1" }
                                 )
                             $ _ { content =
-                                    [ Monoid.guard (not Array.null props.icon)
-                                        $ box
-                                        $ S._alignSelf S.Start
-                                        $ S.onDesktop (S._alignSelf S.Center)
-                                        $ style_
-                                            ( fold
-                                                [ css
-                                                    { marginRight: int 16
-                                                    }
-                                                , desktopQuery $ css
-                                                    { alignSelf: str "center"
-                                                    }
-                                                ]
-                                            )
-                                        $ _ { content = props.icon
-                                            }
+                                    [ case props.icon of
+                                        Just icon ->
+                                          box
+                                          $ S._alignSelf S.Start
+                                          $ S.onDesktop (S._alignSelf S.Center)
+                                          $ style_
+                                              ( fold
+                                                  [ css
+                                                      { marginRight: int 16
+                                                      }
+                                                  , desktopQuery $ css
+                                                      { alignSelf: str "center"
+                                                      }
+                                                  ]
+                                              )
+                                          $ _ { content = [ icon ]
+                                              }
+                                        _ -> mempty
                                     ]
                                     <> props.content
                                 }
@@ -115,7 +119,7 @@ banner =
                                 , type_: Icon.Remove
                                 }
                             ]
-                        , onClick = capture_ $ setVisible \_ -> false
+                        -- , onClick = capture_ $ setVisible \_ -> false
                         }
                 ]
             }
@@ -123,10 +127,10 @@ banner =
     defaults :: Record BannerProps
     defaults =
       { component: Banner
-      , title: []
+      , title: Nothing
       , content: []
       , dismissable: false
-      , icon: []
+      , icon: Nothing
       }
 
     dismissButtonStyle :: forall props. PropsModifier props
@@ -159,7 +163,7 @@ actionBanner actions f =
                       }
                   , desktopQuery $ css
                       -- @NOTE positioning of the action button changes dependent on if there is a banner title or not
-                      { alignItems: if (not Array.null props.title)
+                      { alignItems: if (isJust props.title)
                           then str "flex-end"
                           else str "center"
                       }

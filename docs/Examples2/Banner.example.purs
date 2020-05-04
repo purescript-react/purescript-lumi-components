@@ -3,6 +3,7 @@ module Lumi.Components2.Examples.Banner where
 import Prelude
 
 import Data.Array (intercalate)
+import Data.Maybe (Maybe(..))
 import Lumi.Components (LumiProps)
 import Lumi.Components.Button as Button
 import Lumi.Components.Example (example)
@@ -169,19 +170,17 @@ docs =
       [ R.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam varius erat a purus fermentum luctus. Sed porta nisi eget mauris facilisis, a accumsan erat feugiat. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque maximus mauris nulla."
       ]
 
-    bannerTitle :: Array JSX
+    bannerTitle :: Maybe JSX
     bannerTitle =
-      [ subsectionHeader_ "Lorem ipsum dolor sit amet"
-      ]
+      Just $ subsectionHeader_ "Lorem ipsum dolor sit amet"
 
-    bannerIcon :: Array JSX
+    bannerIcon :: Maybe JSX
     bannerIcon =
-      [ avatar
+      Just $ avatar
           { image: R.img { src: "https://s3.amazonaws.com/lumi-blog/avatars/_x600/flexo.jpg" }
           , size: large
           , style: R.css { height: "40px", width: "40px" }
           }
-      ]
 
     simpleActions :: Array JSX
     simpleActions =
