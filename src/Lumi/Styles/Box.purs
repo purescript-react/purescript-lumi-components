@@ -36,6 +36,11 @@ _wrap =
   style_
     $ css { flexWrap: str "wrap" }
 
+_flex :: StyleModifier
+_flex =
+  style_
+    $ css { flex: str "1" }
+
 data FlexAlign
   = Start
   | End

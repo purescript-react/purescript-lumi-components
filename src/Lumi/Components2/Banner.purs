@@ -22,10 +22,11 @@ import Lumi.Components (LumiComponent, PropsModifier, lumiComponent)
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
+import Lumi.Components2.Button (button)
 import Lumi.Styles (color, css, int, nested, prop, str, style, style_, toCSS)
 import Lumi.Styles.Banner (banner) as S
 import Lumi.Styles.Border (_listSpaced, _listCompact) as Styles.Banner
-import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _interactive, _justify, _row) as S
+import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _flex, _interactive, _justify, _row) as S
 import Lumi.Styles.Responsive (desktopQuery)
 import Lumi.Styles.Responsive (onDesktop) as S
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
@@ -55,16 +56,18 @@ banner =
       pure
         $ Monoid.guard visible
         $ box
-        $ style props.css
         $ S.banner
+        $ style props.css
         $ _ { className = props.className
             , content =
                 [ box
                   $ S._column
+                  $ S._flex
                   $ S._alignSelf S.Center
+                  $ S._align S.Stretch
+                  -- @TODO remove this
                   $ style_
-                      ( css
-                        { flex: str "1", width: str "100%" }
+                      ( css { border: str "1px dashed" }
                       )
                   $ _ { content =
                           [ case props.title of
@@ -74,7 +77,7 @@ banner =
                                 $ style_
                                     ( css
                                       { marginBottom: int 8
-                                      , maxWidth: str "calc(100% - 24px)"
+                                      , border: str "1px dashed green"
                                       }
                                     )
                                 $ _ { content = [ title ]
@@ -83,10 +86,7 @@ banner =
                           , box
                             $ S._align S.Center
                             $ S._row
-                            $ style_
-                                ( css
-                                  { flex: str "1" }
-                                )
+                            $ S._flex
                             $ _ { content =
                                     [ case props.icon of
                                         Just icon ->
@@ -94,14 +94,9 @@ banner =
                                           $ S._alignSelf S.Start
                                           $ S.onDesktop (S._alignSelf S.Center)
                                           $ style_
-                                              ( fold
-                                                  [ css
-                                                      { marginRight: int 16
-                                                      }
-                                                  , desktopQuery $ css
-                                                      { alignSelf: str "center"
-                                                      }
-                                                  ]
+                                              ( css
+                                                  { marginRight: int 16
+                                                  }
                                               )
                                           $ _ { content = [ icon ]
                                               }
@@ -111,18 +106,18 @@ banner =
                                 }
                           ]
                       }
-                ,  Monoid.guard props.dismissable
-                    $ E.element R.div'
-                      { children:
-                          [ Icon.icon
-                              { style: R.css { fontSize: "12px" }
-                              , type_: Icon.Remove
-                              }
-                          ]
-                      , className: ""
-                      , css: theme # toCSS dismissButtonStyle
-                      , onClick: capture_ $ setVisible \_ -> false
-                      }
+                , Monoid.guard props.dismissable
+                    $ button
+                    $ S._alignSelf S.Start
+                    $ dismissButtonStyle
+                    $ _ { content =
+                            [ Icon.icon
+                                { style: R.css { fontSize: "12px" }
+                                , type_: Icon.Remove
+                                }
+                            ]
+                        -- , onPress = capture_ $ setVisible \_ -> false
+                        }
                 ]
             }
   where
@@ -140,11 +135,23 @@ banner =
       S._interactive
       <<< style \(LumiTheme { colors }) ->
             css
-              { position: str "absolute"
-              , top: int 16
-              , right: int 24
+              {
+              --   position: str "absolute"
+              -- , top: int 16
+              -- , right: int 24
+                ariaLabel: str "dismiss"
+              , outline: str "none"
+              -- , border: str "none"
+              , background: str "none"
+              , color: color colors.black1
+              , minWidth: str "initial"
               , "&:hover": nested $ css
                   { color: color colors.black1
+                  , border: str "none"
+                  , background: str "none"
+                  }
+              , "&:focus": nested $ css
+                  { boxShadow: str "none"
                   }
               }
 
@@ -154,29 +161,27 @@ actionBanner actions f =
     { content =
         [ box
           $ S._column
-          $ style_
-              ( css
-                { flex: str "1" }
-              )
           $ S.onDesktop (S._row)
+          $ S._flex
+          $ S._align S.End
+          -- @TODO remove this
           $ style_
-              ( fold
-                  [ css
-                      { alignItems: str "flex-end"
-                      }
-                  , desktopQuery $ css
-                      -- @NOTE positioning of the action button changes dependent on if there is a banner title or not
-                      { alignItems: if (isJust props.title)
-                          then str "flex-end"
-                          else str "center"
-                      }
-                  ]
+              ( css { border: str "1px dashed pink" }
+              )
+          $ style_
+              ( desktopQuery $ css
+                  -- @NOTE positioning of the action button changes dependent on if there is a banner title or not
+                  { alignItems: if (isJust props.title)
+                      then str "flex-end"
+                      else str "center"
+                  }
               )
           $ _ { content =
                   [ box
+                    $ S._flex
+                    -- @TODO remove this
                     $ style_
-                        ( css
-                          { flex: str "1" }
+                        ( css { border: str "1px dashed blue" }
                         )
                     $ _ { content = props.content }
                   , box
@@ -187,6 +192,7 @@ actionBanner actions f =
                         ( fold
                             [ css
                                 { margin: str "16px 0 0"
+                                , border: str "1px dashed red"
                                 , "& :not(:first-child)": nested $ css
                                     { marginLeft: prop S8
                                     }
