@@ -140,6 +140,9 @@ banner =
             css
               { padding: str "8px"
               , margin: str "0 -8px 0 8px"
+              , position: str "absolute"
+              , top: int 8
+              , right: int 16
               , "&:hover": nested $ css
                   { color: color colors.black1
                   }
