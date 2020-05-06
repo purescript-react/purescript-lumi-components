@@ -1,6 +1,7 @@
 module Lumi.Components
   ( LumiProps
   , PropsModifier
+  , PropsModifier'
   , propsModifier
   , LumiComponent
   , lumiComponent
@@ -35,9 +36,11 @@ type LumiComponent props = (LumiProps props -> LumiProps props) -> JSX
 type LumiProps props
   = { css :: LumiTheme -> Emotion.Style, className :: String | props }
 
-type PropsModifier props
+type PropsModifier props = PropsModifier' props props
+
+type PropsModifier' props props'
   = (LumiProps props -> LumiProps props) ->
-    (LumiProps props -> LumiProps props)
+    (LumiProps props' -> LumiProps props')
 
 -- | Lift a `props -> props` function for composition with other `PropsModifier` functions.
 propsModifier :: forall props. (LumiProps props -> LumiProps props) -> PropsModifier props

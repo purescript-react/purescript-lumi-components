@@ -126,7 +126,8 @@ const componentv2Loaders = [
   "Clip",
   "Link",
   "QRCode",
-  "Slat"
+  "Slat",
+  "Text"
 ].map(fromComponentPathv2);
 
 const App = () => {
