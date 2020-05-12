@@ -65,10 +65,6 @@ banner =
                   $ S._flex
                   $ S._alignSelf S.Center
                   $ S._align S.Stretch
-                  -- @TODO remove this
-                  $ style_
-                      ( css { border: str "1px dashed" }
-                      )
                   $ _ { content =
                           [ case props.title of
                               Just title ->
@@ -77,7 +73,6 @@ banner =
                                 $ style_
                                     ( css
                                       { marginBottom: int 8
-                                      , border: str "1px dashed green"
                                       }
                                     )
                                 $ _ { content = [ title ]
@@ -116,7 +111,7 @@ banner =
                                 , type_: Icon.Remove
                                 }
                             ]
-                        -- , onPress = capture_ $ setVisible \_ -> false
+                        , onPress = setVisible \_ -> false
                         }
                 ]
             }
@@ -135,16 +130,16 @@ banner =
       S._interactive
       <<< style \(LumiTheme { colors }) ->
             css
-              {
-              --   position: str "absolute"
-              -- , top: int 16
-              -- , right: int 24
-                ariaLabel: str "dismiss"
+              { ariaLabel: str "dismiss"
               , outline: str "none"
-              -- , border: str "none"
+              , border: str "none"
               , background: str "none"
               , color: color colors.black1
               , minWidth: str "initial"
+              , padding: int 0
+              , "@media (min-width: 860px)": nested $ css
+                  { padding: int 0
+                  }
               , "&:hover": nested $ css
                   { color: color colors.black1
                   , border: str "none"
@@ -164,10 +159,6 @@ actionBanner actions f =
           $ S.onDesktop (S._row)
           $ S._flex
           $ S._align S.End
-          -- @TODO remove this
-          $ style_
-              ( css { border: str "1px dashed pink" }
-              )
           $ style_
               ( desktopQuery $ css
                   -- @NOTE positioning of the action button changes dependent on if there is a banner title or not
@@ -179,10 +170,6 @@ actionBanner actions f =
           $ _ { content =
                   [ box
                     $ S._flex
-                    -- @TODO remove this
-                    $ style_
-                        ( css { border: str "1px dashed blue" }
-                        )
                     $ _ { content = props.content }
                   , box
                     $ S._row
@@ -192,7 +179,6 @@ actionBanner actions f =
                         ( fold
                             [ css
                                 { margin: str "16px 0 0"
-                                , border: str "1px dashed red"
                                 , "& :not(:first-child)": nested $ css
                                     { marginLeft: prop S8
                                     }

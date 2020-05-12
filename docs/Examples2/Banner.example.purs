@@ -77,27 +77,6 @@ docs =
         $ Banner.actionBanner simpleActions
         $ _ { content = loremIpsum_ }
 
-    , h2_ "action banner, round (default), spaced list, dismissable"
-    , example
-        $ fragment
-        $ allColors
-        $ Banner.actionBanner simpleActions
-        $ _ { dismissable = true
-            , title = bannerTitle
-            , content = loremIpsum
-            }
-
-    , h2_ "action banner, round (default), spaced list, dismissable with icon"
-    , example
-        $ fragment
-        $ allColors
-        $ Banner.actionBanner simpleActions
-        $ _ { dismissable = true
-            , title = bannerTitle
-            , content = loremIpsum
-            , icon = bannerIcon
-            }
-
     , h2_ "action banner, round (default), spaced list, non-dismissable"
     , example
         $ fragment
@@ -105,33 +84,12 @@ docs =
         $ Banner.actionBanner twoButtonActions
         $ _ { content = loremIpsum_ }
 
-    , h2_ "action banner, round (default), spaced list, dismissable"
-    , example
-        $ fragment
-        $ allColors
-        $ Banner.actionBanner twoButtonActions
-        $ _ { dismissable = true
-            , title = bannerTitle
-            , content = loremIpsum
-            }
-
     , h2_ "action banner, round (default), spaced list, non-dismissable"
     , example
         $ fragment
         $ allColors
         $ Banner.actionBanner actions
         $ _ { content = loremIpsum_ }
-
-    , h2_ "action banner, round (default), spaced list, dismissable"
-    , example
-        $ fragment
-        $ allColors
-        $ Banner.actionBanner actions
-        $ _ { dismissable = true
-            , title = bannerTitle
-            , content = loremIpsum
-            }
-
     ]
   where
     allColors :: (LumiProps Banner.BannerProps -> LumiProps Banner.BannerProps) -> Array JSX
