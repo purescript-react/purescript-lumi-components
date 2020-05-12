@@ -22,7 +22,6 @@ import Lumi.Components (LumiComponent, PropsModifier, lumiComponent)
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
-import Lumi.Components2.Button (button)
 import Lumi.Styles (color, css, int, nested, prop, str, style, style_, toCSS)
 import Lumi.Styles.Banner (banner) as S
 import Lumi.Styles.Border (_listSpaced, _listCompact) as Styles.Banner
@@ -102,17 +101,17 @@ banner =
                           ]
                       }
                 , Monoid.guard props.dismissable
-                    $ button
-                    $ S._alignSelf S.Start
-                    $ dismissButtonStyle
-                    $ _ { content =
-                            [ Icon.icon
-                                { style: R.css { fontSize: "12px" }
-                                , type_: Icon.Remove
-                                }
-                            ]
-                        , onPress = setVisible \_ -> false
-                        }
+                    $ E.element R.button'
+                      { css: theme # toCSS dismissButtonStyle
+                      , children:
+                          [ Icon.icon
+                              { style: R.css { fontSize: "12px" }
+                              , type_: Icon.Remove
+                              }
+                          ]
+                      , onClick: capture_ $ setVisible \_ -> false
+                      , className: "banner-dismiss"
+                      }
                 ]
             }
   where
@@ -128,25 +127,17 @@ banner =
     dismissButtonStyle :: forall props. PropsModifier props
     dismissButtonStyle =
       S._interactive
+      <<< S._alignSelf S.Start
       <<< style \(LumiTheme { colors }) ->
             css
               { ariaLabel: str "dismiss"
-              , outline: str "none"
               , border: str "none"
               , background: str "none"
               , color: color colors.black1
-              , minWidth: str "initial"
               , padding: int 0
-              , "@media (min-width: 860px)": nested $ css
-                  { padding: int 0
-                  }
-              , "&:hover": nested $ css
-                  { color: color colors.black1
-                  , border: str "none"
-                  , background: str "none"
-                  }
               , "&:focus": nested $ css
                   { boxShadow: str "none"
+                  , outline: str "none"
                   }
               }
 
@@ -165,6 +156,9 @@ actionBanner actions f =
                   { alignItems: if (isJust props.title)
                       then str "flex-end"
                       else str "center"
+                  , border: if (isJust props.title)
+                      then str "1px dashed red"
+                      else str "1px dashed blue"
                   }
               )
           $ _ { content =
