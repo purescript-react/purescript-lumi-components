@@ -150,17 +150,6 @@ actionBanner actions f =
           $ S.onDesktop (S._row)
           $ S._flex
           $ S._align S.End
-          $ style_
-              ( desktopQuery $ css
-                  -- @NOTE positioning of the action button changes dependent on if there is a banner title or not
-                  { alignItems: if (isJust props.title)
-                      then str "flex-end"
-                      else str "center"
-                  , border: if (isJust props.title)
-                      then str "1px dashed red"
-                      else str "1px dashed blue"
-                  }
-              )
           $ _ { content =
                   [ box
                     $ S._flex
