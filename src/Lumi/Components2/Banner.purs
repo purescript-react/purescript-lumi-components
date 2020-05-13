@@ -14,7 +14,7 @@ import Prelude
 
 import Color (lighten)
 import Data.Foldable (fold)
-import Data.Maybe (Maybe(..), isJust)
+import Data.Maybe (Maybe(..))
 import Data.Monoid as Monoid
 import Data.Tuple.Nested ((/\))
 import Effect.Unsafe (unsafePerformEffect)
@@ -130,8 +130,7 @@ banner =
       <<< S._alignSelf S.Start
       <<< style \(LumiTheme { colors }) ->
             css
-              { ariaLabel: str "dismiss"
-              , border: str "none"
+              { border: str "none"
               , background: str "none"
               , color: color colors.black1
               , padding: int 0
@@ -147,9 +146,9 @@ actionBanner actions f =
     { content =
         [ box
           $ S._column
-          $ S.onDesktop (S._row)
+          $ S._align S.Start
+          $ S.onDesktop (S._row <<< S._align S.Center)
           $ S._flex
-          $ S._align S.End
           $ _ { content =
                   [ box
                     $ S._flex
@@ -157,7 +156,8 @@ actionBanner actions f =
                   , box
                     $ S._row
                     $ S._align S.Center
-                    $ S._justify S.End
+                    $ S._alignSelf S.End
+                    $ S.onDesktop (S._alignSelf S.Center)
                     $ style_
                         ( fold
                             [ css
