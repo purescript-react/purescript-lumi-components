@@ -25,7 +25,7 @@ import Lumi.Components2.Box (box)
 import Lumi.Styles (color, css, int, nested, prop, str, style, style_, toCSS)
 import Lumi.Styles.Banner (banner) as S
 import Lumi.Styles.Border (_listSpaced, _listCompact) as Styles.Banner
-import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _flex, _interactive, _justify, _row) as S
+import Lumi.Styles.Box (FlexAlign(..), _align, _alignSelf, _column, _flex, _interactive, _row) as S
 import Lumi.Styles.Responsive (desktopQuery)
 import Lumi.Styles.Responsive (onDesktop) as S
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
@@ -167,7 +167,7 @@ actionBanner actions f =
                                     }
                                 }
                             , desktopQuery $ css
-                                { margin: str "0 0 0 40px"
+                                { margin: str "0 20px"
                                 }
                             ]
                         )

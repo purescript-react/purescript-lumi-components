@@ -52,7 +52,7 @@ docs =
             , icon = bannerIcon
             }
 
-    , h2_ "round (default), spaced list, dismissable"
+    , h2_ "round (default), spaced list, dismissable with title"
     , example
         $ fragment
         $ allColors
@@ -90,6 +90,15 @@ docs =
         $ allColors
         $ Banner.actionBanner actions
         $ _ { content = loremIpsum_ }
+
+    , h2_ "action banner, round (default), spaced list, dismissable"
+    , example
+        $ fragment
+        $ allColors
+        $ Banner.actionBanner simpleActions
+        $ _ { content = loremIpsum_
+            , dismissable = true
+            }
     ]
   where
     allColors :: (LumiProps Banner.BannerProps -> LumiProps Banner.BannerProps) -> Array JSX
