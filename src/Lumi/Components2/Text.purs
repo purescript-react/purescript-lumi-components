@@ -51,11 +51,11 @@ type TextProps =
 type TextElement = ReactComponent { children :: Array JSX, className :: String }
 
 -- | Inline piece of text whose `content` prop is a `String`. Elements of this
--- | component should preferentially be used only where an inline element is
--- | expected, that is, from within the contents of a block-level element.
+-- | component should preferentially be used only where an inline piece of text
+-- | with no bottom margin is expected.
 -- |
--- | For block-level text elements, please use `paragraph`, `paragraph_`, or the
--- | header components defined in this module.
+-- | For block-level, independent text elements, please use `paragraph`,
+-- | `paragraph_`, or the header components defined in this module.
 text :: LumiComponent TextProps
 text =
   unsafePerformEffect $ lumiComponent "Text" defaults \props -> Hooks.do
