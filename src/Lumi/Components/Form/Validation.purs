@@ -58,15 +58,15 @@ type WarningValidator result =
 
 -- | A `Validator` which verifies that an input string is non-empty.
 nonEmpty :: String -> Validator String NonEmptyString
-nonEmpty name = note (name <> " is required.") <<< NES.fromString
+nonEmpty name = note (name <> " is required") <<< NES.fromString
 
 -- | A `Validator` which verifies that an input array is non-empty.
 nonEmptyArray :: forall a. String -> Validator (Array a) (NonEmptyArray a)
-nonEmptyArray name = note (name <> " cannot be empty.") <<< NEA.fromArray
+nonEmptyArray name = note (name <> " cannot be empty") <<< NEA.fromArray
 
 -- | A `Validator` which verifies that an optional field is specified.
 nonNull :: forall a. String -> Validator (Maybe a) a
-nonNull name = note (name <> " is required.")
+nonNull name = note (name <> " is required")
 
 -- | A `Validator` which verifies that its input equals some value.
 mustEqual :: forall a. Eq a => a -> String -> Validator a a
@@ -80,17 +80,17 @@ mustBe cond error value
 
 -- | A `Validator` which verifies that its input can be parsed as a number.
 validNumber :: String -> Validator String Number
-validNumber name = note (name <> " must be a number.") <<< Number.fromString
+validNumber name = note (name <> " must be a number") <<< Number.fromString
 
 -- | A `Validator` which verifies that its input can be parsed as an integer.
 validInt :: String -> Validator String Int
-validInt name = note (name <> " must be a whole number.") <<< Int.fromString
+validInt name = note (name <> " must be a whole number") <<< Int.fromString
 
 -- | A `Validator` which verifies that its input can be parsed as a date.
 -- | Dates are of the format "YYYY-MM-DD".
 validDate :: String -> Validator String Date.Date
 validDate name input =
-  note (name <> " must be a date.") result
+  note (name <> " must be a date") result
   where
     result = case traverse Int.fromString $ split (Pattern "-") input of
       Just [y, m, d] -> join $ Date.exactDate <$> toEnum y <*> toEnum m <*> toEnum d
