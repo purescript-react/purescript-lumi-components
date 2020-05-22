@@ -116,6 +116,7 @@ styles = jss
           { display: "flex"
           , flexFlow: "row nowrap"
           , alignItems: "center"
+          , minWidth: "0"
 
           , "& > lumi-lockup-description":
               { display: "flex"
