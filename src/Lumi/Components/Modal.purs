@@ -456,8 +456,9 @@ styles = jss
 
                 -- non-dialog modals fill the screen on mobile devices
               , "&:not([data-variant=\"dialog\"])":
-                  { "& lumi-modal":
-                      { "@media (max-width: 860px)":
+                  { "@media (max-width: 860px)":
+                      { maxHeight: "100%"
+                      , "& lumi-modal":
                           { position: "fixed"
                           , top: "0"
                           , right: "0"
@@ -469,6 +470,10 @@ styles = jss
                           , borderRadius: "0"
                           , "&[data-size=\"small\"], &[data-size=\"medium\"], &[data-size=\"large\"]":
                               { width: "100vw"
+                              }
+                          , "& lumi-modal-content":
+                              { flex: "1 1 auto"
+                              , overflowY: "auto"
                               }
                           }
                       }
