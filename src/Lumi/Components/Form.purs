@@ -5,6 +5,7 @@ module Lumi.Components.Form
   , build
   , build'
   , defaultRenderForm
+  , defaultRenderForest
   , useForm
   , useForm'
   , formState
@@ -166,7 +167,7 @@ defaultRenderForm
      }
   -> Forest
   -> JSX
-defaultRenderForm { inlineTable, forceTopLabels } { readonly } forest =
+defaultRenderForm renderProps@{ inlineTable, forceTopLabels } { readonly } forest =
   element (R.unsafeCreateDOMComponent "lumi-form")
     { class:
         String.joinWith " " $ fold
@@ -174,34 +175,44 @@ defaultRenderForm { inlineTable, forceTopLabels } { readonly } forest =
           , guard readonly ["readonly"]
           ]
     , children:
-        surround fieldDivider (map toRow (Array.mapMaybe pruneTree forest))
+        surround fieldDivider
+          $ defaultRenderForest { forceTopLabels }
+          $ Array.mapMaybe pruneTree
+          $ forest
     }
   where
     fieldDivider = R.hr { className: "lumi field-divider" }
 
-    toRow :: Tree -> JSX
-    toRow = case _ of
-      Child { key, child } ->
-        maybe identity keyed key $ child
-      Wrapper { key, wrap: f, children } ->
-        maybe identity keyed key
-          $ f
-          $ intercalate [fieldDivider]
-          $ map (pure <<< toRow)
-          $ children
-      Node { label, key, required, validationError, children } ->
-        maybe identity keyed key $
-          labeledField
-            { label: text body
-                { children = [ label ]
-                , className = toNullable (pure "field-label")
-                }
-            , value: intercalate fieldDivider (map toRow children)
-            , validationError
-            , required
-            , forceTopLabel: forceTopLabels
-            , style: R.css {}
+defaultRenderForest
+  :: { forceTopLabels :: Boolean
+     }
+  -> Forest
+  -> Array JSX
+defaultRenderForest renderProps@{ forceTopLabels } = map case _ of
+  Child { key, child } ->
+    maybe identity keyed key $ child
+  Wrapper { key, wrap: f, children } ->
+    maybe identity keyed key
+      $ f
+      $ intercalate [fieldDivider]
+      $ map pure
+      $ defaultRenderForest renderProps
+      $ children
+  Node { label, key, required, validationError, children } ->
+    maybe identity keyed key $
+      labeledField
+        { label: text body
+            { children = [ label ]
+            , className = toNullable (pure "field-label")
             }
+        , value: intercalate fieldDivider (defaultRenderForest renderProps children)
+        , validationError
+        , required
+        , forceTopLabel: forceTopLabels
+        , style: R.css {}
+        }
+  where
+    fieldDivider = R.hr { className: "lumi field-divider" }
 
 -- | Render a form with state managed automatically.
 useForm
