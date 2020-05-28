@@ -25,7 +25,7 @@
     "purescript-integers": "^4.0.0",
     "purescript-maybe": "^4.0.0",
     "purescript-nullable": "^4.0.0",
-    "purescript-numbers": "^6.0.0",
+    "purescript-numbers": "^7.0.0",
     "purescript-prelude": "^4.0.1",
     "purescript-profunctor-lenses": ">=4.0.0 <7.0.0",
     "purescript-random": "^4.0.0",
