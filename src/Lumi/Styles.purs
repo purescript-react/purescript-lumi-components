@@ -1,8 +1,5 @@
 module Lumi.Styles
-  ( StyleModifier
-  , style
-  , style_
-  , toCSS
+  ( module Lumi.Styles
   , module Emotion
   ) where
 
