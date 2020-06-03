@@ -265,6 +265,7 @@ styles = jss
           , "&[data-color=\"primary-3\"]": buttonColorHoverMixin colors.primary3
           , "&[data-color=\"primary-4\"]": buttonColorHoverMixin colors.primary4
           , "&[data-color=\"accent-1\"]": buttonColorHoverMixin colors.accent1
+          , "&[data-color=\"accent-1-3\"]": buttonColorHoverMixin colors.accent13
           , "&[data-color=\"accent-2\"]": buttonColorHoverMixin colors.accent2
           , "&[data-color=\"accent-3\"]": buttonColorHoverMixin colors.accent3
           , "&[data-color=\"accent-3-3\"]": buttonColorHoverMixin colors.accent33

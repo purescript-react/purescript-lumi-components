@@ -85,6 +85,7 @@ links"""
                       """Input dropdown row hover background color
 selected table row background color"""
                   , colorPanel _.accent1 "Accent 1" """Indicates good or complete status"""
+                  , colorPanel _.accent13 "Accent 1 - 15%" """Faded for focus borders/backgrounds"""
                   , colorPanel _.accent2 "Accent 2" """Indicates pending, needs attention"""
                   , colorPanel _.accent3 "Accent 3" """Indicates a problem, warning"""
                   , colorPanel _.accent33 "Accent 3 - 15%" """Faded for focus borders/backgrounds"""
