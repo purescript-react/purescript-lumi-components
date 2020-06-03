@@ -195,6 +195,7 @@ styles =
         , "&[data-color=\"primary-4\"]": { color: cssStringHSLA colors.primary4 }
         , "&[data-color=\"accent-1\"]": { color: cssStringHSLA colors.accent1 }
         , "&[data-color=\"accent-2\"]": { color: cssStringHSLA colors.accent2 }
+        , "&[data-color=\"accent-2-3\"]": { color: cssStringHSLA colors.accent23 }
         , "&[data-color=\"accent-3\"]": { color: cssStringHSLA colors.accent3 }
         , "&[data-color=\"accent-3-3\"]": { color: cssStringHSLA colors.accent33 }
         , "&[data-color=\"white\"]": { color: cssStringHSLA colors.white }
