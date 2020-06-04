@@ -33,6 +33,7 @@ type ColorMap a =
   , primary4 :: a
   , secondary :: a
   , accent1 :: a
+  , accent13 :: a
   , accent2 :: a
   , accent23 :: a
   , accent3 :: a
@@ -59,6 +60,7 @@ colors =
   , primary4: rgb 0xed 0xf2 0xfd
   , secondary: rgb 0x91 0x90 0x8d
   , accent1: rgb 0x49 0xb8 0x60
+  , accent13: rgb 0xe4 0xf5 0xe7
   , accent2: rgb 0xff 0xa5 0x02
   , accent23: rgb 0xff 0xee 0xd9
   , accent3: rgb 0xf1 0x50 0x0d
@@ -85,6 +87,7 @@ colorNames =
   , primary4: ColorName "primary-4"
   , secondary: ColorName "secondary"
   , accent1: ColorName "accent-1"
+  , accent13: ColorName "accent-1-3"
   , accent2: ColorName "accent-2"
   , accent23: ColorName "accent-2-3"
   , accent3: ColorName "accent-3"
