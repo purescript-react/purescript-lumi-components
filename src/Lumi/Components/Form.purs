@@ -63,6 +63,7 @@ import Data.Either (Either(..))
 import Data.Foldable (fold, surround)
 import Data.Generic.Rep (class Generic, Constructor(..), NoArguments(..), Sum(..), to, from)
 import Data.Lens (Iso', Lens', Prism, Prism', matching, review, view)
+import Data.Lens.Prism.Maybe (_Just)
 import Data.Maybe (Maybe(..), fromMaybe, isJust, isNothing, maybe)
 import Data.Monoid (guard)
 import Data.Newtype (un)
@@ -80,10 +81,10 @@ import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
 import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
-import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (Forest(..), FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
-import Lumi.Components.Form.Validation (setModified)
+import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, validDate, optional, setFresh, setModified, validated, warn) as Validation
+import Lumi.Components.Form.Validation (setModified)
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..), labeledField, labeledFieldValidationErrorStyles, labeledFieldValidationWarningStyles)
@@ -451,7 +452,7 @@ labeledCheckbox label =
       }
   where
     lumiAlignToInput = element (R.unsafeCreateDOMComponent "lumi-align-to-input")
-    
+
 -- | A form that edits an optional structure represented by group of radio
 -- | buttons, visually oriented in either horizontal or vertical fashion.
 -- |
@@ -720,6 +721,50 @@ number { min, max, step } = formBuilder \{ readonly } value ->
             , step = notNull step
             }
   , validate: Just value
+  }
+
+-- | Edit an Optional value.
+-- |
+-- | This `FormBuilder` displays a removable section for a snigle optional element,
+-- | along with an "Add..." button in the final row.
+maybeForm
+  :: forall props u a
+   . { addLabel :: String
+     , defaultValue :: u
+     , form :: FormBuilder { readonly :: Boolean | props } u a
+     }
+  -> FormBuilder { readonly :: Boolean | props } (Maybe u) (Maybe a)
+maybeForm { addLabel, defaultValue, form } = FormBuilder \props@{ readonly } valueM ->
+  { edit: \onChange ->
+      case valueM of
+        Nothing ->
+          if readonly then
+            []
+          else
+            [ Child
+                { key: Nothing
+                , child:
+                    Link.link Link.defaults
+                      { navigate = pure $ onChange \_ -> Just defaultValue
+                      , className = pure "lumi"
+                      , text = Input.alignToInput $ body_ ("+ " <> addLabel)
+                      }
+                }
+            ]
+        Just value ->
+          [ Node
+              { key: Nothing
+              , label:
+                  Link.link Link.defaults
+                    { navigate = pure $ onChange \_ -> Nothing
+                    , text = R.text "×"
+                    }
+              , required: Neither
+              , validationError: Nothing
+              , children: (un FormBuilder form props value).edit (onChange <<< _Just)
+              }
+          ]
+  , validate: traverse (un FormBuilder form props >>> _.validate) valueM
   }
 
 -- | Edit an `Array` of values.
