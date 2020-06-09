@@ -77,8 +77,8 @@ text =
     defaultTextStyle :: LumiTheme -> Maybe TextType -> Style
     defaultTextStyle theme ty =
       S.css
-        { fontSize: maybe S.inherit (px <<< textFontSize theme <<< textTheme) ty
-        , lineHeight: maybe S.inherit (px <<< textLineHeight theme <<< textTheme) ty
+        { fontSize: maybe S.inherit (S.px <<< textFontSize theme <<< textTheme) ty
+        , lineHeight: maybe S.inherit (S.px <<< textLineHeight theme <<< textTheme) ty
         , whiteSpace: S.str "pre-wrap"
         , margin: S.str "0"
         , padding: S.str "0"
@@ -261,10 +261,7 @@ textStyle :: (forall a. TextMap a -> a) -> StyleModifier
 textStyle selector =
   S.style \theme -> 
     S.css
-      { fontSize: px $ textFontSize theme selector
-      , lineHeight: px $ textLineHeight theme selector
-      , marginBottom: px $ textMargin theme selector
+      { fontSize: S.px $ textFontSize theme selector
+      , lineHeight: S.px $ textLineHeight theme selector
+      , marginBottom: S.px $ textMargin theme selector
       }
-
-px :: Int -> StyleProperty
-px i = S.str $ show i <> "px"
