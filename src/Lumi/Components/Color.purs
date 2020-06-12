@@ -33,10 +33,16 @@ type ColorMap a =
   , primary4 :: a
   , secondary :: a
   , accent1 :: a
+  , accent11 :: a
+  , accent12 :: a
   , accent13 :: a
   , accent2 :: a
+  , accent21 :: a
+  , accent22 :: a
   , accent23 :: a
   , accent3 :: a
+  , accent31 :: a
+  , accent32 :: a
   , accent33 :: a
   , white :: a
   , transparent :: a
@@ -60,10 +66,16 @@ colors =
   , primary4: rgb 0xed 0xf2 0xfd
   , secondary: rgb 0x91 0x90 0x8d
   , accent1: rgb 0x49 0xb8 0x60
+  , accent11: rgb 0x78 0xdd 0x8d
+  , accent12: rgb 0xbc 0xee 0xc6
   , accent13: rgb 0xe4 0xf5 0xe7
   , accent2: rgb 0xff 0xa5 0x02
+  , accent21: rgb 0xff 0xb9 0x67
+  , accent22: rgb 0xff 0xdc 0xb3
   , accent23: rgb 0xff 0xee 0xd9
   , accent3: rgb 0xf1 0x50 0x0d
+  , accent31: rgb 0xf7 0x96 0x6d
+  , accent32: rgb 0xfb 0xca 0xb6
   , accent33: rgb 0xfd 0xe5 0xdb
   , white: rgb 0xff 0xff 0xff
   , transparent: rgba 0 0 0 0.0
@@ -87,10 +99,16 @@ colorNames =
   , primary4: ColorName "primary-4"
   , secondary: ColorName "secondary"
   , accent1: ColorName "accent-1"
+  , accent11: ColorName "accent-1-1"
+  , accent12: ColorName "accent-1-2"
   , accent13: ColorName "accent-1-3"
   , accent2: ColorName "accent-2"
+  , accent21: ColorName "accent-2-1"
+  , accent22: ColorName "accent-2-2"
   , accent23: ColorName "accent-2-3"
   , accent3: ColorName "accent-3"
+  , accent31: ColorName "accent-3-1"
+  , accent32: ColorName "accent-3-2"
   , accent33: ColorName "accent-3-3"
   , white: ColorName "white"
   , transparent: ColorName "transparent"

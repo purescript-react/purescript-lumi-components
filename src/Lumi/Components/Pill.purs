@@ -51,23 +51,27 @@ styles = jss
           , whiteSpace: "nowrap"
 
           , "&[data-status=\"active\"]":
-              { color: cssStringHSLA colors.accent1
-              , borderColor: cssStringHSLA colors.accent1
+              { color: cssStringHSLA colors.black
+              , borderColor: cssStringHSLA colors.accent12
+              , backgroundColor: cssStringHSLA colors.accent12
               }
 
           , "&[data-status=\"warning\"]":
-              { color: cssStringHSLA colors.accent2
-              , borderColor: cssStringHSLA colors.accent2
+              { color: cssStringHSLA colors.black
+              , borderColor: cssStringHSLA colors.accent22
+              , backgroundColor: cssStringHSLA colors.accent22
               }
 
           , "&[data-status=\"error\"]":
-              { color: cssStringHSLA colors.accent3
-              , borderColor: cssStringHSLA colors.accent3
+              { color: cssStringHSLA colors.black
+              , borderColor: cssStringHSLA colors.accent32
+              , backgroundColor: cssStringHSLA colors.accent32
               }
 
           , "&[data-status=\"unknown\"]":
-              { color: cssStringHSLA colors.black1
-              , borderColor: cssStringHSLA colors.black1
+              { color: cssStringHSLA colors.black
+              , borderColor: cssStringHSLA colors.black4
+              , backgroundColor: cssStringHSLA colors.black4
               }
           }
       }
