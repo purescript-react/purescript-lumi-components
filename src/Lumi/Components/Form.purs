@@ -587,7 +587,7 @@ multiSelect
 multiSelect encode opts = formBuilder_ \{ readonly } selected onChange ->
   if readonly
     then
-      alignToInput $ R.text (String.joinWith "," $ map encode selected)
+      alignToInput $ R.text (String.joinWith ", " $ map encode selected)
     else
       Select.multiSelect
         { value:
