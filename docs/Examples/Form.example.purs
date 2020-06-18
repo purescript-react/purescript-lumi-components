@@ -425,7 +425,13 @@ userForm = ado
         { variant: Upload.Avatar
         , backend:
             { fetch: \id ->
-                pure { id, name: Upload.FileName "avatar", previewUri: Nothing }
+                pure
+                  { id
+                  , name: Upload.FileName "avatar"
+                  , previewUri: Nothing
+                  , readonly: false
+                  }
+            , remove: \_ -> pure true
             , upload: \file -> produceAff \emitter -> do
                 let
                   totalBytes = Int.round $ File.size file
