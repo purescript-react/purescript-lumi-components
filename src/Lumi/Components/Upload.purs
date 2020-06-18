@@ -875,11 +875,7 @@ styles = jss
                   , flexFlow: "row"
                   , alignItems: "center"
                   , height: "65px"
-                  , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
-
-                  , "&:last-child":
-                      { borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
-                      }
+                  , borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
 
                   , "& > lumi-upload-file-image":
                       { boxSizing: "border-box"
