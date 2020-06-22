@@ -352,6 +352,7 @@ userForm = ado
             , color: Nothing
             }
         , maxRows: top
+        , rowMenu: FT.defaultRowMenu
         , summary: mempty
         , formBuilder: ado
             name <- FT.column_ "Name" ado

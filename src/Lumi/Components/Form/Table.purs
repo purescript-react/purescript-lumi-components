@@ -2,6 +2,7 @@ module Lumi.Components.Form.Table
   ( TableFormBuilder
   , editableTable
   , nonEmptyEditableTable
+  , defaultRowMenu
   , column
   , column_
   , withProps
@@ -76,13 +77,21 @@ editableTable
      , defaultValue :: Maybe row
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
+       -- | Controls what is displayed in the last cell of an editable table row,
+       -- | providing access to callbacks that delete or update the current row.
+     , rowMenu
+        :: { remove :: Maybe (Effect Unit)
+           , update :: (row -> row) -> Effect Unit
+           }
+        -> row
+        -> JSX
      , summary :: JSX
      }
   -> FormBuilder
       { readonly :: Boolean | props }
       (Array row)
       (Array result)
-editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary } =
+editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
@@ -106,7 +115,12 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary }
             , onRowAdd: foldMap (onChange <<< flip Array.snoc) defaultValue
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (Array.deleteAt index rows')
-            , removeCell: EditableTable.defaultRemoveCell
+            , removeCell: \onRowRemoveM (Tuple index row) ->
+                rowMenu
+                  { remove: onRowRemoveM <@> Tuple index row
+                  , update: onChange <<< ix index
+                  }
+                  row
             , columns:
                 columns <#> \{ label, render } ->
                   { label
@@ -125,13 +139,19 @@ nonEmptyEditableTable
      , defaultValue :: Maybe row
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
+     , rowMenu
+        :: { remove :: Maybe (Effect Unit)
+           , update :: (row -> row) -> Effect Unit
+           }
+        -> row
+        -> JSX
      , summary :: JSX
      }
   -> FormBuilder
       { readonly :: Boolean | props }
       (NEA.NonEmptyArray row)
       (NEA.NonEmptyArray result)
-nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary } =
+nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
@@ -155,7 +175,12 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, s
             , onRowAdd: foldMap (onChange <<< flip NEA.snoc) defaultValue
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (NEA.fromArray =<< NEA.deleteAt index rows')
-            , removeCell: EditableTable.defaultRemoveCell
+            , removeCell: \onRowRemoveM (Tuple index row) ->
+                rowMenu
+                  { remove: onRowRemoveM <@> Tuple index row
+                  , update: onChange <<< ix index
+                  }
+                  row
             , columns:
                 columns <#> \{ label, render } ->
                   { label
@@ -165,6 +190,18 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, s
             }
       , validate: traverse validate rows
       }
+
+-- | Default row menu that displays a bin icon, which, when clicked, deletes the
+-- | current row.
+defaultRowMenu
+  :: forall row
+   . { remove :: Maybe (Effect Unit)
+     , update :: (row -> row) -> Effect Unit
+     }
+  -> row
+  -> JSX
+defaultRowMenu { remove } row =
+  EditableTable.defaultRemoveCell (map const remove) row
 
 -- | Convert a `FormBuilder` into a column of a table form with the specified
 -- | label where all fields are laid out horizontally.
