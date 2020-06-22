@@ -21,9 +21,11 @@ import Data.Maybe (Maybe, fromMaybe, isNothing, maybe)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
-import Data.Traversable (traverse)
+import Data.Traversable (for_, traverse)
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
+import Effect.Aff (Aff, launchAff_)
+import Effect.Class (liftEffect)
 import Lumi.Components.Column as Column
 import Lumi.Components.EditableTable as EditableTable
 import Lumi.Components.Form.Internal (FormBuilder, FormBuilder'(..), Tree(..), Forest, formBuilder)
@@ -85,7 +87,7 @@ revalidate form props row = (un TableFormBuilder form props).validate row
 editableTable
   :: forall props row result
    . { addLabel :: String
-     , defaultValue :: Maybe row
+     , addRow :: Maybe (Aff row)
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
        -- | Controls what is displayed in the last cell of an editable table row,
@@ -102,7 +104,7 @@ editableTable
       { readonly :: Boolean | props }
       (Array row)
       (Array result)
-editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, rowMenu, summary } =
+editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
@@ -111,7 +113,7 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, rowMenu, 
           EditableTable.editableTable
             { addLabel
             , maxRows
-            , readonly: isNothing defaultValue || props.readonly
+            , readonly: isNothing addRow || props.readonly
             , rowEq: unsafeRefEq
             , summary:
                 Row.row
@@ -123,7 +125,10 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, rowMenu, 
                   , children: [ summary ]
                   }
             , rows: Left $ mapWithIndex Tuple rows
-            , onRowAdd: foldMap (onChange <<< flip Array.snoc) defaultValue
+            , onRowAdd:
+                for_ addRow \addRow' -> launchAff_ do
+                  row <- addRow'
+                  liftEffect $ onChange (flip Array.snoc row)
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (Array.deleteAt index rows')
             , removeCell: \onRowRemoveM (Tuple index row) ->
@@ -147,7 +152,7 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, rowMenu, 
 nonEmptyEditableTable
   :: forall props row result
    . { addLabel :: String
-     , defaultValue :: Maybe row
+     , addRow :: Maybe (Aff row)
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
      , rowMenu
@@ -162,7 +167,7 @@ nonEmptyEditableTable
       { readonly :: Boolean | props }
       (NEA.NonEmptyArray row)
       (NEA.NonEmptyArray result)
-nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, rowMenu, summary } =
+nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
@@ -171,7 +176,7 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, r
           EditableTable.editableTable
             { addLabel
             , maxRows
-            , readonly: isNothing defaultValue || props.readonly
+            , readonly: isNothing addRow || props.readonly
             , rowEq: unsafeRefEq
             , summary:
                 Row.row
@@ -183,7 +188,10 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, r
                   , children: [ summary ]
                   }
             , rows: Right $ mapWithIndex Tuple rows
-            , onRowAdd: foldMap (onChange <<< flip NEA.snoc) defaultValue
+            , onRowAdd:
+                for_ addRow \addRow' -> launchAff_ do
+                  row <- addRow'
+                  liftEffect $ onChange (flip NEA.snoc row)
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (NEA.fromArray =<< NEA.deleteAt index rows')
             , removeCell: \onRowRemoveM (Tuple index row) ->
