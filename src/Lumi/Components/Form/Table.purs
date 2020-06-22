@@ -1,5 +1,6 @@
 module Lumi.Components.Form.Table
   ( TableFormBuilder
+  , revalidate
   , editableTable
   , nonEmptyEditableTable
   , defaultRowMenu
@@ -68,6 +69,16 @@ instance applicativeTableFormBuilder :: Applicative (TableFormBuilder props row)
       { columns: []
       , validate: \_ -> pure a
       }
+
+-- | Revalidate the table form, in order to display error messages or create
+-- | a validated result.
+revalidate
+  :: forall props row result
+   . TableFormBuilder props row result
+  -> props
+  -> row
+  -> Maybe result
+revalidate form props row = (un TableFormBuilder form props).validate row
 
 -- | A `TableFormBuilder` makes a `FormBuilder` for an array where each row has
 -- | columns defined by it.
