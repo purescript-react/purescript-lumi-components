@@ -99,7 +99,10 @@ editableTable
         -> row
         -> Maybe result
         -> JSX
-     , summary :: JSX
+     , summary
+        :: Array row
+        -> Maybe (Array result)
+        -> JSX
      }
   -> FormBuilder
       { readonly :: Boolean | props }
@@ -109,6 +112,7 @@ editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summar
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
+      validateRows = traverse validate rows
     in
       { edit: \onChange ->
           EditableTable.editableTable
@@ -123,7 +127,7 @@ editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summar
                       , flexWrap: "wrap"
                       , justifyContent: "flex-end"
                       }
-                  , children: [ summary ]
+                  , children: [ summary rows validateRows ]
                   }
             , rows: Left $ mapWithIndex Tuple rows
             , onRowAdd:
@@ -146,7 +150,7 @@ editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summar
                       render r (onChange <<< ix i)
                   }
             }
-      , validate: traverse validate rows
+      , validate: validateRows
       }
 
 -- | A `TableFormBuilder` makes a `FormBuilder` for a non-empty array where each
@@ -164,7 +168,10 @@ nonEmptyEditableTable
         -> row
         -> Maybe result
         -> JSX
-     , summary :: JSX
+     , summary
+        :: NEA.NonEmptyArray row
+        -> Maybe (NEA.NonEmptyArray result)
+        -> JSX
      }
   -> FormBuilder
       { readonly :: Boolean | props }
@@ -174,6 +181,7 @@ nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
+      validateRows = traverse validate rows
     in
       { edit: \onChange ->
           EditableTable.editableTable
@@ -188,7 +196,7 @@ nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu
                       , flexWrap: "wrap"
                       , justifyContent: "flex-end"
                       }
-                  , children: [ summary ]
+                  , children: [ summary rows validateRows ]
                   }
             , rows: Right $ mapWithIndex Tuple rows
             , onRowAdd:
@@ -211,7 +219,7 @@ nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu
                       render r (onChange <<< ix i)
                   }
             }
-      , validate: traverse validate rows
+      , validate: validateRows
       }
 
 -- | Default row menu that displays a bin icon, which, when clicked, deletes the
