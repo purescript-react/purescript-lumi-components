@@ -126,7 +126,9 @@ type UploadProps =
 
 type UploadBackend =
   { fetch :: FileId -> Aff FileInfo
-    -- | Allows for running arbitrary 
+    -- | Allows for running an async effect to determine whether the given file
+    -- | should be removed or not. This may be opening a modal window that asks
+    -- | for user confirmation or fetching some remote data.
   , remove :: FileId -> Aff Boolean
   , upload :: File -> Producer Progress Aff (Either Error FileId)
   }
