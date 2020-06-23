@@ -87,6 +87,11 @@ revalidate form props row = (un TableFormBuilder form props).validate row
 editableTable
   :: forall props row result
    . { addLabel :: String
+       -- | Controls the action that is performed when the button for adding a
+       -- | new row is clicked. If this is `Nothing`, the button is not
+       -- | displayed. The async effect wrapped in `Maybe` produces the new row
+       -- | that will be inserted in the table, and, if it's result is
+       -- | `Nothing`, then no rows will be added.
      , addRow :: Maybe (Aff (Maybe row))
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
