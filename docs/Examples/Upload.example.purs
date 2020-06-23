@@ -17,11 +17,11 @@ import Effect.Random (randomRange)
 import Effect.Uncurried (runEffectFn2)
 import Lumi.Components.Button (button, primary) as Button
 import Lumi.Components.Column (column, column_)
+import Lumi.Components.Example (example)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (labeledField, RequiredField(..))
 import Lumi.Components.Text (h2_)
 import Lumi.Components.Upload (FileId(..), FileName(..), UploadVariant(..), defaults, upload)
-import Lumi.Components.Example (example)
 import React.Basic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetChecked)
@@ -117,7 +117,13 @@ docs = unit # make component { initialState, didMount, render }
                       , readonly = self.state.readonly
                       , backend =
                           { fetch: \id@(FileId name) ->
-                              pure { id, name: FileName name, previewUri: Nothing }
+                              pure
+                                { id
+                                , name: FileName name
+                                , previewUri: Nothing
+                                , readonly: false
+                                }
+                          , remove: \_ -> pure true
                           , upload: \file -> produceAff \emitter ->
                               uploadWithRandomPauses emitter file
                           }
@@ -134,10 +140,17 @@ docs = unit # make component { initialState, didMount, render }
                       { value = self.state.files
                       , variant = Files
                       , onChange = send self <<< FileEx
+                      , onClick = \(FileId id) -> Just $ log id
                       , readonly = self.state.readonly
                       , backend =
                           { fetch: \id@(FileId name) ->
-                              pure { id, name: FileName name, previewUri: Nothing }
+                              pure
+                                { id
+                                , name: FileName name
+                                , previewUri: Nothing
+                                , readonly: false
+                                }
+                          , remove: \_ -> pure true
                           , upload: \file -> produceAff \emitter -> do
                               foldMap AVar.read self.state.startUpload
                               void $ foldMap AVar.tryTake self.state.startUpload
@@ -163,7 +176,13 @@ docs = unit # make component { initialState, didMount, render }
                       , readonly = self.state.readonly
                       , backend =
                           { fetch: \id@(FileId name) -> do
-                              pure { id, name: FileName name, previewUri: Nothing }
+                              pure
+                                { id
+                                , name: FileName name
+                                , previewUri: Nothing
+                                , readonly: false
+                                }
+                          , remove: \_ -> pure true
                           , upload: \file -> produceAff \emitter ->
                               uploadWithRandomPauses emitter file
                           }
@@ -182,7 +201,13 @@ docs = unit # make component { initialState, didMount, render }
                       , readonly = self.state.readonly
                       , backend =
                           { fetch: \id@(FileId name) -> do
-                              pure { id, name: FileName name, previewUri: Nothing }
+                              pure
+                                { id
+                                , name: FileName name
+                                , previewUri: Nothing
+                                , readonly: false
+                                }
+                          , remove: \_ -> pure true
                           , upload: \file -> produceAff \emitter ->
                               uploadWithRandomPauses emitter file
                           }

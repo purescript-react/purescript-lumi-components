@@ -9,6 +9,10 @@ import Prelude
 
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Either (Either(..))
+import Data.Map (Map)
+import Data.Map as Map
+import Data.Set (Set)
+import Data.Set as Set
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, SProxy(..))
 import Lumi.Components.Form.Validation (Validated(..))
@@ -38,6 +42,8 @@ instance formDefaultsNumber :: FormDefaults Number where formDefaults = 0.0
 instance formDefaultsInt :: FormDefaults Int where formDefaults = 0
 instance formDefaultsString :: FormDefaults String where formDefaults = ""
 instance formDefaultsArray :: FormDefaults (Array a) where formDefaults = []
+instance formDefaultsSet :: FormDefaults (Set a) where formDefaults = Set.empty
+instance formDefaultsMap :: FormDefaults (Map k a) where formDefaults = Map.empty
 
 instance formDefaultsNonEmptyArray :: FormDefaults a => FormDefaults (NonEmptyArray a) where
   formDefaults = pure formDefaults

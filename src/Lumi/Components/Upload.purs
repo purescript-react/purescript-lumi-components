@@ -31,14 +31,14 @@ import Data.Foldable (foldMap, for_, traverse_)
 import Data.Int (toNumber)
 import Data.Int as Int
 import Data.Map as Map
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, isJust, maybe)
 import Data.MediaType (MediaType(..))
 import Data.Newtype (class Newtype, un)
 import Data.Nullable (Nullable, toNullable)
 import Data.String as String
-import Data.Traversable (for)
+import Data.Traversable (for, sequence_)
 import Effect (Effect)
-import Effect.Aff (Aff, Error, runAff_)
+import Effect.Aff (Aff, Error, launchAff_, runAff_)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (errorShow)
 import Effect.Exception (try)
@@ -79,6 +79,7 @@ type FileInfo =
   { id :: FileId
   , name :: FileName
   , previewUri :: Maybe URI
+  , readonly :: Boolean
   }
 
 type PendingFileInfo =
@@ -114,6 +115,7 @@ type UploadProps =
   , name :: String
   , onBlur :: Nullable EventHandler
   , onChange :: Array FileId -> Effect Unit
+  , onClick :: FileId -> Maybe (Effect Unit)
   , onFocus :: Nullable EventHandler
   , readonly :: Boolean
   , required :: Boolean
@@ -124,6 +126,10 @@ type UploadProps =
 
 type UploadBackend =
   { fetch :: FileId -> Aff FileInfo
+    -- | Allows for running an async effect to determine whether the given file
+    -- | should be removed or not. This may be opening a modal window that asks
+    -- | for user confirmation or fetching some remote data.
+  , remove :: FileId -> Aff Boolean
   , upload :: File -> Producer Progress Aff (Either Error FileId)
   }
 
@@ -137,13 +143,20 @@ defaults :: UploadProps
 defaults =
   { allowMultiple: true
   , backend:
-      { fetch: \id@(FileId name) -> pure { id, name: FileName name, previewUri: Nothing }
+      { fetch: \id@(FileId name) -> pure
+          { id
+          , name: FileName name
+          , previewUri: Nothing
+          , readonly: false
+          }
+      , remove: \_ -> pure true
       , upload: \file -> pure (Right (FileId (File.name file)))
       }
   , disabled: false
   , name: ""
   , onBlur: toNullable $ Just $ handler_ $ pure unit
   , onChange: \_ -> pure unit
+  , onClick: \_ -> Nothing
   , onFocus: toNullable $ Just $ handler_ $ pure unit
   , readonly: false
   , required: false
@@ -212,7 +225,7 @@ upload = make component { initialState, render }
             , previewUri
             , progress: Nothing
             }
-          pure { file, name, previewUri }
+          pure { file, name, previewUri, readonly: true }
       let
         handlePending name = forever do
           progress <- await
@@ -221,12 +234,12 @@ upload = make component { initialState, render }
 
         handleCompleteFiles = send self <<< AddCompleteFiles
       runAff_ (either errorShow handleCompleteFiles) do
-        flip parTraverse allowedFiles' \{ file, name, previewUri } -> do
+        flip parTraverse allowedFiles' \{ file, name, previewUri, readonly } -> do
           let var = self.props.backend.upload file
           completeFile <- runProcess (var $$ handlePending name)
           case completeFile of
             Left error -> throwError error
-            Right id -> pure { id, name, previewUri }
+            Right id -> pure { id, name, previewUri, readonly }
 
     send self action = do
       unless self.props.readonly do
@@ -267,7 +280,11 @@ upload = make component { initialState, render }
                 props.onChange $ mergeFileIds (shouldAllowMultiple props) (map _.id files) props.value
 
           RemoveCompleteFile fileId -> do
-            self.props.onChange $ Array.delete fileId self.props.value
+            launchAff_ do
+              shouldRemove <- self.props.backend.remove fileId
+              when shouldRemove $ liftEffect do
+                props <- readProps self
+                props.onChange $ Array.delete fileId props.value
 
     render self@{ props, state, instance_ } =
       FetchCache.multi
@@ -370,7 +387,8 @@ upload = make component { initialState, render }
                   ( stuff.completeFiles <#> \value ->
                       lumiUploadImage
                         { key: un FileName value.name
-                        , onClick: cancel
+                        , onClick: cancelAnd $ sequence_ (self.props.onClick value.id)
+                        , "data-clickable": isJust (self.props.onClick value.id)
                         , style:
                             case value.previewUri <|> Map.lookup value.id stuff.filePreviewCache of
                               Just (URI uri) ->
@@ -388,7 +406,7 @@ upload = make component { initialState, render }
                                   , backgroundSize: "36px 36px"
                                   }
                         , children:
-                            if stuff.readonly
+                            if stuff.readonly || value.readonly
                               then [ empty ]
                               else
                                 [ lumiUploadImageHoverOverlay {}
@@ -403,6 +421,7 @@ upload = make component { initialState, render }
                     in Array.filter (\f -> not Array.elem f.name completeFileNames) stuff.pendingFiles <#> \value ->
                       lumiUploadImage
                         { key: un FileName value.name
+                        , "data-clickable": false
                         , onClick: cancel
                         , style: R.css {}
                         , children:
@@ -447,15 +466,25 @@ upload = make component { initialState, render }
                                           }
                                 }
                             , lumiUploadFileInfo
-                                { children: [ body_ $ un FileName value.name ]
+                                { children:
+                                    [ case self.props.onClick value.id of
+                                        Nothing ->
+                                          body_ $ un FileName value.name
+                                        Just onClick ->
+                                          button linkStyle
+                                            { title = un FileName value.name
+                                            , onPress = cancelAnd onClick
+                                            }
+                                    ]
                                 }
-                            , if stuff.readonly
+                            , if stuff.readonly || value.readonly
                                 then empty
-                                else lumiUploadFileRemove
-                                  { onClick: capture_ $ send self $ RemoveCompleteFile value.id
-                                  , children: icon_ Bin
-                                  , style: R.css {}
-                                  }
+                                else
+                                  lumiUploadFileRemove
+                                    { onClick: capture_ $ send self $ RemoveCompleteFile value.id
+                                    , children: icon_ Bin
+                                    , style: R.css {}
+                                    }
                             ]
                         }
                   )
@@ -523,6 +552,8 @@ upload = make component { initialState, render }
                 Just pendingFileInfo, _ ->
                   lumiUploadAvatarImage
                     { style: R.css {}
+                    , "data-clickable": false
+                    , onClick: cancel
                     , children:
                         [ pendingFileInfo.progress # foldMap \progress ->
                             progressCircle progressDefaults
@@ -542,33 +573,15 @@ upload = make component { initialState, render }
                             , backgroundRepeat: "no-repeat"
                             , backgroundSize: "cover"
                             }
+                        , "data-clickable": isJust (self.props.onClick fileInfo.id)
+                        , onClick: cancelAnd $ sequence_ (self.props.onClick fileInfo.id)
                         , children: []
                         }
                     _ ->
-                      case variant of
-                        Logo ->
-                          lumiUploadAvatarImage
-                            { style: R.css { backgroundColor: cssStringHSLA colors.black4 }
-                            , children: []
-                            }
-                        _ ->
-                          lumiUploadAvatarImage
-                            { style: R.css {}
-                            , children: [ userSvg ]
-                            }
+                      defaultAvatarImage
 
                 _, _ ->
-                  case variant of
-                    Logo ->
-                      lumiUploadAvatarImage
-                        { style: R.css { backgroundColor: cssStringHSLA colors.black4 }
-                        , children: []
-                        }
-                    _ ->
-                      lumiUploadAvatarImage
-                        { style: R.css {}
-                        , children: [ userSvg ]
-                        }
+                  defaultAvatarImage
             , if stuff.readonly
                 then empty
                 else
@@ -590,6 +603,9 @@ upload = make component { initialState, render }
                               Nothing ->
                                 empty
 
+                              Just fileInfo | stuff.readonly || fileInfo.readonly ->
+                                empty
+
                               Just fileInfo ->
                                 button linkStyle
                                   { onPress = capture_ $ send self $ RemoveCompleteFile fileInfo.id
@@ -599,6 +615,23 @@ upload = make component { initialState, render }
                       }
             ]
         }
+      where
+        defaultAvatarImage =
+          case variant of
+            Logo ->
+              lumiUploadAvatarImage
+                { style: R.css { backgroundColor: cssStringHSLA colors.black4 }
+                , "data-clickable": false
+                , onClick: cancel
+                , children: []
+                }
+            _ ->
+              lumiUploadAvatarImage
+                { style: R.css {}
+                , "data-clickable": false
+                , onClick: cancel
+                , children: [ userSvg ]
+                }
 
     lumiUpload = element (R.unsafeCreateDOMComponent "lumi-upload")
     lumiUploadLabel = elementKeyed (R.unsafeCreateDOMComponent "label")
@@ -641,6 +674,9 @@ getEventFiles fileInput = do
 
 cancel :: EventHandler
 cancel = handler (stopPropagation >>> preventDefault) \_ -> pure unit
+
+cancelAnd :: Effect Unit -> EventHandler
+cancelAnd eff = handler (stopPropagation >>> preventDefault) \_ -> eff
 
 unsafeGlobalEventTarget :: EventTarget
 unsafeGlobalEventTarget = unsafePerformEffect do
@@ -790,7 +826,7 @@ styles = jss
               }
 
           , "& > label.lumi-upload + lumi-upload-image-list, & > label.lumi-upload + lumi-upload-file-list":
-                { marginTop: "24px - 8px" -- (gap)
+                { marginTop: "8px" -- (gap)
                 }
 
           , "& > lumi-upload-image-list":
@@ -815,6 +851,10 @@ styles = jss
                   , position: "relative"
                   , width: "128px"
                   , height: "128px"
+
+                  , "&[data-clickable=\"true\"]":
+                      { cursor: "pointer"
+                      }
 
                   , "&:not(:hover)":
                       { "& > lumi-upload-image-hover-overlay, & > lumi-upload-image-remove-icon":
@@ -875,11 +915,7 @@ styles = jss
                   , flexFlow: "row"
                   , alignItems: "center"
                   , height: "65px"
-                  , borderTop: [ "1px", "solid", cssStringHSLA colors.black4 ]
-
-                  , "&:last-child":
-                      { borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
-                      }
+                  , borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
 
                   , "& > lumi-upload-file-image":
                       { boxSizing: "border-box"
@@ -939,6 +975,9 @@ styles = jss
                   , borderRadius: "40px"
                   , overflow: "hidden"
                   , backgroundColor: cssStringHSLA colors.white
+                  , "&[data-clickable=\"true\"]":
+                      { cursor: "pointer"
+                      }
                   }
               , "& > lumi-upload-avatar-actions":
                   { boxSizing: "border-box"

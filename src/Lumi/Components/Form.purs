@@ -81,7 +81,7 @@ import Lumi.Components.Column (column)
 import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
 import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
-import Lumi.Components.Form.Internal (Forest(..), FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
+import Lumi.Components.Form.Internal (Forest, FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
 import Lumi.Components.Form.Validation (setModified)
 import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, validDate, optional, setFresh, setModified, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
