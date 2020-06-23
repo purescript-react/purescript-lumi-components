@@ -21,7 +21,7 @@ import Data.Maybe (Maybe, fromMaybe, isNothing, maybe)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
-import Data.Traversable (for_, traverse)
+import Data.Traversable (for_, traverse, traverse_)
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Aff (Aff, launchAff_)
@@ -87,7 +87,7 @@ revalidate form props row = (un TableFormBuilder form props).validate row
 editableTable
   :: forall props row result
    . { addLabel :: String
-     , addRow :: Maybe (Aff row)
+     , addRow :: Maybe (Aff (Maybe row))
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
        -- | Controls what is displayed in the last cell of an editable table row,
@@ -97,6 +97,7 @@ editableTable
            , update :: (row -> row) -> Effect Unit
            }
         -> row
+        -> Maybe result
         -> JSX
      , summary :: JSX
      }
@@ -127,8 +128,8 @@ editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summar
             , rows: Left $ mapWithIndex Tuple rows
             , onRowAdd:
                 for_ addRow \addRow' -> launchAff_ do
-                  row <- addRow'
-                  liftEffect $ onChange (flip Array.snoc row)
+                  rowM <- addRow'
+                  traverse_ (liftEffect <<< onChange <<< flip Array.snoc) rowM
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (Array.deleteAt index rows')
             , removeCell: \onRowRemoveM (Tuple index row) ->
@@ -137,6 +138,7 @@ editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summar
                   , update: onChange <<< ix index
                   }
                   row
+                  (validate row)
             , columns:
                 columns <#> \{ label, render } ->
                   { label
@@ -152,7 +154,7 @@ editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summar
 nonEmptyEditableTable
   :: forall props row result
    . { addLabel :: String
-     , addRow :: Maybe (Aff row)
+     , addRow :: Maybe (Aff (Maybe row))
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
      , rowMenu
@@ -160,6 +162,7 @@ nonEmptyEditableTable
            , update :: (row -> row) -> Effect Unit
            }
         -> row
+        -> Maybe result
         -> JSX
      , summary :: JSX
      }
@@ -190,8 +193,8 @@ nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu
             , rows: Right $ mapWithIndex Tuple rows
             , onRowAdd:
                 for_ addRow \addRow' -> launchAff_ do
-                  row <- addRow'
-                  liftEffect $ onChange (flip NEA.snoc row)
+                  rowM <- addRow'
+                  traverse_ (liftEffect <<< onChange <<< flip NEA.snoc) rowM
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (NEA.fromArray =<< NEA.deleteAt index rows')
             , removeCell: \onRowRemoveM (Tuple index row) ->
@@ -200,6 +203,7 @@ nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu
                   , update: onChange <<< ix index
                   }
                   row
+                  (validate row)
             , columns:
                 columns <#> \{ label, render } ->
                   { label
@@ -213,13 +217,14 @@ nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu
 -- | Default row menu that displays a bin icon, which, when clicked, deletes the
 -- | current row.
 defaultRowMenu
-  :: forall row
+  :: forall row result
    . { remove :: Maybe (Effect Unit)
      , update :: (row -> row) -> Effect Unit
      }
   -> row
+  -> Maybe result
   -> JSX
-defaultRowMenu { remove } row =
+defaultRowMenu { remove } row _ =
   EditableTable.defaultRemoveCell (map const remove) row
 
 -- | Convert a `FormBuilder` into a column of a table form with the specified

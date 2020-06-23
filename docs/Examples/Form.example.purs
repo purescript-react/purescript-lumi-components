@@ -344,7 +344,7 @@ userForm = ado
       )
     $ FT.editableTable
         { addLabel: "Add pet"
-        , addRow: Just $ pure
+        , addRow: Just $ pure $ Just
             { firstName: F.Fresh ""
             , lastName: F.Fresh ""
             , animal: F.Fresh Nothing
