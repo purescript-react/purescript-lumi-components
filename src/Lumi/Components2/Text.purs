@@ -1,5 +1,7 @@
 module Lumi.Components2.Text
-  ( Text
+  ( nbsp
+
+  , Text
   , TextProps, TextType
   , text
 
@@ -24,13 +26,16 @@ import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, PropsModifier', lumiComponent, propsModifier)
 import Lumi.Components.Color (ColorMap)
-import Lumi.Styles (Style, StyleModifier, StyleProperty)
+import Lumi.Styles (Style, StyleModifier)
 import Lumi.Styles as S
 import Lumi.Styles.Theme (LumiTheme(..), TextMap, textFontSize, textLineHeight, textMargin, useTheme)
 import React.Basic (JSX, ReactComponent)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Hooks as Hooks
+
+nbsp :: String
+nbsp = " "
 
 -- Text
 
@@ -127,6 +132,9 @@ color :: forall c. (forall a. ColorMap a -> a) -> TextModifier c
 color f =
   S.style \(LumiTheme { colors }) ->
     S.css { color: S.color (f colors) }
+
+noMargin :: forall c. TextModifier c
+noMargin = S.style_ $ S.css { marginBottom: S.px 0 }
 
 -- Paragraph
 
