@@ -16,7 +16,7 @@ import Lumi.Components.Column (column)
 import Lumi.Components.Tab (TabId(..), TabKey(..), tabs, urlParts)
 import Lumi.Components.Text (body, text)
 import Lumi.Components.Utility.ReactRouter (RouterProps, withRouter)
-import React.Basic (Component, JSX, createComponent, element, empty, toReactComponent)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, toReactComponent)
 import React.Basic.DOM (css, mergeStyles)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))

@@ -11,7 +11,7 @@ import Lumi.Components2.Text as T
 import Lumi.Styles (StyleModifier)
 import Lumi.Styles as S
 import Lumi.Styles.Box (_flex)
-import React.Basic (JSX, fragment)
+import React.Basic.Classic (JSX, fragment)
 
 docs :: JSX
 docs =

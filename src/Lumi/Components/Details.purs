@@ -6,7 +6,7 @@ import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Text (body_)
 import React.Basic.DOM as R
-import React.Basic.Hooks (JSX, component, element)
+import React.Basic.Hooks (JSX, component)
 
 type DetailsProps =
   { summary :: JSX
@@ -15,7 +15,7 @@ type DetailsProps =
   }
 
 details :: DetailsProps -> JSX
-details = element $ unsafePerformEffect do
+details = unsafePerformEffect do
   component "Details" \props ->
     pure $ R.details
       { className: "lumi"

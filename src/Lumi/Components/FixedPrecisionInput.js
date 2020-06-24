@@ -4,10 +4,10 @@ var React = require("react");
 
 function Input(props) {
   var this_ = this;
-  this_.bindRef = function(input) {
+  this_.bindRef = function (input) {
     this_.inputRef = input;
   };
-  this_.onChange = function(e) {
+  this_.onChange = function (e) {
     var target = e.target;
     var valueStr = target.value;
     var validationError = props.validate(valueStr);
@@ -37,13 +37,13 @@ Input.prototype = Object.create(React.Component.prototype);
 
 Input.displayName = "FixedPrecisionInputInner";
 
-Input.prototype.componentWillReceiveProps = function(newProps) {
+Input.prototype.componentWillReceiveProps = function (newProps) {
   if (this.inputRef != null && this.inputRef.value !== newProps.defaultValue) {
     this.inputRef.value = newProps.defaultValue;
   }
 };
 
-Input.prototype.render = function() {
+Input.prototype.render = function () {
   return React.createElement(
     "input",
     Object.assign({}, this.props, {
@@ -56,7 +56,7 @@ Input.prototype.render = function() {
 
 exports.input_ = Input;
 
-exports.cancelWhenNotMatch = function(regex, e) {
+exports.cancelWhenNotMatch = function (regex, e) {
   if (e.cancelable && !e.defaultPrevented && !regex.test(e.key)) {
     e.preventDefault();
   }

@@ -9,7 +9,7 @@ import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Link as Link
 import Lumi.Components.Text (body_, subtext_)
-import React.Basic (JSX, createComponent, element, fragment, makeStateless)
+import React.Basic.Classic (JSX, createComponent, element, fragment, makeStateless)
 import React.Basic.DOM as R
 import Web.HTML.History (URL)
 

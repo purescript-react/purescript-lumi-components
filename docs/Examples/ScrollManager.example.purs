@@ -3,7 +3,7 @@ module Lumi.Components.Examples.ScrollManager where
 import Lumi.Components.Column (column_)
 import Lumi.Components.Text (p_)
 import Lumi.Components.Example (exampleCode)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =

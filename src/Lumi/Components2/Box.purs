@@ -7,7 +7,7 @@ import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles (toCSS)
 import Lumi.Styles.Box as Styles.Box
 import Lumi.Styles.Theme (useTheme)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Hooks as React

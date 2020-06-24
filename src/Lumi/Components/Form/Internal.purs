@@ -13,7 +13,7 @@ import Effect.Aff (Aff, runAff_)
 import Effect.Exception (throwException)
 import Lumi.Components.LabeledField (RequiredField, ValidationMessage)
 import Prim.TypeError (class Warn, Above, Text)
-import React.Basic (JSX, fragment, keyed)
+import React.Basic.Classic (JSX, fragment, keyed)
 
 data Tree
   = Child

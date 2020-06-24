@@ -54,7 +54,7 @@ import Lumi.Components.Icon (IconType(..), icon_)
 import Lumi.Components.Progress (progressBar, progressCircle, progressDefaults)
 import Lumi.Components.Svg (userSvg)
 import Lumi.Components.Text (body_, nbsp)
-import React.Basic (Component, JSX, createComponent, element, elementKeyed, empty, fragment, make, readProps)
+import React.Basic.Classic (Component, JSX, createComponent, element, elementKeyed, empty, fragment, make, readProps)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (defaultOptions, globalEvents)
 import React.Basic.DOM.Events (capture, capture_, nativeEvent, preventDefault, stopPropagation, target)

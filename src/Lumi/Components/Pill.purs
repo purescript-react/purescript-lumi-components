@@ -8,7 +8,7 @@ import Data.Nullable (Nullable, toNullable)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Status (Status)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 type PillProps =

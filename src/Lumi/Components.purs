@@ -16,7 +16,7 @@ import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
 import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
-import React.Basic.Hooks (JSX, ReactComponent, Render, Hook, component, componentFromHook, element)
+import React.Basic.Hooks (Hook, JSX, ReactComponent, Render, element, reactComponent, reactComponentFromHook)
 import Record.Unsafe.Union (unsafeUnion)
 
 -- | A `LumiComponent` takes a function that updates its default props instead
@@ -58,7 +58,7 @@ lumiComponent ::
   (LumiProps props -> Render Unit hooks JSX) ->
   Effect (LumiComponent props)
 lumiComponent name defaults render = do
-  c <- component name render
+  c <- reactComponent name render
   pure
     $ lumiElement
     $ LumiInternalComponent
@@ -81,7 +81,7 @@ lumiComponentFromHook ::
   (LumiProps ( render :: r -> JSX | props ) -> Hook hooks r) ->
   Effect (LumiComponent ( render :: r -> JSX | props ))
 lumiComponentFromHook name defaults propsToHook = do
-  c <- componentFromHook name propsToHook
+  c <- reactComponentFromHook name propsToHook
   pure
     $ lumiElement
     $ LumiInternalComponent

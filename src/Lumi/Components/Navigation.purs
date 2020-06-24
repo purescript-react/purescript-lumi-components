@@ -20,7 +20,7 @@ import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (body_, subtext_, text, subtext)
 import Lumi.Components.ZIndex (ziNavigationBar, ziNavigationDropdown)
-import React.Basic (Component, JSX, createComponent, element, empty, fragment, make)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, fragment, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)

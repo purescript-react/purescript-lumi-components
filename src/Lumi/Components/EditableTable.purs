@@ -22,7 +22,7 @@ import Lumi.Components2.Text as T
 import Lumi.Styles as S
 import Lumi.Styles.Box (FlexAlign(..), _align, _justify, _row)
 import Lumi.Styles.Theme (LumiTheme(..))
-import React.Basic (Component, JSX, createComponent, element, empty, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, makeStateless)
 import React.Basic.DOM as R
 
 type EditableTableProps row =

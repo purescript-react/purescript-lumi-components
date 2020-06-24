@@ -6,7 +6,7 @@ import Data.Int as Int
 import Data.Newtype (class Newtype)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Color (Color, ColorMap, ColorName, colorNames, colors)
-import React.Basic (ReactContext, createContext)
+import React.Basic.Classic (ReactContext, createContext)
 import React.Basic.Hooks (Hook, UseContext, useContext)
 
 newtype LumiTheme

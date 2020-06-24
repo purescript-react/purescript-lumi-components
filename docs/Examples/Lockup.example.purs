@@ -9,7 +9,7 @@ import Lumi.Components.Lockup (pageLockup, productLockup, userLockup)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (h4_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

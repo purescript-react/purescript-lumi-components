@@ -10,7 +10,7 @@ import Data.Maybe (Maybe(..))
 import Data.Traversable (traverse)
 import Effect.Aff (Aff, launchAff_)
 import Effect.Class (liftEffect)
-import React.Basic (Component, JSX, createComponent, make, readProps)
+import React.Basic.Classic (Component, JSX, createComponent, make, readProps)
 
 type FetchCacheProps id value =
   { getData :: id -> Aff value

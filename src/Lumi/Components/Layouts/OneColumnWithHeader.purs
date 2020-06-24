@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Maybe (Maybe(..))
 import Lumi.Components.Text (h2, text)
-import React.Basic (Component, JSX, createComponent, element, fragment, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, fragment, makeStateless)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 

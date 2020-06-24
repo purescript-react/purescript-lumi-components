@@ -5,7 +5,7 @@ import Prelude
 import Color (toHexString)
 import Lumi.Components.Color (colors)
 import JSS (JSS, jss)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 
 data BorderStyle

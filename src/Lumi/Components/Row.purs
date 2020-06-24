@@ -1,7 +1,7 @@
 module Lumi.Components.Row where
 
 import JSS (JSS, jss)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 component :: Component RowProps

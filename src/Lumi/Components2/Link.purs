@@ -11,7 +11,7 @@ import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles (toCSS)
 import Lumi.Styles.Link as Styles.Link
 import Lumi.Styles.Theme (useTheme)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 import React.Basic.DOM.Events (altKey, button, ctrlKey, metaKey, preventDefault, shiftKey, stopPropagation)
 import React.Basic.Emotion as E

@@ -10,7 +10,7 @@ import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
 import Lumi.Components.Text (subtext, text, nbsp)
-import React.Basic (Component, JSX, createComponent, element, empty, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 

@@ -11,7 +11,7 @@ import Lumi.Components.Color (colors, colorNames)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text as T
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 
 type ListProps r =

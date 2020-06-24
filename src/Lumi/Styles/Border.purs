@@ -7,7 +7,7 @@ import Lumi.Styles (StyleModifier, style, style_)
 import Lumi.Styles.Box (box)
 import Lumi.Styles.Box as Box
 import Lumi.Styles.Theme (LumiTheme(..))
-import React.Basic.Emotion (color, css, int, nested, none, prop, str)
+import React.Basic.Emotion (color, css, px, nested, none, prop, str)
 
 border :: StyleModifier
 border =
@@ -15,7 +15,7 @@ border =
     <<< style \(LumiTheme theme) ->
       css
         { label: str "border"
-        , borderWidth: int 1
+        , borderWidth: px 1
         , borderColor: color theme.colors.black4
         , borderStyle: str "solid"
         , padding: str "8px 16px"
@@ -25,7 +25,7 @@ _round :: StyleModifier
 _round =
   style_
     $ css
-      { borderRadius: int 4
+      { borderRadius: px 4
       }
 
 _topBottom :: StyleModifier
@@ -34,9 +34,9 @@ _topBottom =
         ( css
             { borderLeft: none
             , borderRight: none
-            , borderRadius: int 0
-            , paddingLeft: int 0
-            , paddingRight: int 0
+            , borderRadius: px 0
+            , paddingLeft: px 0
+            , paddingRight: px 0
             }
         )
 
@@ -81,7 +81,7 @@ _listCompact =
       , "&:not(:first-child)":
         nested
           $ css
-              { marginTop: int (-1)
+              { marginTop: px (-1)
               , ":not(:hover)":
                 nested
                   $ css

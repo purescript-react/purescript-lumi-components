@@ -6,7 +6,7 @@ import Color (cssStringHSLA)
 import JSS (JSS, jss)
 import Lumi.Components.Color (Color, colors)
 import Lumi.Components.Text (lumiSubtextFontSize)
-import React.Basic (JSX, element)
+import React.Basic.Classic (JSX, element)
 import React.Basic.DOM as R
 
 type BadgeProps =

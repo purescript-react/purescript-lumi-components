@@ -10,7 +10,7 @@ import Effect.Uncurried (EffectFn1, runEffectFn1)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Input as Input
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events as Events

@@ -12,7 +12,7 @@ import Lumi.Components.Images (avatar_, productThumb_)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text as T
-import React.Basic (JSX, createComponent, element, fragment, makeStateless)
+import React.Basic.Classic (JSX, createComponent, element, fragment, makeStateless)
 import React.Basic.DOM as R
 
 lockup

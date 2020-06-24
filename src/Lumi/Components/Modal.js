@@ -14,19 +14,19 @@ function assign(target, from) {
   return target;
 }
 
-exports.modalBuilder = function(ModalPortal) {
+exports.modalBuilder = function (ModalPortal) {
   var ModalComponent = function constructor(_props) {
     this.el = document.createElement("div");
     var this_ = this;
-    this.requestClose = function(event) {
+    this.requestClose = function (event) {
       if (this_.ownerHandlesClose()) {
         this_.props.onRequestClose(event);
       }
     };
-    this.ownerHandlesClose = function() {
+    this.ownerHandlesClose = function () {
       return !!this_.props.onRequestClose;
     };
-    this.portalRef = function(ref) {
+    this.portalRef = function (ref) {
       this_.portal = ref;
     };
     return this;
@@ -34,15 +34,15 @@ exports.modalBuilder = function(ModalPortal) {
   ModalComponent.prototype = Object.create(React.Component.prototype);
   ModalComponent.displayName = "Modal";
 
-  ModalComponent.prototype.componentDidMount = function() {
+  ModalComponent.prototype.componentDidMount = function () {
     modalRoot.appendChild(this.el);
   };
 
-  ModalComponent.prototype.componentWillUnmount = function() {
+  ModalComponent.prototype.componentWillUnmount = function () {
     modalRoot.removeChild(this.el);
   };
 
-  ModalComponent.prototype.render = function() {
+  ModalComponent.prototype.render = function () {
     return ReactDOM.createPortal(
       h(
         ModalPortal,
@@ -61,7 +61,7 @@ exports.modalBuilder = function(ModalPortal) {
   return ModalComponent;
 };
 
-exports.toggleBodyClass = function(className, on) {
+exports.toggleBodyClass = function (className, on) {
   if (on) {
     document.body.classList.add(className);
   } else {

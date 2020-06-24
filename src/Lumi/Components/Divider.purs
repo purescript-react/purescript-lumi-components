@@ -5,7 +5,7 @@ import Prelude
 import Color (cssStringHSLA)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 
 type DividerProps =

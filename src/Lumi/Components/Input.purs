@@ -53,7 +53,7 @@ import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (body_)
-import React.Basic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
 import React.Basic.Events (EventHandler)

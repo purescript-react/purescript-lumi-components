@@ -10,7 +10,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Text (h3_, subtext_)
 import Lumi.Components.FixedPrecisionInput (defaults, fixedPrecisionInput)
 import Lumi.Components.Example (example)
-import React.Basic (Component, JSX, createComponent, make)
+import React.Basic.Classic (Component, JSX, createComponent, make)
 
 component :: Component Unit
 component = createComponent "FixedPrecisionInputExample"

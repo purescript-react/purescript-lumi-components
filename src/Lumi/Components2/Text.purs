@@ -29,7 +29,7 @@ import Lumi.Components.Color (ColorMap)
 import Lumi.Styles (Style, StyleModifier)
 import Lumi.Styles as S
 import Lumi.Styles.Theme (LumiTheme(..), TextMap, textFontSize, textLineHeight, textMargin, useTheme)
-import React.Basic (JSX, ReactComponent)
+import React.Basic.Classic (JSX, ReactComponent)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Hooks as Hooks
@@ -267,7 +267,7 @@ mkHeaderComponent el =
 -- | and header elements.
 textStyle :: (forall a. TextMap a -> a) -> StyleModifier
 textStyle selector =
-  S.style \theme -> 
+  S.style \theme ->
     S.css
       { fontSize: S.px $ textFontSize theme selector
       , lineHeight: S.px $ textLineHeight theme selector

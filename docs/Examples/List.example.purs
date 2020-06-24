@@ -15,7 +15,7 @@ import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (text, subtext, h2_, body_)
 import Lumi.Components.Text as T
 import Lumi.Components.Example (example)
-import React.Basic (JSX, fragment)
+import React.Basic.Classic (JSX, fragment)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
 

@@ -6,7 +6,7 @@ import Color (cssStringHSLA)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size)
-import React.Basic (JSX, element)
+import React.Basic.Classic (JSX, element)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 avatar

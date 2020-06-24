@@ -22,7 +22,7 @@ import Lumi.Components.Link as Link
 import Lumi.Components.Text (p_)
 import Lumi.Components.ZIndex (ziDropdownButton)
 import Math as Math
-import React.Basic (Component, JSX, createComponent, element, fragment, make, makeStateless, readProps, readState)
+import React.Basic.Classic (Component, JSX, createComponent, element, fragment, make, makeStateless, readProps, readState)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (ref)

@@ -13,7 +13,7 @@ import Lumi.Components.Color (colors)
 import Lumi.Components.Icon (IconType(Rearrange), icon)
 import Lumi.Components.Input (CheckboxState(..), checkbox, input)
 import Lumi.Components.Size (small)
-import React.Basic (Component, JSX, createComponent, element, keyed, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, keyed, makeStateless)
 import React.Basic.DOM (CSS, css, div, text, unsafeCreateDOMComponent)
 import React.Basic.DOM.Events (targetChecked)
 import React.Basic.Events as Events

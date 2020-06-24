@@ -11,7 +11,7 @@ import Lumi.Components.Input (input, text_)
 import Lumi.Components.Text (p, text)
 import Lumi.Components.Toast (toast, toastBubble, toastManager)
 import Lumi.Components.Example (example)
-import React.Basic (Component, JSX, createComponent, keyed, make)
+import React.Basic.Classic (Component, JSX, createComponent, keyed, make)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events (handler, handler_)

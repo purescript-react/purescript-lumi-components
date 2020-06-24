@@ -11,7 +11,7 @@ import Effect (Effect)
 import JSS (JSS, jss)
 import Lumi.Components.Button as Button
 import Lumi.Components.Color (colors)
-import React.Basic (JSX, createComponent, element, fragment, keyed, makeStateless)
+import React.Basic.Classic (JSX, createComponent, element, fragment, keyed, makeStateless)
 import React.Basic.DOM as R
 import React.Basic.Events (handler_)
 

@@ -8,7 +8,7 @@ import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size)
 import Lumi.Components.ZIndex (ziTooltip)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 
 type TooltipProps =

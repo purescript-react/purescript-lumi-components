@@ -30,7 +30,7 @@ import Lumi.Components.Table.FilterDropdown (Item, filterDropdown)
 import Lumi.Components.Text (subtext_)
 import Lumi.Components.ZIndex (ziTableHeader, ziTableHeaderMenu, ziTableLockedColumn, ziTableLockedColumnHeader)
 import Lumi.Components2.ScrollObserver (scrollObserver)
-import React.Basic (Component, JSX, createComponent, element, empty, keyed, make, readProps, readState)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, keyed, make, readProps, readState)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (QuerySelector(..), selectorRef)

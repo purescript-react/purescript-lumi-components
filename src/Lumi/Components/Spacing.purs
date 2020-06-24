@@ -7,7 +7,7 @@ module Lumi.Components.Spacing
 
 import Prelude
 
-import React.Basic.Compat (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 import React.Basic.Emotion (class IsStyleProperty, str)
 

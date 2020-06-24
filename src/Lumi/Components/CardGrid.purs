@@ -14,7 +14,7 @@ import JSS (JSS, jss)
 import Lumi.Components.Card (card, cardMinWidth)
 import Lumi.Components.Input (CheckboxState(..), checkbox, input)
 import Lumi.Components.Size (Size(..))
-import React.Basic (JSX, createComponent, element, keyed, make, readProps)
+import React.Basic.Classic (JSX, createComponent, element, keyed, make, readProps)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (stopPropagation, targetChecked)
 import React.Basic.Events (handler)

@@ -9,7 +9,7 @@ import Lumi.Components.NativeSelect (nativeSelect, defaults)
 import Lumi.Components.Text (h2_)
 import Lumi.Components2.Button (button, _secondary)
 import Lumi.Components2.ButtonGroup (buttonGroup)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

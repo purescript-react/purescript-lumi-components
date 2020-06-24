@@ -21,7 +21,7 @@ import Data.Newtype (class Newtype, un)
 import Effect (Effect)
 import Lumi.Components.Form (FormBuilder)
 import Lumi.Components.Form as F
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 -- | `Form` is the base functor for the `Wizard` language.  It represents a
 -- | form as a step of the wizard, taking a parametrized identifier for the

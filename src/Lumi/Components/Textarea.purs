@@ -7,7 +7,7 @@ import Data.Nullable (Nullable, toNullable)
 import Effect.Uncurried (mkEffectFn1)
 import JSS (JSS, jss)
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusInvalidStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputInvalidStyles, lumiInputPlaceholderStyles, lumiInputStyles)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 import React.Basic.Events (EventHandler)
 

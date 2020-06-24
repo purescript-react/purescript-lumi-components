@@ -6,7 +6,7 @@ import Data.Nullable (Nullable, toMaybe)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.ZIndex (ziInputGroup)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 

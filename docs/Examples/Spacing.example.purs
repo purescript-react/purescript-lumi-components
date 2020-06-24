@@ -9,7 +9,7 @@ import Lumi.Components.Example (example)
 import Lumi.Components.Row (row)
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (body_)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

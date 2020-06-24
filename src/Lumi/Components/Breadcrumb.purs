@@ -18,7 +18,7 @@ import Effect.Uncurried (EffectFn1, runEffectFn1)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Link as Link
-import React.Basic (JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 import Web.HTML.History (URL)
 

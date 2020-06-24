@@ -6,7 +6,7 @@ import Lumi.Components.Button (button, primary)
 import Lumi.Components.Column (column_, responsiveColumn_)
 import Lumi.Components.Text (h2_, p_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =

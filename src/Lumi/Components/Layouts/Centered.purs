@@ -1,6 +1,6 @@
 module Lumi.Components.Layouts.Centered where
 
-import React.Basic (JSX, element)
+import React.Basic.Classic (JSX, element)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 
 layout :: JSX -> JSX

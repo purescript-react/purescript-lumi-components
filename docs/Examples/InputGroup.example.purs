@@ -12,7 +12,7 @@ import Lumi.Components.InputGroup (inputGroup)
 import Lumi.Components.Text (h2_)
 import Lumi.Components.DropdownButton (dropdownButton, dropdownButtonDefaults)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

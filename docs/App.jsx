@@ -5,7 +5,7 @@ import React, { Component, useState, useEffect } from "react";
 import { Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
 import Media from "react-media";
 import Loadable from "react-loadable";
-import changeCase from "change-case";
+import { paramCase } from "change-case";
 
 import { colors, colorNames } from "purs/Lumi.Components.Color";
 import { column, column_ } from "purs/Lumi.Components.Column";
@@ -47,7 +47,7 @@ const fromComponentPath = title => ({
     loading: () => null // these load quickly enough that a noisy loader makes it look slower
   }),
   title,
-  path: `/${changeCase.hyphen(title)}`,
+  path: `/${paramCase(title)}`,
   componentSource: `${repoSourceBasePath}/src/Lumi/Components/${title}.purs`,
   exampleSource: `${repoSourceBasePath}/docs/Examples/${title}.example.purs`,
   apiReference: `${pursuitBasePath}/docs/Lumi.Components.${title}`
@@ -64,7 +64,7 @@ const fromComponentPathv2 = title => ({
     loading: () => null // these load quickly enough that a noisy loader makes it look slower
   }),
   title,
-  path: `/v2/${changeCase.hyphen(title)}`,
+  path: `/v2/${paramCase(title)}`,
   componentSource: `${repoSourceBasePath}/src/Lumi/Components2/${title}.purs`,
   exampleSource: `${repoSourceBasePath}/docs/Examples2/${title}.example.purs`,
   apiReference: `${pursuitBasePath}/docs/Lumi.Components2.${title}`
@@ -431,8 +431,8 @@ const ExampleArea = ({ children }) =>
 class ErrorBoundary extends Component {
   state = { error: null };
 
-  componentWillReceiveProps() {
-    this.setState({ error: null });
+  static getDerivedStateFromProps() {
+    return { error: null };
   }
 
   componentDidCatch(error, info) {

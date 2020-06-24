@@ -18,7 +18,7 @@ import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (sectionHeader_, subsectionHeader, text)
 import Lumi.Components.ZIndex (ziModal)
 import Prim.Row (class Nub, class Union)
-import React.Basic (Component, JSX, ReactComponent, createComponent, element, empty, make, makeStateless, toReactComponent)
+import React.Basic.Classic (Component, JSX, ReactComponent, createComponent, element, empty, make, makeStateless, toReactComponent)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Events (currentTarget, stopPropagation, target)

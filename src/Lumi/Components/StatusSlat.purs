@@ -10,7 +10,7 @@ import Lumi.Components.Column (column)
 import Lumi.Components.Row (row)
 import Lumi.Components.Status (Status)
 import Lumi.Components.Text (subtext_, title_)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (css, unsafeCreateDOMComponent)
 
 type StatusCellProps =

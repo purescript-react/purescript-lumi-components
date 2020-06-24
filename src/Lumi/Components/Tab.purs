@@ -16,7 +16,7 @@ import Lumi.Components.Badge (badge)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Link as Link
-import React.Basic (Component, JSX, createComponent, element, empty, fragment, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, fragment, makeStateless)
 import React.Basic.DOM (CSS, mergeStyles)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))

@@ -32,7 +32,7 @@ import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusStyles, lum
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Select.Backend (SelectBackendProps, SelectOption, SelectOptions(..), selectBackend)
 import Lumi.Components.ZIndex (ziSelect)
-import React.Basic (Component, JSX, createComponent, element, elementKeyed, empty, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, elementKeyed, empty, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_, currentTarget, targetValue)

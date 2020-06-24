@@ -3,7 +3,7 @@ module Lumi.Components.Icon where
 import Prelude
 
 import JSS (JSS, jss)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 data IconType

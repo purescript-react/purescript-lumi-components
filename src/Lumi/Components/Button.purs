@@ -15,7 +15,7 @@ import Lumi.Components.Color (ColorName, colorNames, colors)
 import Lumi.Components.Icon (IconType, icon)
 import Lumi.Components.Loader (spinnerMixin)
 import Lumi.Components.Size (Size(..))
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.Events (EventHandler)

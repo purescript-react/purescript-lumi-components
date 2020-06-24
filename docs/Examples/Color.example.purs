@@ -13,7 +13,7 @@ import Lumi.Components.Column (column, column_)
 import Lumi.Components.Row (row, row_)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (body, body_, subtext, text)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
 
@@ -85,7 +85,7 @@ links"""
                       """Input dropdown row hover background color
 selected table row background color"""
                   , colorPanel _.accent1 "Accent 1" """Indicates good or complete status"""
-                  , colorPanel _.accent11 "Accent 1 - 60%" """Faded for focus borders/backgrounds""" 
+                  , colorPanel _.accent11 "Accent 1 - 60%" """Faded for focus borders/backgrounds"""
                   , colorPanel _.accent12 "Accent 1 - 30%" """Status pills, small accent backgrounds"""
                   , colorPanel _.accent13 "Accent 1 - 20%" """Banner backgrounds, large accent backgrounds"""
                   , colorPanel _.accent2 "Accent 2" """Indicates pending, needs attention"""
@@ -93,7 +93,7 @@ selected table row background color"""
                   , colorPanel _.accent22 "Accent 2 - 30%" """Status pills, small accent backgrounds"""
                   , colorPanel _.accent23 "Accent 2 - 20%" """Banner backgrounds"""
                   , colorPanel _.accent3 "Accent 3" """Indicates a problem, warning"""
-                  , colorPanel _.accent31 "Accent 3 - 60%" """Faded for focus borders/backgrounds""" 
+                  , colorPanel _.accent31 "Accent 3 - 60%" """Faded for focus borders/backgrounds"""
                   , colorPanel _.accent32 "Accent 3 - 30%" """Status pills, small accent backgrounds"""
                   , colorPanel _.accent33 "Accent 3 - 20%" """Banner backgrounds, large accent backgrounds"""
                   , colorPanel _.white "White" """Primary button text"""

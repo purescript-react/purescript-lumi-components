@@ -23,7 +23,7 @@ import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.ZIndex (ziToast)
-import React.Basic (Component, JSX, createComponent, element, empty, make)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, make)
 import React.Basic.DOM (createPortal)
 import React.Basic.DOM as R
 import Web.DOM.NonElementParentNode (getElementById)

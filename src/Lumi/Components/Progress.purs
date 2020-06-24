@@ -7,7 +7,7 @@ import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
 import Lumi.Components.Color (colors)
-import React.Basic (Component, JSX, createComponent, displayNameFromComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, displayNameFromComponent, element, makeStateless)
 import React.Basic.DOM as R
 import React.Basic.DOM.SVG as RS
 

@@ -10,7 +10,7 @@ import Effect.Uncurried (mkEffectFn1)
 import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusInvalidStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputInvalidStyles, lumiInputStyles)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
 import React.Basic.Events (EventHandler)

@@ -4,7 +4,7 @@ import Prelude
 
 import JSS (JSS, jss)
 import Lumi.Components.ZIndex (ziButtonGroup)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (unsafeCreateDOMComponent, CSS)
 
 type ButtonGroupProps =

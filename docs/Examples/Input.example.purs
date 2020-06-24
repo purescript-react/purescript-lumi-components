@@ -9,7 +9,7 @@ import Lumi.Components.Input (CheckboxState(..), alignToInput, checkbox, input, 
 import Lumi.Components.Row (row_)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (body, h2_, h4_, p_, text)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

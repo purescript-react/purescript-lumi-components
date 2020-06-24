@@ -5,7 +5,7 @@ import Prelude
 import Lumi.Components.Column (column_)
 import Lumi.Components.Text (body_, h1_, h2_, h3_, h4_, h5_, h6_, mainHeader_, p_, sectionHeader_, span_, subsectionHeader_, subtext_, title_, paragraph_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =

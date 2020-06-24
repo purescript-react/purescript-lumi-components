@@ -7,7 +7,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Text (p_)
 import Lumi.Components.Slider (slider)
 import Lumi.Components.Example (example)
-import React.Basic (Component, JSX, createComponent, make)
+import React.Basic.Classic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
 
 component :: Component Unit

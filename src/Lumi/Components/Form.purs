@@ -98,8 +98,8 @@ import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
 import Prim.Row (class Nub, class Union)
-import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
-import React.Basic.Components.Async (async, asyncWithLoader)
+import React.Basic.Classic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
+import React.Basic.Classic.Components.Async (async, asyncWithLoader)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
@@ -286,24 +286,24 @@ useForm' editor initialState props = Hooks.do
 -- |
 -- | _Note_: this function should be fully applied, to avoid remounting
 -- | the component on each render.
-formState
-  :: forall props unvalidated result
-   . Hooks.ReactComponent
-      { initialState :: unvalidated
-      , form :: FormBuilder { readonly :: Boolean | props } unvalidated result
-      , inlineTable :: Boolean
-      , forceTopLabels :: Boolean
-      , formProps :: { readonly :: Boolean | props }
-      , render
-          :: { formData :: unvalidated
-             , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
-             , setModified :: Effect Unit
-             , reset :: Effect Unit
-             , validated :: Maybe result
-             , form :: JSX
-             }
-          -> JSX
-      }
+formState ::
+  forall props unvalidated result. 
+  { initialState :: unvalidated
+  , form :: FormBuilder { readonly :: Boolean | props } unvalidated result
+  , inlineTable :: Boolean
+  , forceTopLabels :: Boolean
+  , formProps :: { readonly :: Boolean | props }
+  , render
+      :: { formData :: unvalidated
+          , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
+          , setModified :: Effect Unit
+          , reset :: Effect Unit
+          , validated :: Maybe result
+          , form :: JSX
+          }
+      -> JSX
+  } ->
+  JSX
 formState = unsafePerformEffect do
   Hooks.component "FormState" \props -> Hooks.do
     state <- useForm props.form
@@ -451,7 +451,7 @@ labeledCheckbox label =
       }
   where
     lumiAlignToInput = element (R.unsafeCreateDOMComponent "lumi-align-to-input")
-    
+
 -- | A form that edits an optional structure represented by group of radio
 -- | buttons, visually oriented in either horizontal or vertical fashion.
 -- |

@@ -8,7 +8,7 @@ import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (Pattern(Pattern), indexOf)
 import JSS (JSS, jss)
 import Lumi.Components.Color (ColorName, colors)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 

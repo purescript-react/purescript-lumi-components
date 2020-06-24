@@ -17,7 +17,6 @@ import Data.Nullable as Nullable
 import Data.String as String
 import Data.String.NonEmpty (NonEmptyString, appendString, length, toString)
 import Data.Symbol (SProxy(..))
-import Effect (Effect)
 import Effect.Aff (Milliseconds(..), delay, error, throwError)
 import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
@@ -43,12 +42,12 @@ import React.Basic.DOM (css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (preventDefault)
 import React.Basic.Events (handler, handler_)
-import React.Basic.Hooks (JSX, ReactComponent, component, element, useState, (/\))
+import React.Basic.Hooks (Component, JSX, component, useState, (/\))
 import React.Basic.Hooks as React
 import Web.File.File as File
 
 docs :: JSX
-docs = flip element {} $ unsafePerformEffect do
+docs = unit # unsafePerformEffect do
 
   userFormExample <- mkUserFormExample
 
@@ -66,7 +65,7 @@ docs = flip element {} $ unsafePerformEffect do
           , children: [ form ]
           }
 
-      , example $ element userFormExample formData
+      , example $ userFormExample formData
       ]
 
 -- | This form renders the toggles at the top of the example
@@ -102,14 +101,12 @@ metaForm = ado
   in unit
 
 mkUserFormExample
-  :: Effect
-       ( ReactComponent
-           { inlineTable :: Boolean
-           , forceTopLabels :: Boolean
-           , readonly :: Boolean
-           , simulatePauses :: Boolean
-           }
-       )
+  :: Component
+      { inlineTable :: Boolean
+      , forceTopLabels :: Boolean
+      , readonly :: Boolean
+      , simulatePauses :: Boolean
+      }
 mkUserFormExample = do
   component "UserFormExample" \props -> React.do
     userDialog /\ setUserDialog <- useState Nothing

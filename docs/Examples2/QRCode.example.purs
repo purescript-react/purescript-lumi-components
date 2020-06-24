@@ -16,14 +16,13 @@ import Lumi.Styles.Border as Border
 import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Box as Box
 import React.Basic.DOM.Events (capture, targetValue)
-import React.Basic.Hooks (JSX, ReactComponent, component, element, useState, (/\))
+import React.Basic.Hooks (JSX, component, useState, (/\))
 import React.Basic.Hooks as React
 import Web.HTML.History (URL(..))
 
 docs :: JSX
 docs =
-  flip element {}
-    $ unsafePerformEffect do
+  unit # unsafePerformEffect do
         component "QRCodeExample" \_ -> React.do
           value /\ setValue <- useState "https://www.lumi.com"
           pure
@@ -37,11 +36,11 @@ docs =
                           }
                     , vspace S24
                     , example
-                        $ element qrcodeExample { value }
+                        $ qrcodeExample { value }
                     ]
                   }
 
-qrcodeExample :: ReactComponent { value :: String }
+qrcodeExample :: { value :: String } -> JSX
 qrcodeExample =
   unsafePerformEffect do
     component "QRCode" \props -> React.do
@@ -56,8 +55,8 @@ qrcodeExample =
                   $ Border._round
                   $ S.style_
                       ( S.css
-                          { padding: S.int 16
-                          , width: S.int 140
+                          { padding: S.px 16
+                          , width: S.px 140
                           }
                       )
                   $ identity
