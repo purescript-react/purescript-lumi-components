@@ -1,7 +1,9 @@
 module Lumi.Components.Form.Table
   ( TableFormBuilder
+  , revalidate
   , editableTable
   , nonEmptyEditableTable
+  , defaultRowMenu
   , column
   , column_
   , withProps
@@ -19,9 +21,11 @@ import Data.Maybe (Maybe, fromMaybe, isNothing, maybe)
 import Data.Monoid (guard)
 import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
-import Data.Traversable (traverse)
+import Data.Traversable (for_, traverse, traverse_)
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
+import Effect.Aff (Aff, launchAff_)
+import Effect.Class (liftEffect)
 import Lumi.Components.Column as Column
 import Lumi.Components.EditableTable as EditableTable
 import Lumi.Components.Form.Internal (FormBuilder, FormBuilder'(..), Tree(..), Forest, formBuilder)
@@ -68,30 +72,58 @@ instance applicativeTableFormBuilder :: Applicative (TableFormBuilder props row)
       , validate: \_ -> pure a
       }
 
+-- | Revalidate the table form, in order to display error messages or create
+-- | a validated result.
+revalidate
+  :: forall props row result
+   . TableFormBuilder props row result
+  -> props
+  -> row
+  -> Maybe result
+revalidate form props row = (un TableFormBuilder form props).validate row
+
 -- | A `TableFormBuilder` makes a `FormBuilder` for an array where each row has
 -- | columns defined by it.
 editableTable
   :: forall props row result
    . { addLabel :: String
-     , defaultValue :: Maybe row
+       -- | Controls the action that is performed when the button for adding a
+       -- | new row is clicked. If this is `Nothing`, the button is not
+       -- | displayed. The async effect wrapped in `Maybe` produces the new row
+       -- | that will be inserted in the table, and, if it's result is
+       -- | `Nothing`, then no rows will be added.
+     , addRow :: Maybe (Aff (Maybe row))
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
-     , summary :: JSX
+       -- | Controls what is displayed in the last cell of an editable table row,
+       -- | providing access to callbacks that delete or update the current row.
+     , rowMenu
+        :: { remove :: Maybe (Effect Unit)
+           , update :: (row -> row) -> Effect Unit
+           }
+        -> row
+        -> Maybe result
+        -> JSX
+     , summary
+        :: Array row
+        -> Maybe (Array result)
+        -> JSX
      }
   -> FormBuilder
       { readonly :: Boolean | props }
       (Array row)
       (Array result)
-editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary } =
+editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
+      validateRows = traverse validate rows
     in
       { edit: \onChange ->
           EditableTable.editableTable
             { addLabel
             , maxRows
-            , readonly: isNothing defaultValue || props.readonly
+            , readonly: isNothing addRow || props.readonly
             , rowEq: unsafeRefEq
             , summary:
                 Row.row
@@ -100,13 +132,22 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary }
                       , flexWrap: "wrap"
                       , justifyContent: "flex-end"
                       }
-                  , children: [ summary ]
+                  , children: [ summary rows validateRows ]
                   }
             , rows: Left $ mapWithIndex Tuple rows
-            , onRowAdd: foldMap (onChange <<< flip Array.snoc) defaultValue
+            , onRowAdd:
+                for_ addRow \addRow' -> launchAff_ do
+                  rowM <- addRow'
+                  traverse_ (liftEffect <<< onChange <<< flip Array.snoc) rowM
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (Array.deleteAt index rows')
-            , removeCell: EditableTable.defaultRemoveCell
+            , removeCell: \onRowRemoveM (Tuple index row) ->
+                rowMenu
+                  { remove: onRowRemoveM <@> Tuple index row
+                  , update: onChange <<< ix index
+                  }
+                  row
+                  (validate row)
             , columns:
                 columns <#> \{ label, render } ->
                   { label
@@ -114,7 +155,7 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary }
                       render r (onChange <<< ix i)
                   }
             }
-      , validate: traverse validate rows
+      , validate: validateRows
       }
 
 -- | A `TableFormBuilder` makes a `FormBuilder` for a non-empty array where each
@@ -122,25 +163,36 @@ editableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary }
 nonEmptyEditableTable
   :: forall props row result
    . { addLabel :: String
-     , defaultValue :: Maybe row
+     , addRow :: Maybe (Aff (Maybe row))
      , formBuilder :: TableFormBuilder { readonly :: Boolean | props } row result
      , maxRows :: Int
-     , summary :: JSX
+     , rowMenu
+        :: { remove :: Maybe (Effect Unit)
+           , update :: (row -> row) -> Effect Unit
+           }
+        -> row
+        -> Maybe result
+        -> JSX
+     , summary
+        :: NEA.NonEmptyArray row
+        -> Maybe (NEA.NonEmptyArray result)
+        -> JSX
      }
   -> FormBuilder
       { readonly :: Boolean | props }
       (NEA.NonEmptyArray row)
       (NEA.NonEmptyArray result)
-nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, summary } =
+nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
       { columns, validate } = (un TableFormBuilder builder) props
+      validateRows = traverse validate rows
     in
       { edit: \onChange ->
           EditableTable.editableTable
             { addLabel
             , maxRows
-            , readonly: isNothing defaultValue || props.readonly
+            , readonly: isNothing addRow || props.readonly
             , rowEq: unsafeRefEq
             , summary:
                 Row.row
@@ -149,13 +201,22 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, s
                       , flexWrap: "wrap"
                       , justifyContent: "flex-end"
                       }
-                  , children: [ summary ]
+                  , children: [ summary rows validateRows ]
                   }
             , rows: Right $ mapWithIndex Tuple rows
-            , onRowAdd: foldMap (onChange <<< flip NEA.snoc) defaultValue
+            , onRowAdd:
+                for_ addRow \addRow' -> launchAff_ do
+                  rowM <- addRow'
+                  traverse_ (liftEffect <<< onChange <<< flip NEA.snoc) rowM
             , onRowRemove: \(Tuple index _) ->
                 onChange \rows' -> fromMaybe rows' (NEA.fromArray =<< NEA.deleteAt index rows')
-            , removeCell: EditableTable.defaultRemoveCell
+            , removeCell: \onRowRemoveM (Tuple index row) ->
+                rowMenu
+                  { remove: onRowRemoveM <@> Tuple index row
+                  , update: onChange <<< ix index
+                  }
+                  row
+                  (validate row)
             , columns:
                 columns <#> \{ label, render } ->
                   { label
@@ -163,8 +224,21 @@ nonEmptyEditableTable { addLabel, defaultValue, formBuilder: builder, maxRows, s
                       render r (onChange <<< ix i)
                   }
             }
-      , validate: traverse validate rows
+      , validate: validateRows
       }
+
+-- | Default row menu that displays a bin icon, which, when clicked, deletes the
+-- | current row.
+defaultRowMenu
+  :: forall row result
+   . { remove :: Maybe (Effect Unit)
+     , update :: (row -> row) -> Effect Unit
+     }
+  -> row
+  -> Maybe result
+  -> JSX
+defaultRowMenu { remove } row _ =
+  EditableTable.defaultRemoveCell (map const remove) row
 
 -- | Convert a `FormBuilder` into a column of a table form with the specified
 -- | label where all fields are laid out horizontally.

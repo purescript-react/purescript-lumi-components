@@ -149,6 +149,7 @@ button colo kind state size = case kind of
               [ css
                   { label: str "button"
                   , appearance: none
+                  , outline: none
                   , padding: int 0
                   , background: none
                   , border: none
@@ -172,6 +173,7 @@ button colo kind state size = case kind of
           ( css
               { label: str "button"
               , appearance: none
+              , outline: none
               , minWidth: int 70
               , padding: str "10px 20px"
               , fontSize: int 14

@@ -344,7 +344,7 @@ userForm = ado
       )
     $ FT.editableTable
         { addLabel: "Add pet"
-        , defaultValue: Just
+        , addRow: Just $ pure $ Just
             { firstName: F.Fresh ""
             , lastName: F.Fresh ""
             , animal: F.Fresh Nothing
@@ -352,6 +352,7 @@ userForm = ado
             , color: Nothing
             }
         , maxRows: top
+        , rowMenu: FT.defaultRowMenu
         , summary: mempty
         , formBuilder: ado
             name <- FT.column_ "Name" ado

@@ -8,17 +8,22 @@ import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
+import Data.Monoid (guard)
 import Effect (Effect)
 import JSS (JSS, jss)
-import Lumi.Components.Button as Button
+import Lumi.Components (($$$))
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column_)
-import Lumi.Components.Icon (IconType(..), icon_)
-import Lumi.Components.Row as Row
+import Lumi.Components.Icon (IconType(..), icon, icon_)
+import Lumi.Components.Text (nbsp)
+import Lumi.Components2.Box (row)
+import Lumi.Components2.Button (button, _linkStyle)
+import Lumi.Components2.Text as T
+import Lumi.Styles as S
+import Lumi.Styles.Box (FlexAlign(..), _align, _justify, _row)
+import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic (Component, JSX, createComponent, element, empty, makeStateless)
 import React.Basic.DOM as R
-import React.Basic.DOM.Events (capture_, preventDefault, stopPropagation)
-import React.Basic.Events (handler)
 
 type EditableTableProps row =
   { addLabel :: String
@@ -53,13 +58,26 @@ editableTableDefaults =
 defaultRemoveCell :: forall row. Maybe (row -> Effect Unit) -> row -> JSX
 defaultRemoveCell onRowRemove item =
   onRowRemove # Array.foldMap \onRowRemove' ->
-    R.a
-      { children: [ icon_ Bin ]
-      , className: "lumi"
-      , onClick: capture_ $ onRowRemove' item
-      , role: "button"
-      , style: R.css { fontSize: "20px", lineHeight: "20px", textDecoration: "none" }
-      }
+    button
+    $ _linkStyle
+    $ S.style
+        ( \(LumiTheme { colors }) ->
+          S.css
+            { fontSize: S.px 20
+            , lineHeight: S.px 20
+            , textDecoration: S.important S.none
+            , color: S.color colors.black1
+            , "&:hover": S.nested $ S.css
+                { color: S.color colors.black
+                }
+            , "lumi-font-icon::before": S.nested $ S.css
+                { verticalAlign: S.str "baseline"
+                }
+            }
+        )
+    $ _ { onPress = onRowRemove' item
+        , content = [ icon_ Bin ]
+        }
 
 component :: forall row. Component (EditableTableProps row)
 component = createComponent "EditableTableExample"
@@ -93,7 +111,7 @@ editableTable = makeStateless component render
               (Array.length props.columns + 1)
         ]
       where
-        row_ = row props.columns props.onRowRemove props.removeCell
+        row_ = tableRow props.columns props.onRowRemove props.removeCell
 
 
     container children =
@@ -111,7 +129,7 @@ editableTable = makeStateless component render
     body =
       R.tbody_
 
-    row columns onRowRemove removeCell isRemovable item =
+    tableRow columns onRowRemove removeCell isRemovable item =
       R.tr_ $
         (cell item <$> columns)
           <> [ R.td_
@@ -130,25 +148,35 @@ editableTable = makeStateless component render
         [ R.tr_
             [ R.td
                 { children:
-                    [ Row.row
-                        { children:
-                            [ summary
-                            , if not canAddRows
-                                then empty
-                                else Button.iconButton Button.iconButtonDefaults
-                                  { title = addLabel
-                                  , onPress =
-                                      handler
-                                        (preventDefault >>> stopPropagation)
-                                        \_ -> onRowAdd
-                                  , iconLeft = Just Plus
+                    [ row
+                      $ _align Start
+                      $ _justify SpaceBetween
+                      $ S.style_ (S.css { flexFlow: S.str "row-reverse wrap" })
+                      $$$ [ summary
+                          , guard canAddRows
+                              $ button
+                              $ _linkStyle
+                              $ _row
+                              $ _align Baseline
+                              $ S.style_
+                                  ( S.css
+                                      { fontSize: S.px 14
+                                      , lineHeight: S.px 17
+                                      , "lumi-font-icon::before": S.nested $ S.css
+                                          { verticalAlign: S.str "baseline"
+                                          }
+                                      }
+                                  )
+                              $ _ { onPress = onRowAdd
+                                  , content =
+                                      [ icon
+                                          { type_: Plus
+                                          , style: R.css { fontSize: "11px" }
+                                          }
+                                      , T.text $$$ nbsp <> nbsp <> addLabel
+                                      ]
                                   }
-                            ]
-                        , style: R.css
-                            { justifyContent: "space-between"
-                            , flexFlow: "row-reverse wrap"
-                            }
-                        }
+                          ]
                     ]
                 , colSpan: columnCount
                 }
