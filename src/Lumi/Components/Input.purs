@@ -97,6 +97,8 @@ type InputProps =
   , disabled :: Boolean
   , max :: Nullable Number
   , min :: Nullable Number
+  , maxLength :: Nullable Int
+  , minLength :: Nullable Int
   , step :: Nullable InputStep
   , name :: String
   , onBlur :: Nullable EventHandler
@@ -133,6 +135,8 @@ input = makeStateless component $ element lumiInputElement <<< mapProps
       , indeterminate: props.checked == Indeterminate
       , max: props.max
       , min: props.min
+      , maxLength: props.maxLength
+      , minLength: props.minLength
       , step: toNullable $ map displayStep $ toMaybe props.step
       , name: props.name
       , onBlur: props.onBlur
@@ -156,6 +160,8 @@ text_ =
   , disabled: false
   , max: toNullable Nothing
   , min: toNullable Nothing
+  , maxLength: toNullable Nothing
+  , minLength: toNullable Nothing
   , step: toNullable Nothing
   , name: ""
   , onBlur: toNullable Nothing
