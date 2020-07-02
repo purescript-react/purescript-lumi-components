@@ -347,7 +347,7 @@ inputBox inputProps = formBuilder_ \{ readonly } s onChange ->
     else Input.input inputProps
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = R.css { width: "100%" }
+           , style = R.css { width: "100%" } <> inputProps.style
            }
 
 -- | A simple text box makes a `FormBuilder` for strings
