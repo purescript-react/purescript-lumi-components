@@ -10,6 +10,7 @@ import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype, un)
 import Data.String (Pattern(..), drop, indexOf, joinWith, null, split)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import Global.Unsafe (unsafeEncodeURIComponent)
 import JSS (JSS, jss)
 import Lumi.Components.Badge (badge)
@@ -37,7 +38,7 @@ tabComponent = createComponent "Tab"
 tab :: TabProps -> JSX
 tab = makeStateless tabComponent render
   where
-    lumiTabElement = element (R.unsafeCreateDOMComponent "lumi-tab")
+    lumiTabElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-tab")
 
     render props =
       lumiTabElement
@@ -92,8 +93,8 @@ tabsComponent = createComponent "Tabs"
 tabs :: TabsProps -> JSX
 tabs = makeStateless tabsComponent render
   where
-    lumiTabsElement = element (R.unsafeCreateDOMComponent "lumi-tabs")
-    lumiTabContentElement = element (R.unsafeCreateDOMComponent "lumi-tab-content")
+    lumiTabsElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-tabs")
+    lumiTabContentElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-tab-content")
 
     render props =
       column_

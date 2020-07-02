@@ -8,45 +8,49 @@ import Data.Array (drop, mapWithIndex, take, (!!))
 import Data.Foldable (for_)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nullable (Nullable, toMaybe)
-import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn2, runEffectFn1, runEffectFn2)
+import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Icon (IconType(Rearrange), icon)
 import Lumi.Components.Input (CheckboxState(..), checkbox, input)
 import Lumi.Components.Size (small)
-import React.Basic.Classic (Component, JSX, createComponent, element, keyed, makeStateless)
 import React.Basic.DOM (CSS, css, div, text, unsafeCreateDOMComponent)
 import React.Basic.DOM.Events (targetChecked)
 import React.Basic.Events as Events
-import React.Basic.ReactDND (DragDrop, DragDropItemType(DragDropItemType), createDragDrop)
+import React.Basic.Hooks (JSX, component, element, keyed, useState', (/\))
+import React.Basic.Hooks as React
+import React.Basic.ReactDND (DragDrop, DragDropItemType(..), createDragDrop)
 
 type FilterDropdownProps =
   { items :: Array Item
-  , onChange :: EffectFn1 (Array Item) Unit
+  , onChange :: Array Item -> Effect Unit
   , style :: CSS
   }
 
-component :: Component FilterDropdownProps
-component = createComponent "TableFilterDropdown"
-
 filterDropdown :: FilterDropdownProps -> JSX
-filterDropdown = makeStateless component render
+filterDropdown =
+  unsafePerformEffect do
+    component "TableFilterDropdown" render
   where
     render props =
-      element (unsafeCreateDOMComponent "lumi-filter-dropdown")
-        { style: props.style
-        , children:
-            props.items `flip mapWithIndex` \index item ->
-              keyed item.name $ filterItem_
-                { index
-                , item
-                , items: props.items
-                , onChange: props.onChange
-                , onDrag: mkEffectFn2 onDrag
-                }
-        }
+      pure
+        $ filterDropdownEl
+            { style: props.style
+            , children:
+                props.items # mapWithIndex \index item ->
+                  keyed item.name $ filterItem_
+                    { index
+                    , item
+                    , items: props.items
+                    , onChange: props.onChange
+                    , onDrag
+                    }
+            }
       where
         onDrag (DragIndex dragIndex) (HoverIndex hoverIndex) = do
-          runEffectFn1 props.onChange (moveItem dragIndex hoverIndex props.items)
+          props.onChange (moveItem dragIndex hoverIndex props.items)
+    
+    filterDropdownEl = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-filter-dropdown")
 
 moveItem :: forall a. Int -> Int -> Array a -> Array a
 moveItem fromIndex toIndex items =
@@ -79,64 +83,65 @@ type FilterItemProps =
   { item :: Item
   , index :: Int
   , items :: Array Item
-  , onChange :: EffectFn1 (Array Item) Unit
-  , onDrag :: EffectFn2 DragIndex HoverIndex Unit
+  , onChange :: Array Item -> Effect Unit
+  , onDrag :: DragIndex -> HoverIndex -> Effect Unit
   }
 
-filterItemComponent :: Component FilterItemProps
-filterItemComponent = createComponent "FilterItem"
-
 filterItem_ :: FilterItemProps -> JSX
-filterItem_ = makeStateless filterItemComponent render
+filterItem_ =
+  unsafePerformEffect do
+    component "FilterItem" render
   where
-    render { onChange, onDrag, items, item, index } =
-      dnd.dragSource
-        { beginDrag: \_ -> pure
-            { name: item.name
-            , index
+    render { onChange, onDrag, items, item, index } = React.do
+      isDragging /\ setIsDragging <- useState' false
+      pure
+        $ dnd.dragSource
+            { beginDrag: \_ -> pure
+                { name: item.name
+                , index
+                }
+            , endDrag: const (pure unit)
+            , canDrag: const (pure true)
+            , isDragging: \{ item: draggingItem } ->
+                pure $ maybe false (\i -> i.name == item.name) draggingItem
+            , render: \{ connectDragSource, isDragging } ->
+                dnd.dropTarget
+                  { drop: handleDrop onDrag index
+                  , hover: const (pure unit)
+                  , canDrop: const (pure true)
+                  , render: \{ connectDropTarget, isOver, item: maybeDragItem } ->
+                      connectDragSource $ connectDropTarget $
+                        row
+                          { className: if item.hidden then "" else "active"
+                          , style:
+                            let
+                              borderStyle :: (Int -> Int -> Boolean) -> String
+                              borderStyle compare' =
+                                if isOver && maybe false (\dragItem -> dragItem.index `compare'` index) maybeDragItem
+                                then "2px solid " <> cssStringHSLA colors.primary
+                                else "2px solid " <> cssStringHSLA colors.transparent
+                              borderTop = borderStyle (>)
+                              borderBottom = borderStyle (<)
+                            in
+                              css
+                                { padding: "0 8px"
+                                , alignItems: "center"
+                                , borderTop
+                                , borderBottom
+                                , opacity: if isDragging then 0.1 else 1.0
+                                }
+                          , children:
+                              [ renderInput onChange items item
+                              , renderLabel item
+                              , renderDragIcon
+                              ]
+                          }
+                  }
             }
-        , endDrag: const (pure unit)
-        , canDrag: const (pure true)
-        , isDragging: \{ item: draggingItem } ->
-            pure $ maybe false (\i -> i.name == item.name) draggingItem
-        , render: \{ connectDragSource, isDragging } ->
-            dnd.dropTarget
-              { drop: handleDrop onDrag index
-              , hover: const (pure unit)
-              , canDrop: const (pure true)
-              , render: \{ connectDropTarget, isOver, item: maybeDragItem } ->
-                  connectDragSource $ connectDropTarget $
-                    element (unsafeCreateDOMComponent "lumi-row")
-                      { className: if item.hidden then "" else "active"
-                      , style:
-                        let
-                          borderStyle :: (Int -> Int -> Boolean) -> String
-                          borderStyle compare' =
-                            if isOver && maybe false (\dragItem -> dragItem.index `compare'` index) maybeDragItem
-                            then "2px solid " <> cssStringHSLA colors.primary
-                            else "2px solid " <> cssStringHSLA colors.transparent
-                          borderTop = borderStyle (>)
-                          borderBottom = borderStyle (<)
-                        in
-                          css
-                            { padding: "0 8px"
-                            , alignItems: "center"
-                            , borderTop
-                            , borderBottom
-                            , opacity: if isDragging then 0.1 else 1.0
-                            }
-                      , children:
-                          [ renderInput onChange items item
-                          , renderLabel item
-                          , renderDragIcon
-                          ]
-                      }
-              }
-        }
 
     handleDrop onDrag index { item: dragItem } = do
       for_ (_.index <$> dragItem) \dragIndex ->
-        runEffectFn2 onDrag (DragIndex dragIndex) (HoverIndex index)
+        onDrag (DragIndex dragIndex) (HoverIndex index)
       pure Nothing
 
     renderInput onChange items item =
@@ -150,7 +155,7 @@ filterItem_ = makeStateless filterItemComponent render
         }
 
     handleCheckboxChange onChange items item checked = do
-      runEffectFn1 onChange $ items <#> \item_ ->
+      onChange $ items <#> \item_ ->
         if item.name == item_.name
         then item_ { hidden = not checked }
         else item_
@@ -174,3 +179,5 @@ filterItem_ = makeStateless filterItemComponent render
         { type_: Rearrange
         , style: css { cursor: "move" }
         }
+    
+    row = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-row")

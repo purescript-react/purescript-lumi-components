@@ -5,6 +5,7 @@ import Prelude
 import Color (cssStringHSLA)
 import Data.Maybe (Maybe(..), maybe)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Link as Link
@@ -25,9 +26,9 @@ type CardProps =
 card :: CardProps -> JSX
 card = makeStateless (createComponent "Card") render
   where
-    lumiCard = element (R.unsafeCreateDOMComponent "lumi-card")
-    lumiCardImg = element (R.unsafeCreateDOMComponent "lumi-card-img")
-    lumiCardText = element (R.unsafeCreateDOMComponent "lumi-card-text")
+    lumiCard = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-card")
+    lumiCardImg = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-card-img")
+    lumiCardText = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-card-text")
 
     render props =
       let

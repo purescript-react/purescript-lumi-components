@@ -7,6 +7,7 @@ import Data.Int (fromString)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Nullable (toNullable)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Input as Input
@@ -44,8 +45,8 @@ slider = makeStateless component render
             ]
         }
 
-    lumiSliderElement = element $ R.unsafeCreateDOMComponent "lumi-slider"
-    lumiValueBarElement = element $ R.unsafeCreateDOMComponent "lumi-value-bar"
+    lumiSliderElement = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-slider"
+    lumiValueBarElement = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-value-bar"
 
 styles :: JSS
 styles = jss

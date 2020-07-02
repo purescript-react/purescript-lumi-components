@@ -9,6 +9,7 @@ import { paramCase } from "change-case";
 
 import { colors, colorNames } from "purs/Lumi.Components.Color";
 import { column, column_ } from "purs/Lumi.Components.Column";
+import { divider_ } from "purs/Lumi.Components.Divider";
 import { row, row_ } from "purs/Lumi.Components.Row";
 import {
   text,
@@ -212,24 +213,16 @@ const renderRoute = component => (
     render={() =>
       column_([
         row({
-          style: {
-            alignItems: "center",
-            marginBottom: "24px",
-            flexWrap: "wrap"
-          },
+          style: { alignItems: "baseline", flexWrap: "wrap" },
           children: [
-            h1_(component.title),
             <a
               className="lumi"
               target="_blank"
               rel="noopener noreferrer"
               href={component.componentSource}
-              style={{
-                marginLeft: "8px",
-                marginRight: "8px"
-              }}
+              style={{ marginRight: "8px" }}
             >
-              Component Source
+              {body_("Component Source")}
             </a>,
             "|",
             <a
@@ -242,7 +235,7 @@ const renderRoute = component => (
                 marginRight: "8px"
               }}
             >
-              Example Source
+              {body_("Example Source")}
             </a>,
             "|",
             <a
@@ -254,7 +247,7 @@ const renderRoute = component => (
                 marginLeft: "8px"
               }}
             >
-              API Reference
+              {body_("API Reference")}
             </a>,
             <div
               style={{
@@ -271,6 +264,9 @@ const renderRoute = component => (
             </div>
           ]
         }),
+        divider_,
+        <div style={{ height: 20 }} />,
+        h1_(component.title),
         <component.docs />
       ])
     }
@@ -329,7 +325,7 @@ const Header = ({ isMobile, toggleMenu }) =>
     style: {
       position: "fixed",
       top: 0,
-      zIndex: 1,
+      zIndex: 100,
       height: 60,
       width: "100%",
       justifyContent: "center",
@@ -424,7 +420,7 @@ const ExampleArea = ({ children }) =>
     children,
     style: {
       width: "100%",
-      padding: "20px"
+      padding: "0 20px 40px"
     }
   });
 

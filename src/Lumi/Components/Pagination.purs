@@ -8,6 +8,7 @@ import Data.Foldable (fold, foldMap)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Button as Button
 import Lumi.Components.Color (colors)
@@ -29,8 +30,8 @@ type PaginationProps =
 pagination :: PaginationProps -> JSX
 pagination = makeStateless (createComponent "Pagination") render
   where
-    lumiPagination = element (R.unsafeCreateDOMComponent "lumi-pagination")
-    lumiPaginationDetails = element (R.unsafeCreateDOMComponent "lumi-pagination-details")
+    lumiPagination = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-pagination")
+    lumiPaginationDetails = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-pagination-details")
 
     render props =
       let

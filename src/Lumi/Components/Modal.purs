@@ -9,6 +9,7 @@ import Data.Monoid (guard)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, mkEffectFn1, runEffectFn2)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Button as Button
 import Lumi.Components.Color (colors)
@@ -122,7 +123,7 @@ modalLink = make modalLinkComponent { initialState, didMount, render }
           ]
         }
 
-    lumiModalLink = element (R.unsafeCreateDOMComponent "lumi-modal-link")
+    lumiModalLink = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal-link")
 
 type CommonProps rest =
   { modalOpen :: Boolean
@@ -312,13 +313,13 @@ modalPortal = toReactComponent identity modalPortalComponent
                 closeModal
               _ -> pure unit
 
-    lumiModalContainer = element (R.unsafeCreateDOMComponent "lumi-modal-container")
-    lumiModalOverlay = element (R.unsafeCreateDOMComponent "lumi-modal-overlay")
-    lumiModal = element (R.unsafeCreateDOMComponent "lumi-modal")
-    lumiModalClose = element (R.unsafeCreateDOMComponent "lumi-modal-close")
-    lumiModalHeader = element (R.unsafeCreateDOMComponent "lumi-modal-header")
-    lumiModalContent = element (R.unsafeCreateDOMComponent "lumi-modal-content")
-    lumiModalFooter = element (R.unsafeCreateDOMComponent "lumi-modal-footer")
+    lumiModalContainer = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal-container")
+    lumiModalOverlay = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal-overlay")
+    lumiModal = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal")
+    lumiModalClose = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal-close")
+    lumiModalHeader = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal-header")
+    lumiModalContent = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal-content")
+    lumiModalFooter = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-modal-footer")
 
 styles :: JSS
 styles = jss

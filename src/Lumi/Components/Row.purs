@@ -1,5 +1,8 @@
 module Lumi.Components.Row where
 
+import Prelude
+
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
@@ -15,7 +18,7 @@ type RowProps =
 row :: RowProps -> JSX
 row = makeStateless component lumiRowElement
   where
-    lumiRowElement = element (unsafeCreateDOMComponent "lumi-row")
+    lumiRowElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-row")
 
 row_ :: Array JSX -> JSX
 row_ children = row { children, style: css {} }
@@ -23,7 +26,7 @@ row_ children = row { children, style: css {} }
 responsiveRow :: RowProps -> JSX
 responsiveRow = makeStateless component lumiResponsiveRowElement
   where
-    lumiResponsiveRowElement = element (unsafeCreateDOMComponent "lumi-responsive-row")
+    lumiResponsiveRowElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-responsive-row")
 
 responsiveRow_ :: Array JSX -> JSX
 responsiveRow_ children = responsiveRow { children, style: css {} }

@@ -15,6 +15,7 @@ import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Data.Nullable (Nullable, toMaybe)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Link as Link
@@ -51,7 +52,7 @@ genericBreadcrumb
   -> JSX
 genericBreadcrumb = makeStateless (createComponent "Breadcrumb") render
   where
-    lumiBreadcrumb = element (R.unsafeCreateDOMComponent "lumi-breadcrumb")
+    lumiBreadcrumb = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-breadcrumb")
     render props@{ compact } =
       lumiBreadcrumb
         { class: guard compact "compact"

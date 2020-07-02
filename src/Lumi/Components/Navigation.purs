@@ -9,6 +9,7 @@ import Data.NonEmpty (NonEmpty, oneOf)
 import Data.Nullable (toNullable)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, mkEffectFn1, runEffectFn2)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Column (column, column_)
@@ -365,19 +366,19 @@ navigation = make component { initialState, render }
               ]
           }
 
-    navigationElement = element (R.unsafeCreateDOMComponent "lumi-navigation")
-    navLinkContainerElement = element (R.unsafeCreateDOMComponent "lumi-navlink-container")
-    navLinkElement = element (R.unsafeCreateDOMComponent "lumi-nav-link")
-    subNavLinkContainerElement = element (R.unsafeCreateDOMComponent "lumi-subnav-link-container")
-    navContentContainerElement = element (R.unsafeCreateDOMComponent "lumi-navcontent-container")
-    cartContainerElement = element (R.unsafeCreateDOMComponent "lumi-cart-container")
-    navLockupContainerElement = element (R.unsafeCreateDOMComponent "lumi-nav-lockup-container") -- @TODO need a navLockup component
+    navigationElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-navigation")
+    navLinkContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-navlink-container")
+    navLinkElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-nav-link")
+    subNavLinkContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-subnav-link-container")
+    navContentContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-navcontent-container")
+    cartContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-cart-container")
+    navLockupContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-nav-lockup-container") -- @TODO need a navLockup component
 
-    desktopLogoContainerElement = element (R.unsafeCreateDOMComponent "lumi-desktop-nav-logo-container")
-    mobileCloseContainerElement = element (R.unsafeCreateDOMComponent "lumi-mobile-nav-close-container")
-    mobileLogoContainerElement = element (R.unsafeCreateDOMComponent "lumi-mobile-nav-logo-container")
-    mobileHamburgerContainerElement = element (R.unsafeCreateDOMComponent "lumi-mobile-nav-hamburger-container")
-    mobileLinksContainerElement = element (R.unsafeCreateDOMComponent "lumi-mobile-nav-links-container")
+    desktopLogoContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-desktop-nav-logo-container")
+    mobileCloseContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-mobile-nav-close-container")
+    mobileLogoContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-mobile-nav-logo-container")
+    mobileHamburgerContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-mobile-nav-hamburger-container")
+    mobileLinksContainerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-mobile-nav-links-container")
 
 foreign import checkIsEventTargetInTree :: EffectFn2 Node Event Boolean
 

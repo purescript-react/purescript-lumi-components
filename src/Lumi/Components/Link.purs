@@ -9,6 +9,7 @@ import Data.Newtype (un)
 import Data.Nullable (toNullable)
 import Effect (Effect)
 import Effect.Uncurried (runEffectFn1)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import React.Basic.Classic (Component, JSX, createComponent, element, empty, makeStateless)
@@ -33,7 +34,7 @@ component = createComponent "Link"
 link :: LinkProps -> JSX
 link = makeStateless component render
   where
-    lumiAnchorElement = element (unsafeCreateDOMComponent "a")
+    lumiAnchorElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "a")
 
     render { className, href, navigate, style, target, testId, text } =
       lumiAnchorElement

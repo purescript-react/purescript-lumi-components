@@ -36,9 +36,9 @@ type ToastBubbleProps =
   }
 
 toastBubble :: ToastBubbleProps -> JSX
-toastBubble props = toastBubbleElement { children: props.message }
+toastBubble = \props -> toastBubbleElement { children: props.message }
   where
-    toastBubbleElement = element $ R.unsafeCreateDOMComponent "lumi-toast-bubble"
+    toastBubbleElement = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-toast-bubble"
 
 -- | Component creation is an unsafe module-level
 -- | effect, so we need to create this Ref unsafely
@@ -164,8 +164,8 @@ toastManager = unit # make toastManagerComponent
             in
               createPortal jsx toastRoot
 
-    toastAnchorElement = element $ R.unsafeCreateDOMComponent "lumi-toast-anchor"
-    toastWrapperElement = element $ R.unsafeCreateDOMComponent "lumi-toast-wrapper"
+    toastAnchorElement = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-toast-anchor"
+    toastWrapperElement = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-toast-wrapper"
 
 styles :: JSS
 styles = jss

@@ -49,6 +49,7 @@ import Color (cssStringHSLA)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, notNull, toMaybe, toNullable)
 import Effect.Uncurried (mkEffectFn1)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size(..))
@@ -271,7 +272,7 @@ range = text_
 label :: { children :: Array JSX, for :: Nullable String, style :: CSS } -> JSX
 label = lumiLabelElement <<< mapProps
   where
-    lumiLabelElement = element (R.unsafeCreateDOMComponent "label")
+    lumiLabelElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "label")
     mapProps { children, for, style } =
       { className: "lumi"
       , children
@@ -316,7 +317,7 @@ alignToInputComponent = createComponent "AlignToInput"
 alignToInput :: JSX -> JSX
 alignToInput = makeStateless alignToInputComponent render
   where
-    lumiAlignToInputElement = element (R.unsafeCreateDOMComponent "lumi-align-to-input")
+    lumiAlignToInputElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-align-to-input")
     render child = lumiAlignToInputElement { children: child }
 
 -- | Sneaky FFI

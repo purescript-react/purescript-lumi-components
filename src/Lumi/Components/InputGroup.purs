@@ -1,8 +1,11 @@
 module Lumi.Components.InputGroup where
 
+import Prelude
+
 import Color (cssStringHSLA)
 import Data.Array (fromFoldable)
 import Data.Nullable (Nullable, toMaybe)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.ZIndex (ziInputGroup)
@@ -33,8 +36,8 @@ inputGroup = makeStateless component render
             ]
         }
 
-    inputGroupElement = element (unsafeCreateDOMComponent "lumi-input-group")
-    inputGroupAddOn = element (unsafeCreateDOMComponent "input-group-addon")
+    inputGroupElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-input-group")
+    inputGroupAddOn = element (unsafePerformEffect $ unsafeCreateDOMComponent "input-group-addon")
 
 styles :: JSS
 styles = jss

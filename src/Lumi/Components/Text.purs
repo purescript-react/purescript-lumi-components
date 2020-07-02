@@ -1,6 +1,7 @@
 module Lumi.Components.Text where
 
 import Prelude
+
 import Color (cssStringHSLA)
 import Data.Array (foldMap)
 import Data.Maybe (Maybe(..))
@@ -8,9 +9,10 @@ import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (Pattern(Pattern), indexOf)
 import JSS (JSS, jss)
 import Lumi.Components.Color (ColorName, colors)
-import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
-import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
+import React.Basic.Classic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
+import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
+import Unsafe.Coerce (unsafeCoerce)
 
 type TextProps
   = { children :: Array JSX
@@ -29,7 +31,7 @@ text = makeStateless component render
   where
   render { children, className, color, style, tag, testId } = case indexOf (Pattern "lumi-") tag of
     Just 0 ->
-      element (unsafeCreateDOMComponent tag)
+      element (unsafeTextTagToComponent tag)
         { children
         , "class": className
         , "data-color": color
@@ -37,13 +39,16 @@ text = makeStateless component render
         , style
         }
     _ ->
-      element (unsafeCreateDOMComponent tag)
+      element (unsafeTextTagToComponent tag)
         { children
         , className: "lumi" <> foldMap (" " <> _) (toMaybe className)
         , "data-color": color
         , "data-testid": testId
         , style
         }
+  
+  unsafeTextTagToComponent :: forall props. String -> ReactComponent props
+  unsafeTextTagToComponent = unsafeCoerce
 
 -- Lumi-styled defaults for built in elements with padding
 h1 :: TextProps

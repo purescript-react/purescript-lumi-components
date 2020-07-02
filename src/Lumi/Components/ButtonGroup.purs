@@ -2,6 +2,7 @@ module Lumi.Components.ButtonGroup where
 
 import Prelude
 
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.ZIndex (ziButtonGroup)
 import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
@@ -29,8 +30,8 @@ buttonGroup = makeStateless component render
         renderChild child =
           buttonGroupChildElement { children: [ child ] }
 
-    buttonGroupElement = element (unsafeCreateDOMComponent "lumi-button-group")
-    buttonGroupChildElement = element (unsafeCreateDOMComponent "lumi-button-group-child")
+    buttonGroupElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-button-group")
+    buttonGroupChildElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-button-group-child")
 
 styles :: JSS
 styles = jss

@@ -5,6 +5,7 @@ import Prelude
 import Color (cssStringHSLA)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Nullable (toNullable)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Input (alignToInput)
@@ -48,8 +49,12 @@ component = createComponent "LabeledField"
 labeledField :: LabeledFieldProps -> JSX
 labeledField = makeStateless component render
   where
+    _label = element (unsafePerformEffect $ unsafeCreateDOMComponent "label")
+
+    _column = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-column")
+
     render props =
-      element (unsafeCreateDOMComponent "label")
+      _label
         { className: "lumi labeled-field"
         , "data-force-top-label": props.forceTopLabel
         , style: props.style
@@ -60,7 +65,7 @@ labeledField = makeStateless component render
         }
 
     columnLeft label required =
-      element (unsafeCreateDOMComponent "lumi-column")
+      _column
         { "class": "labeled-field--left"
         , children:
             [ alignToInput
@@ -82,7 +87,7 @@ labeledField = makeStateless component render
         }
 
     columnRight value validationError =
-      element (unsafeCreateDOMComponent "lumi-column")
+      _column
         { "class": "labeled-field--right"
         , children:
             [ value

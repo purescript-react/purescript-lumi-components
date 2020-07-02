@@ -9,6 +9,7 @@ import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Data.String (null)
 import Effect.Uncurried (mkEffectFn1)
+import Effect.Unsafe (unsafePerformEffect)
 import Foreign (isNull, isUndefined, unsafeToForeign)
 import JSS (JSS, jss)
 import Lumi.Components.Color (ColorName, colorNames, colors)
@@ -43,8 +44,8 @@ component = createComponent "Button"
 button :: ButtonProps -> JSX
 button = makeStateless component render
   where
-    lumiButtonElement = element (unsafeCreateDOMComponent "button")
-    lumiButtonLinkElement = element (unsafeCreateDOMComponent "a")
+    lumiButtonElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "button")
+    lumiButtonLinkElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "a")
 
     render props =
       if props.type == "link"
@@ -131,7 +132,7 @@ iconComponent = createComponent "IconButton"
 iconButton :: IconButtonProps -> JSX
 iconButton = makeStateless iconComponent render
   where
-    lumiButtonElement = element (unsafeCreateDOMComponent "button")
+    lumiButtonElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "button")
     render props =
       lumiButtonElement
         { "aria-label": props.accessibilityLabel

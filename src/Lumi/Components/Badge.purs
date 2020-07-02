@@ -3,6 +3,7 @@ module Lumi.Components.Badge where
 import Prelude
 
 import Color (cssStringHSLA)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (Color, colors)
 import Lumi.Components.Text (lumiSubtextFontSize)
@@ -20,7 +21,7 @@ badge_ :: String -> JSX
 badge_ = badge <<< defaults { text = _ }
 
 badge :: BadgeProps -> JSX
-badge { background, color, style, text } =
+badge = \{ background, color, style, text } ->
   lumiBadgeElement
     { style: R.mergeStyles
         [ R.css
@@ -32,7 +33,7 @@ badge { background, color, style, text } =
     , children: R.text text
     }
   where
-    lumiBadgeElement = element (R.unsafeCreateDOMComponent "lumi-badge")
+    lumiBadgeElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-badge")
 
 defaults :: BadgeProps
 defaults =

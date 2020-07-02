@@ -3,8 +3,9 @@ module Lumi.Components.Border where
 import Prelude
 
 import Color (toHexString)
-import Lumi.Components.Color (colors)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
+import Lumi.Components.Color (colors)
 import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 
@@ -35,7 +36,7 @@ type BorderProps =
 border :: BorderProps -> JSX
 border = makeStateless component render
   where
-    lumiBorderElement = element (unsafeCreateDOMComponent "lumi-border")
+    lumiBorderElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-border")
 
     render props =
       lumiBorderElement

@@ -4,6 +4,7 @@ import Prelude
 
 import Color (cssStringHSLA)
 import Data.Nullable (Nullable, toNullable, toMaybe)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
@@ -53,8 +54,8 @@ statusSlat = makeStateless component $ lumiStatusSlat <<< mapProps
               }
         }
 
-    lumiStatusSlat = element (unsafeCreateDOMComponent "lumi-status-slat")
-    lumiStatusSlatCell = element (unsafeCreateDOMComponent "lumi-status-slat-cell")
+    lumiStatusSlat = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-status-slat")
+    lumiStatusSlatCell = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-status-slat-cell")
 
 styles :: JSS
 styles = jss
