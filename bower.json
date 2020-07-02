@@ -34,7 +34,7 @@
     "purescript-react-basic-classic": "lumihq/purescript-react-basic-classic#^1.0.1",
     "purescript-react-basic-emotion": "^4.2.2",
     "purescript-react-basic-hooks": "^6.0.0",
-    "purescript-react-dnd-basic": "next",
+    "purescript-react-dnd-basic": "^7.0.0",
     "purescript-record": ">= 1.0.0 < 3.0.0",
     "purescript-simple-json": ">=4.0.0 <7.0.0",
     "purescript-strings": "^4.0.0",

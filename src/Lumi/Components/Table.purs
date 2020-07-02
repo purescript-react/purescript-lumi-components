@@ -421,7 +421,7 @@ table = make component
         { children:
             [ if not self.state.showMenu
                 then empty
-                else guard (self.props.dropdownMenu) $ renderFilterDropdown
+                else guard self.props.dropdownMenu $ renderFilterDropdown
                   { close: closeMenu self
                   , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
                       { name: ColumnName name
@@ -462,7 +462,7 @@ table = make component
               , onChange: reorderItems
               , style
               }
-    
+
     lumiTableEl = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-table")
     lumiTableInnerEl = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-table-inner")
     lumiRowEl = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-row")

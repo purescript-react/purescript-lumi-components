@@ -6,7 +6,8 @@ import Color (cssStringHSLA)
 import Control.Alt ((<|>))
 import Data.Array (drop, mapWithIndex, take, (!!))
 import Data.Foldable (for_)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Int as Int
+import Data.Maybe (fromMaybe, maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
@@ -17,9 +18,9 @@ import Lumi.Components.Size (small)
 import React.Basic.DOM (CSS, css, div, text, unsafeCreateDOMComponent)
 import React.Basic.DOM.Events (targetChecked)
 import React.Basic.Events as Events
-import React.Basic.Hooks (JSX, component, element, keyed, useState', (/\))
+import React.Basic.Hooks (JSX, component, element, keyed)
 import React.Basic.Hooks as React
-import React.Basic.ReactDND (DragDrop, DragDropItemType(..), createDragDrop)
+import React.Basic.ReactDND (mergeTargets, useDrag, useDrop)
 
 type FilterDropdownProps =
   { items :: Array Item
@@ -49,7 +50,7 @@ filterDropdown =
       where
         onDrag (DragIndex dragIndex) (HoverIndex hoverIndex) = do
           props.onChange (moveItem dragIndex hoverIndex props.items)
-    
+
     filterDropdownEl = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-filter-dropdown")
 
 moveItem :: forall a. Int -> Int -> Array a -> Array a
@@ -62,11 +63,8 @@ moveItem fromIndex toIndex items =
       <> maybe [] pure item
       <> drop toIndex items'
 
-filterDragDropType :: DragDropItemType
-filterDragDropType = DragDropItemType "FILTER_ITEM"
-
-dnd :: DragDrop { name :: String, index :: Int }
-dnd = createDragDrop filterDragDropType
+filterDragDropType :: String
+filterDragDropType = "FILTER_ITEM"
 
 newtype DragIndex = DragIndex Int
 
@@ -93,56 +91,43 @@ filterItem_ =
     component "FilterItem" render
   where
     render { onChange, onDrag, items, item, index } = React.do
-      isDragging /\ setIsDragging <- useState' false
+      { isDragging, connectDrag } <- useDrag { type: filterDragDropType, id: show index }
+      { id: maybeDragItem, isOver, connectDrop } <-
+        useDrop
+          { accept: filterDragDropType
+          , onDrop: Int.fromString >>> handleDrop onDrag index
+          }
       pure
-        $ dnd.dragSource
-            { beginDrag: \_ -> pure
-                { name: item.name
-                , index
-                }
-            , endDrag: const (pure unit)
-            , canDrag: const (pure true)
-            , isDragging: \{ item: draggingItem } ->
-                pure $ maybe false (\i -> i.name == item.name) draggingItem
-            , render: \{ connectDragSource, isDragging } ->
-                dnd.dropTarget
-                  { drop: handleDrop onDrag index
-                  , hover: const (pure unit)
-                  , canDrop: const (pure true)
-                  , render: \{ connectDropTarget, isOver, item: maybeDragItem } ->
-                      connectDragSource $ connectDropTarget $
-                        row
-                          { className: if item.hidden then "" else "active"
-                          , style:
-                            let
-                              borderStyle :: (Int -> Int -> Boolean) -> String
-                              borderStyle compare' =
-                                if isOver && maybe false (\dragItem -> dragItem.index `compare'` index) maybeDragItem
-                                then "2px solid " <> cssStringHSLA colors.primary
-                                else "2px solid " <> cssStringHSLA colors.transparent
-                              borderTop = borderStyle (>)
-                              borderBottom = borderStyle (<)
-                            in
-                              css
-                                { padding: "0 8px"
-                                , alignItems: "center"
-                                , borderTop
-                                , borderBottom
-                                , opacity: if isDragging then 0.1 else 1.0
-                                }
-                          , children:
-                              [ renderInput onChange items item
-                              , renderLabel item
-                              , renderDragIcon
-                              ]
-                          }
+        $ row
+            { ref: mergeTargets connectDrag connectDrop
+            , className: if item.hidden then "" else "active"
+            , style:
+              let
+                borderStyle :: (Int -> Int -> Boolean) -> String
+                borderStyle compare' =
+                  if isOver && maybe false (_ `compare'` index) (Int.fromString =<< maybeDragItem)
+                  then "2px solid " <> cssStringHSLA colors.primary
+                  else "2px solid " <> cssStringHSLA colors.transparent
+                borderTop = borderStyle (>)
+                borderBottom = borderStyle (<)
+              in
+                css
+                  { padding: "0 8px"
+                  , alignItems: "center"
+                  , borderTop
+                  , borderBottom
+                  , opacity: if isDragging then 0.1 else 1.0
                   }
+            , children:
+                [ renderInput onChange items item
+                , renderLabel item
+                , renderDragIcon
+                ]
             }
 
-    handleDrop onDrag index { item: dragItem } = do
-      for_ (_.index <$> dragItem) \dragIndex ->
+    handleDrop onDrag index id = do
+      for_ id \dragIndex ->
         onDrag (DragIndex dragIndex) (HoverIndex index)
-      pure Nothing
 
     renderInput onChange items item =
       input checkbox
@@ -179,5 +164,5 @@ filterItem_ =
         { type_: Rearrange
         , style: css { cursor: "move" }
         }
-    
+
     row = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-row")
