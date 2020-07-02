@@ -345,7 +345,7 @@ inputBox inputProps = formBuilder_ \{ readonly } s onChange ->
     else Input.input inputProps
            { value = s
            , onChange = capture targetValue (traverse_ onChange)
-           , style = R.css { width: "100%" }
+           , style = R.css { width: "100%" } <> inputProps.style
            }
 
 -- | A simple text box makes a `FormBuilder` for strings
@@ -451,7 +451,7 @@ labeledCheckbox label =
       }
   where
     lumiAlignToInput = element (R.unsafeCreateDOMComponent "lumi-align-to-input")
-    
+
 -- | A form that edits an optional structure represented by group of radio
 -- | buttons, visually oriented in either horizontal or vertical fashion.
 -- |
