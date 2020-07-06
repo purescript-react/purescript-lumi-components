@@ -29,7 +29,7 @@ import Lumi.Components.Color (ColorMap)
 import Lumi.Styles (Style, StyleModifier)
 import Lumi.Styles as S
 import Lumi.Styles.Theme (LumiTheme(..), TextMap, textFontSize, textLineHeight, textMargin, useTheme)
-import React.Basic.Classic (JSX, ReactComponent)
+import React.Basic (JSX, ReactComponent)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Hooks as Hooks
