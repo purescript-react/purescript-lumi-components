@@ -20,7 +20,7 @@ import Lumi.Components.Text as T
 import Lumi.Components.Wizard (Wizard, WizardStep)
 import Lumi.Components.Wizard as W
 import Lumi.Components.Example (example)
-import React.Basic (JSX, createComponent, make)
+import React.Basic.Classic (JSX, createComponent, make)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, capture_)
 

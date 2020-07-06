@@ -267,7 +267,7 @@ mkHeaderComponent el =
 -- | and header elements.
 textStyle :: (forall a. TextMap a -> a) -> StyleModifier
 textStyle selector =
-  S.style \theme -> 
+  S.style \theme ->
     S.css
       { fontSize: S.px $ textFontSize theme selector
       , lineHeight: S.px $ textLineHeight theme selector

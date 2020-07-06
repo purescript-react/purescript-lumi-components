@@ -12,6 +12,7 @@ import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.Traversable (for_)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Button (button, secondary)
 import Lumi.Components.Color (colors)
@@ -22,7 +23,7 @@ import Lumi.Components.Link as Link
 import Lumi.Components.Text (p_)
 import Lumi.Components.ZIndex (ziDropdownButton)
 import Math as Math
-import React.Basic (Component, JSX, createComponent, element, fragment, make, makeStateless, readProps, readState)
+import React.Basic.Classic (Component, JSX, createComponent, element, fragment, make, makeStateless, readProps, readState)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (ref)
@@ -186,9 +187,9 @@ dropdownButton =
             , handler: \_ -> close self
             }
 
-    lumiDropdownButton = element $ R.unsafeCreateDOMComponent "lumi-dropdown-button"
-    lumiDropdownButtonContent = element $ R.unsafeCreateDOMComponent "lumi-dropdown-button-content"
-    lumiDropdownButtonMarker = element $ R.unsafeCreateDOMComponent "lumi-dropdown-button-marker"
+    lumiDropdownButton = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-dropdown-button"
+    lumiDropdownButtonContent = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-dropdown-button-content"
+    lumiDropdownButtonMarker = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-dropdown-button-marker"
 
 type DropdownMenuProps =
   { label :: String

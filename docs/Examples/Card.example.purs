@@ -11,7 +11,7 @@ import Lumi.Components.Row (row_)
 import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text (h2_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
 

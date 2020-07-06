@@ -18,7 +18,7 @@ import Lumi.Components2.Slat as Slat
 import Lumi.Styles (StyleModifier, style_)
 import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
-import React.Basic (JSX, fragment)
+import React.Basic.Classic (JSX, fragment)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Hooks as React
@@ -112,13 +112,13 @@ docs =
       ]
 
 slatExWidth :: StyleModifier
-slatExWidth = style_ $ E.css { maxWidth: E.int 500, width: E.str "100%" }
+slatExWidth = style_ $ E.css { maxWidth: E.px 500, width: E.str "100%" }
 
 slatColumn :: Int -> StyleModifier
 slatColumn flexGrow =
   style_
     $ E.css
-    $ { flexGrow: E.int flexGrow
+    $ { flexGrow: E.str (show flexGrow)
       , "&:not(:first-child)":
         E.nested
           $ E.css

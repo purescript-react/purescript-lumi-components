@@ -7,7 +7,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Row (responsiveRow_, row_)
 import Lumi.Components.Text (h2_, p_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =

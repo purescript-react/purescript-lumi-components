@@ -11,7 +11,7 @@ import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justif
 import Lumi.Styles.Link as Link
 import Lumi.Styles.Loader (mkLoader, spin)
 import Lumi.Styles.Theme (LumiTheme(..))
-import React.Basic.Emotion (color, css, int, nested, str)
+import React.Basic.Emotion (color, css, px, nested, str)
 
 data ButtonKind
   = Primary
@@ -150,7 +150,7 @@ button colo kind state size = case kind of
                   { label: str "button"
                   , appearance: none
                   , outline: none
-                  , padding: int 0
+                  , padding: px 0
                   , background: none
                   , border: none
                   }
@@ -174,48 +174,48 @@ button colo kind state size = case kind of
               { label: str "button"
               , appearance: none
               , outline: none
-              , minWidth: int 70
+              , minWidth: px 70
               , padding: str "10px 20px"
-              , fontSize: int 14
-              , lineHeight: int 1
+              , fontSize: px 14
+              , lineHeight: px 1
               , whiteSpace: str "nowrap"
               , textOverflow: str "ellipsis"
               , overflow: str "hidden"
-              , height: int 40
-              , borderRadius: int 3
-              , borderWidth: int 1
+              , height: px 40
+              , borderRadius: px 3
+              , borderWidth: px 1
               , borderStyle: str "solid"
               , "@media (min-width: 860px)":
                   nested
                     $ fold
                         [ css
                             { padding: str "6px 16px"
-                            , height: int 32
+                            , height: px 32
                             }
                         , case size of
                             Small ->
                               css
-                                { fontSize: int 12
-                                , height: int 28
+                                { fontSize: px 12
+                                , height: px 28
                                 }
                             Medium -> mempty
                             Large ->
                               css
-                                { fontSize: int 15
+                                { fontSize: px 15
                                 , padding: str "12px 24px"
-                                , height: int 48
+                                , height: px 48
                                 }
                             ExtraLarge ->
                               css
-                                { fontSize: int 20
+                                { fontSize: px 20
                                 , padding: str "16px 32px"
-                                , height: int 64
+                                , height: px 64
                                 }
                             ExtraExtraLarge ->
                               css
-                                { fontSize: int 20
+                                { fontSize: px 20
                                 , padding: str "16px 32px"
-                                , height: int 64
+                                , height: px 64
                                 }
                         ]
               }
@@ -283,7 +283,7 @@ buttonGroup joined =
             , "& > *:not(:last-child)":
                 nested
                   $ css
-                      { marginRight: int 8
+                      { marginRight: px 8
                       }
             }
         else
@@ -292,19 +292,19 @@ buttonGroup joined =
             , "& > *:not(:last-child)":
                 nested
                   $ css
-                      { marginRight: int (-1)
-                      , borderTopRightRadius: int 0
-                      , borderBottomRightRadius: int 0
+                      { marginRight: px (-1)
+                      , borderTopRightRadius: px 0
+                      , borderBottomRightRadius: px 0
                       }
             , "& > *:not(:first-child)":
                 nested
                   $ css
-                      { borderTopLeftRadius: int 0
-                      , borderBottomLeftRadius: int 0
+                      { borderTopLeftRadius: px 0
+                      , borderBottomLeftRadius: px 0
                       }
             , "& > *:focus, & > *:hover":
                 nested
                   $ css
-                      { zIndex: int ziButtonGroup
+                      { zIndex: px ziButtonGroup
                       }
             }

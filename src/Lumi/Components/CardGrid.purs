@@ -10,11 +10,12 @@ import Data.Foldable (foldMap)
 import Data.Maybe (Maybe(..), fromMaybe, isJust)
 import Data.Monoid (guard)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Card (card, cardMinWidth)
 import Lumi.Components.Input (CheckboxState(..), checkbox, input)
 import Lumi.Components.Size (Size(..))
-import React.Basic (JSX, createComponent, element, keyed, make, readProps)
+import React.Basic.Classic (JSX, createComponent, element, keyed, make, readProps)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (stopPropagation, targetChecked)
 import React.Basic.Events (handler)
@@ -50,7 +51,7 @@ cardGrid =
         { selectedKeys: nextSelectedKeys } <- nextProps.selection
         in not (unsafeRefEq selectedKeys nextSelectedKeys)
 
-    lumiCardGrid = element (R.unsafeCreateDOMComponent "lumi-card-grid")
+    lumiCardGrid = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-card-grid")
 
     render self@{ props } =
       lumiCardGrid
@@ -109,8 +110,8 @@ cardGridCell =
     shouldUpdate { props } { nextProps } =
       props.selected /= nextProps.selected
 
-    lumiCardGridCell = element (R.unsafeCreateDOMComponent "lumi-card-grid-cell")
-    lumiCardGridCheckbox = element (R.unsafeCreateDOMComponent "lumi-card-grid-checkbox")
+    lumiCardGridCell = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-card-grid-cell")
+    lumiCardGridCheckbox = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-card-grid-checkbox")
 
     render { props } =
       lumiCardGridCell

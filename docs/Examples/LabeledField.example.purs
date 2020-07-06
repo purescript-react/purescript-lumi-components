@@ -10,7 +10,7 @@ import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..), ValidationMessage(..), defaults, labeledField)
 import Lumi.Components.Text (h2_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
 

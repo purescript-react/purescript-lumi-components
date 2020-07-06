@@ -5,7 +5,7 @@ import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (nbsp)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

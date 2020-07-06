@@ -34,7 +34,7 @@ import Lumi.Components.Orientation (Orientation(..))
 import Lumi.Components.Row as Row
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text as T
-import React.Basic (JSX, keyed)
+import React.Basic.Classic (JSX, keyed)
 import React.Basic.DOM as R
 import Unsafe.Reference (unsafeRefEq)
 

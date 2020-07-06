@@ -10,6 +10,7 @@ import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components (($$$))
 import Lumi.Components.Color (colors)
@@ -22,7 +23,7 @@ import Lumi.Components2.Text as T
 import Lumi.Styles as S
 import Lumi.Styles.Box (FlexAlign(..), _align, _justify, _row)
 import Lumi.Styles.Theme (LumiTheme(..))
-import React.Basic (Component, JSX, createComponent, element, empty, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, makeStateless)
 import React.Basic.DOM as R
 
 type EditableTableProps row =
@@ -183,7 +184,7 @@ editableTable = makeStateless component render
             ]
         ]
 
-    editableTableElement = element $ R.unsafeCreateDOMComponent "lumi-editable-table"
+    editableTableElement = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-editable-table"
 
 styles :: JSS
 styles = jss

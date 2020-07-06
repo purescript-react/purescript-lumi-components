@@ -6,8 +6,9 @@ import Color (cssStringHSLA)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
+import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Color (colors)
-import React.Basic (Component, JSX, createComponent, displayNameFromComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, displayNameFromComponent, element, makeStateless)
 import React.Basic.DOM as R
 import React.Basic.DOM.SVG as RS
 
@@ -132,7 +133,7 @@ makeProgressComponent component renderShape = makeStateless component render
           , children: renderShape { total: totalString, completed: completedString }
           }
 
-    lumiProgress = element (R.unsafeCreateDOMComponent "lumi-progress")
+    lumiProgress = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-progress")
 
 progressAnimationStyles :: R.CSS
 progressAnimationStyles = R.css { willChange: "auto", transition: "stroke-dashoffset 400ms ease-in-out" }

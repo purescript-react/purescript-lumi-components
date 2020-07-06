@@ -7,10 +7,11 @@ import Data.Foldable (find)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Nullable (Nullable, toNullable)
 import Effect.Uncurried (mkEffectFn1)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusInvalidStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputInvalidStyles, lumiInputStyles)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
 import React.Basic.Events (EventHandler)
@@ -38,8 +39,8 @@ component = createComponent "NativeSelect"
 nativeSelect :: NativeSelectProps -> JSX
 nativeSelect = makeStateless component $ lumiSelectElement <<< mapProps
   where
-    lumiSelectElement = element (R.unsafeCreateDOMComponent "select")
-    lumiOptionElement = element (R.unsafeCreateDOMComponent "option")
+    lumiSelectElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "select")
+    lumiOptionElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "option")
     mapProps props =
       { "data-testid": props.testId
       , children: props.options <#> \{ label, value } ->

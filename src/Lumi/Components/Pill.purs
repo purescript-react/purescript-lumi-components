@@ -5,10 +5,11 @@ import Prelude
 import Color (cssStringHSLA)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Status (Status)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 type PillProps =
@@ -24,7 +25,7 @@ component = createComponent "Pill"
 pill :: PillProps -> JSX
 pill = makeStateless component $ lumiPillElement <<< mapProps
   where
-    lumiPillElement = element (unsafeCreateDOMComponent "lumi-pill")
+    lumiPillElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-pill")
     mapProps props =
       { "data-status": show props.status
       , "data-testid": props.testId

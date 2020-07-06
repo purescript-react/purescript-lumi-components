@@ -25,6 +25,7 @@ import Data.Nullable (toNullable)
 import Data.String as String
 import Effect (Effect)
 import Effect.Aff (Aff)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, important, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Icon as Icon
@@ -32,7 +33,7 @@ import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusStyles, lum
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Select.Backend (SelectBackendProps, SelectOption, SelectOptions(..), selectBackend)
 import Lumi.Components.ZIndex (ziSelect)
-import React.Basic (Component, JSX, createComponent, element, elementKeyed, empty, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, elementKeyed, empty, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture_, currentTarget, targetValue)
@@ -355,33 +356,33 @@ select = makeStateless component render
                 }
 
     lumiSelectElement =
-      element (R.unsafeCreateDOMComponent "lumi-select")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select")
     lumiSelectInnerElement =
-      element (R.unsafeCreateDOMComponent "lumi-select-inner")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-inner")
     lumiSelectInputElement =
-      element (R.unsafeCreateDOMComponent "lumi-select-input")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-input")
     lumiSelectNativeInputElement =
-      elementKeyed (R.unsafeCreateDOMComponent "input")
+      elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "input")
     lumiSelectInputPlaceholder =
-      elementKeyed (R.unsafeCreateDOMComponent "lumi-select-input-placeholder")
+      elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-input-placeholder")
     lumiSelectInputSelectedValuesElement =
-      element (R.unsafeCreateDOMComponent "lumi-select-input-selected-values")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-input-selected-values")
     lumiSelectInputSelectedValueElement =
-      elementKeyed (R.unsafeCreateDOMComponent "lumi-select-input-selected-value")
+      elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-input-selected-value")
     lumiSelectInputSelectedValueTextElement =
-      element (R.unsafeCreateDOMComponent "lumi-select-input-selected-value-text")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-input-selected-value-text")
     lumiSelectClearIconElement =
-      element (R.unsafeCreateDOMComponent "lumi-select-clear-icon")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-clear-icon")
     lumiSelectMenuAnchorElement =
-      element (R.unsafeCreateDOMComponent "lumi-select-menu-anchor")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-menu-anchor")
     lumiSelectMenuElement =
-      element (R.unsafeCreateDOMComponent "lumi-select-menu")
+      element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-menu")
     lumiSelectMenuLoaderElement =
-      elementKeyed (R.unsafeCreateDOMComponent "lumi-select-menu-loader")
+      elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-menu-loader")
     lumiSelectOptionElement =
-      elementKeyed (R.unsafeCreateDOMComponent "lumi-select-option")
+      elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-option")
     lumiSelectNonOptionElement =
-      elementKeyed (R.unsafeCreateDOMComponent "lumi-select-non-option")
+      elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-select-non-option")
 
 focusChildInput :: Node.Node -> Effect Unit
 focusChildInput node = do

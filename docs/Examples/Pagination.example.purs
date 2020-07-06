@@ -6,7 +6,7 @@ import Data.Maybe (Maybe(..))
 import Lumi.Components.Column (column_)
 import Lumi.Components.Pagination (defaults, pagination)
 import Lumi.Components.Example (example)
-import React.Basic (JSX, createComponent, make)
+import React.Basic.Classic (JSX, createComponent, make)
 import React.Basic.DOM as R
 
 docs :: JSX

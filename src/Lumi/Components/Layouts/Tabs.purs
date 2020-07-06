@@ -7,7 +7,7 @@ import Data.NonEmpty (NonEmpty, oneOf)
 import Effect (Effect)
 import Lumi.Components.Tab (TabId, TabKey)
 import Lumi.Components.Tab as Tab
-import React.Basic (Component, JSX, createComponent, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, makeStateless)
 import React.Basic.DOM as R
 import Web.HTML.History (URL)
 

@@ -6,7 +6,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Responsive (desktop, mobile, phone, withMobile)
 import Lumi.Components.Text (body_, p_)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =

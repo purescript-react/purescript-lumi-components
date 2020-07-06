@@ -1,10 +1,10 @@
 module Lumi.Components.Responsive where
 
 import Prelude
-import Effect (Effect)
+
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
-import React.Basic.Hooks (Hook, JSX, ReactComponent, component, element, unsafeHook)
+import React.Basic.Hooks (Component, Hook, JSX, component, unsafeHook)
 import React.Basic.Hooks as React
 
 foreign import data MediaQuery :: Type
@@ -39,14 +39,14 @@ minWidthDesktop = 860
 
 mobile :: (Unit -> JSX) -> JSX
 mobile = \render ->
-  element c { render: \isMobile -> if isMobile then render unit else mempty }
+  c \isMobile -> if isMobile then render unit else mempty
   -- WARNING: Don't add any arguments to the definition of `mobile`!
   --   `c` must be fully applied at module creation!
   where
   c = unsafePerformEffect (mkMediaComponent "Mobile" useIsMobile)
 
 withMobile :: (Boolean -> JSX) -> JSX
-withMobile = element c <<< { render: _ }
+withMobile = c
   -- WARNING: Don't add any arguments to the `withMobile` function!
   --   `c` must be fully applied at module creation!
   where
@@ -54,14 +54,14 @@ withMobile = element c <<< { render: _ }
 
 phone :: (Unit -> JSX) -> JSX
 phone = \render ->
-  element c { render: \isPhone -> if isPhone then render unit else mempty }
+  c \isPhone -> if isPhone then render unit else mempty
   -- WARNING: Don't add any arguments to the definition of `phone`!
   --   `c` must be fully applied at module creation!
   where
   c = unsafePerformEffect (mkMediaComponent "Phone" useIsPhone)
 
 withPhone :: (Boolean -> JSX) -> JSX
-withPhone = element c <<< { render: _ }
+withPhone = c
   -- WARNING: Don't add any arguments to the `withPhone` function!
   --   `c` must be fully applied at module creation!
   where
@@ -69,14 +69,14 @@ withPhone = element c <<< { render: _ }
 
 desktop :: (Unit -> JSX) -> JSX
 desktop = \render ->
-  element c { render: \isDesktop -> if isDesktop then render unit else mempty }
+  c \isDesktop -> if isDesktop then render unit else mempty
   -- WARNING: Don't add any arguments the `desktop` function!
   --   `c` must be fully applied at module creation!
   where
   c = unsafePerformEffect (mkMediaComponent "Desktop" useIsDesktop)
 
 withDesktop :: (Boolean -> JSX) -> JSX
-withDesktop = element c <<< { render: _ }
+withDesktop = c
   -- WARNING: Don't add any arguments to the `withDesktop` function!
   --   `c` must be fully applied at module creation!
   where
@@ -85,8 +85,8 @@ withDesktop = element c <<< { render: _ }
 mkMediaComponent ::
   String ->
   Hook UseMediaQuery Boolean ->
-  Effect (ReactComponent { render :: Boolean -> JSX })
+  Component (Boolean -> JSX)
 mkMediaComponent name umq = do
-  component ("MediaQuery(" <> name <> ")") \{ render } -> React.do
+  component ("MediaQuery(" <> name <> ")") \render -> React.do
     isMatch <- umq
     pure $ render isMatch

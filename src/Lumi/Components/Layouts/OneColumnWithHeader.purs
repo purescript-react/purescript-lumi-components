@@ -3,8 +3,9 @@ module Lumi.Components.Layouts.OneColumnWithHeader where
 import Prelude
 
 import Data.Maybe (Maybe(..))
+import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Text (h2, text)
-import React.Basic (Component, JSX, createComponent, element, fragment, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, fragment, makeStateless)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 
@@ -72,9 +73,9 @@ layout = makeStateless component render
             ]
         }
 
-    lumiLayout = element (unsafeCreateDOMComponent "lumi-layout")
-    lumiLayoutViewHead = element (unsafeCreateDOMComponent "lumi-layout-view-head")
-    lumiLayoutViewBody = element (unsafeCreateDOMComponent "lumi-layout-view-body")
+    lumiLayout = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-layout")
+    lumiLayoutViewHead = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-layout-view-head")
+    lumiLayoutViewBody = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-layout-view-body")
 
 sidebarLayoutComponent :: Component SidebarLayoutProps
 sidebarLayoutComponent = createComponent "Sidebar"

@@ -98,8 +98,8 @@ import Lumi.Components.Text (body, body_, subsectionHeader, text)
 import Lumi.Components.Textarea as Textarea
 import Lumi.Components.Upload as Upload
 import Prim.Row (class Nub, class Union)
-import React.Basic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
-import React.Basic.Components.Async (async, asyncWithLoader)
+import React.Basic.Classic (JSX, createComponent, element, empty, fragment, keyed, makeStateless)
+import React.Basic.Classic.Components.Async (async, asyncWithLoader)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
@@ -168,17 +168,19 @@ defaultRenderForm
   -> Forest
   -> JSX
 defaultRenderForm renderProps@{ inlineTable, forceTopLabels } { readonly } forest =
-  element (R.unsafeCreateDOMComponent "lumi-form")
-    { class:
-        String.joinWith " " $ fold
+  R.div
+    { className: "lumi-form" <>
+        ( String.joinWith " " $ fold
           [ guard inlineTable ["inline-table"]
           , guard readonly ["readonly"]
           ]
+        )
     , children:
-        surround fieldDivider
+        [ surround fieldDivider
           $ defaultRenderForest { forceTopLabels }
           $ Array.mapMaybe pruneTree
           $ forest
+        ]
     }
   where
     fieldDivider = R.hr { className: "lumi field-divider" }
@@ -286,24 +288,24 @@ useForm' editor initialState props = Hooks.do
 -- |
 -- | _Note_: this function should be fully applied, to avoid remounting
 -- | the component on each render.
-formState
-  :: forall props unvalidated result
-   . Hooks.ReactComponent
-      { initialState :: unvalidated
-      , form :: FormBuilder { readonly :: Boolean | props } unvalidated result
-      , inlineTable :: Boolean
-      , forceTopLabels :: Boolean
-      , formProps :: { readonly :: Boolean | props }
-      , render
-          :: { formData :: unvalidated
-             , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
-             , setModified :: Effect Unit
-             , reset :: Effect Unit
-             , validated :: Maybe result
-             , form :: JSX
-             }
-          -> JSX
-      }
+formState ::
+  forall props unvalidated result. 
+  { initialState :: unvalidated
+  , form :: FormBuilder { readonly :: Boolean | props } unvalidated result
+  , inlineTable :: Boolean
+  , forceTopLabels :: Boolean
+  , formProps :: { readonly :: Boolean | props }
+  , render
+      :: { formData :: unvalidated
+          , setFormData :: (unvalidated -> unvalidated) -> Effect Unit
+          , setModified :: Effect Unit
+          , reset :: Effect Unit
+          , validated :: Maybe result
+          , form :: JSX
+          }
+      -> JSX
+  } ->
+  JSX
 formState = unsafePerformEffect do
   Hooks.component "FormState" \props -> Hooks.do
     state <- useForm props.form
@@ -424,7 +426,7 @@ labeledCheckbox
   :: forall props
   . JSX
   -> FormBuilder { readonly :: Boolean | props } Boolean Boolean
-labeledCheckbox label =
+labeledCheckbox = \label ->
   formBuilder_ \{ readonly } value onChange ->
     Input.label
       { style: R.css
@@ -450,7 +452,7 @@ labeledCheckbox label =
           ]
       }
   where
-    lumiAlignToInput = element (R.unsafeCreateDOMComponent "lumi-align-to-input")
+    lumiAlignToInput = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-align-to-input")
 
 -- | A form that edits an optional structure represented by group of radio
 -- | buttons, visually oriented in either horizontal or vertical fashion.
@@ -462,49 +464,51 @@ radioGroup
   => Orientation
   -> Array { label :: JSX, value :: a }
   -> FormBuilder { readonly :: Boolean | props } (Maybe a) (Maybe a)
-radioGroup orientation options = formBuilder_  \props selected onChange ->
-  wrapper $ options <#> \{ label, value } ->
-    Input.label
-      { style: R.css
-          { flexDirection: "row"
-          , alignSelf: "stretch"
-          }
-      , for: null
-      , children:
-          [ Input.input Input.radio
-              { style = R.css { marginRight: 8 }
-              , checked = if Just value == selected then Input.On else Input.Off
-              , onChange =
-                  Events.handler targetChecked \s ->
-                    when (fromMaybe false s) $
-                      onChange (Just value)
-              }
-          , lumiAlignToInput
-              { style: { flex: "1" }
-              , children: label
-              }
-          ]
-      }
+radioGroup = radioGroup'
   where
-    lumiAlignToInput = element (R.unsafeCreateDOMComponent "lumi-align-to-input")
+    lumiAlignToInput = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-align-to-input")
 
-    wrapper :: Array JSX -> JSX
-    wrapper children =
-      case orientation of
-        Horizontal ->
-          row
-            { children
-            , style: R.css
-                { alignItems: "center"
-                , justifyContent: "flex-start"
-                , flexWrap: "wrap"
-                }
-            }
-        Vertical ->
-          column
-            { children
-            , style: R.css { alignItems: "flex-start" }
-            }
+    radioGroup' orientation options = formBuilder_  \props selected onChange ->
+      wrapper $ options <#> \{ label, value } ->
+        Input.label
+          { style: R.css
+              { flexDirection: "row"
+              , alignSelf: "stretch"
+              }
+          , for: null
+          , children:
+              [ Input.input Input.radio
+                  { style = R.css { marginRight: 8 }
+                  , checked = if Just value == selected then Input.On else Input.Off
+                  , onChange =
+                      Events.handler targetChecked \s ->
+                        when (fromMaybe false s) $
+                          onChange (Just value)
+                  }
+              , lumiAlignToInput
+                  { style: { flex: "1" }
+                  , children: label
+                  }
+              ]
+          }
+      where
+      wrapper :: Array JSX -> JSX
+      wrapper children =
+        case orientation of
+          Horizontal ->
+            row
+              { children
+              , style: R.css
+                  { alignItems: "center"
+                  , justifyContent: "flex-start"
+                  , flexWrap: "wrap"
+                  }
+              }
+          Vertical ->
+            column
+              { children
+              , style: R.css { alignItems: "flex-start" }
+              }
 
 -- | A editor consisting of a file picker.
 file
@@ -1159,7 +1163,7 @@ withKey key editor = FormBuilder \props value ->
 styles :: JSS
 styles = jss
   { "@global":
-      { "lumi-form":
+      { ".lumi-form":
           { "& hr.lumi.field-divider":
               { margin: "8px 0"
               , height: "0"
@@ -1171,7 +1175,7 @@ styles = jss
               }
 
             -- hide outer borders in nested Forms
-          , "& .labeled-field--right > lumi-form > hr.lumi.field-divider":
+          , "& .labeled-field--right > .lumi-form > hr.lumi.field-divider":
               { "&:first-child, &:last-child": { display: "none" }
               }
 

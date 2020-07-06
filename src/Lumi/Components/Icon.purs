@@ -2,8 +2,9 @@ module Lumi.Components.Icon where
 
 import Prelude
 
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 data IconType
@@ -123,7 +124,7 @@ component = createComponent "Icon"
 icon :: IconProps -> JSX
 icon = makeStateless component $ lumiIconElement <<< mapProps
   where
-    lumiIconElement = element (unsafeCreateDOMComponent "lumi-font-icon")
+    lumiIconElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-font-icon")
 
     mapProps props =
       { "data-icon-char": show props.type_

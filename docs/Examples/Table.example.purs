@@ -22,7 +22,7 @@ import Lumi.Components.NativeSelect (defaults, nativeSelect)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Table (ColumnName(..), SortString(..), table)
 import Lumi.Components.Text (p_)
-import React.Basic (Component, JSX, createComponent, make)
+import React.Basic.Classic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)

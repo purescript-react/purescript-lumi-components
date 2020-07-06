@@ -14,7 +14,7 @@ import Lumi.Components.Row (row_)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (h2_)
 import Lumi.Components.Example (example)
-import React.Basic (Component, JSX, createComponent, make)
+import React.Basic.Classic (Component, JSX, createComponent, make)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events (handler, handler_)

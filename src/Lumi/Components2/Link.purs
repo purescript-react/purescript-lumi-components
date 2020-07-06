@@ -11,7 +11,7 @@ import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Styles (toCSS)
 import Lumi.Styles.Link as Styles.Link
 import Lumi.Styles.Theme (useTheme)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM (unsafeCreateDOMComponent)
 import React.Basic.DOM.Events (altKey, button, ctrlKey, metaKey, preventDefault, shiftKey, stopPropagation)
 import React.Basic.Emotion as E
@@ -33,19 +33,6 @@ type LinkProps
 link :: LumiComponent LinkProps
 link =
   unsafePerformEffect do
-    let
-      lumiAnchorElement = E.element (unsafeCreateDOMComponent "a")
-
-      defaults =
-        { className: ""
-        , href: URL ""
-        , navigate: Nothing
-        , tabIndex: 0
-        , target: Nothing
-        , rel: Nothing
-        , download: Nothing
-        , content: []
-        }
     lumiComponent "Link" defaults \props@{ className } -> React.do
       theme <- useTheme
       pure
@@ -70,3 +57,16 @@ link =
             , tabIndex: props.tabIndex
             , download: toNullable props.download
             }
+  where
+  lumiAnchorElement = E.element (unsafePerformEffect $ unsafeCreateDOMComponent "a")
+
+  defaults =
+    { className: ""
+    , href: URL ""
+    , navigate: Nothing
+    , tabIndex: 0
+    , target: Nothing
+    , rel: Nothing
+    , download: Nothing
+    , content: []
+    }

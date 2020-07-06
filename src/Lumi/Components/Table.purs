@@ -20,7 +20,9 @@ import Data.Nullable (Nullable, toMaybe)
 import Data.Nullable as Nullable
 import Data.String (contains, joinWith, Pattern(..))
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn1, runEffectFn2)
+import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
+import Effect.Unsafe (unsafePerformEffect)
+import Foreign.Object (fromHomogeneous)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Icon (IconType(ArrowUp, ArrowDown), icon_)
@@ -30,7 +32,7 @@ import Lumi.Components.Table.FilterDropdown (Item, filterDropdown)
 import Lumi.Components.Text (subtext_)
 import Lumi.Components.ZIndex (ziTableHeader, ziTableHeaderMenu, ziTableLockedColumn, ziTableLockedColumnHeader)
 import Lumi.Components2.ScrollObserver (scrollObserver)
-import React.Basic (Component, JSX, createComponent, element, empty, keyed, make, readProps, readState)
+import React.Basic.Classic (Component, JSX, createComponent, element, empty, keyed, make, readProps, readState)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
 import React.Basic.DOM.Components.Ref (QuerySelector(..), selectorRef)
@@ -317,7 +319,7 @@ table = make component
             cleanUpNullables x = x { getLink = toMaybe x.getLink }
 
         renderTableHead columns tableRef =
-          element (R.unsafeCreateDOMComponent "thead")
+          R.thead
             { onContextMenu: Events.handler (preventDefault >>> stopPropagation) \e -> do
                 { x, y } <- runEffectFn2 getMouseEventPositionWithOffset tableRef e
                 openMenu self
@@ -381,15 +383,15 @@ table = make component
             if col.hidden
               then empty
               else
-                element (R.unsafeCreateDOMComponent "th")
-                  { key: col.name
+                R.th
+                  { key: un ColumnName col.name
                   , style: col.style
-                  , "data-required": col.required
+                  , _data: fromHomogeneous { required: show col.required }
                   , className: guard col.sticky "sticky-column"
                   , children:
                       [ case self.props.sortable, toMaybe col.sortBy of
                           true, Just colSortBy ->
-                            element (R.unsafeCreateDOMComponent "lumi-row")
+                            lumiRowEl
                               { style: R.css { cursor: "pointer", alignItems: "center" }
                               , onClick: Events.handler_ (runEffectFn2 self.props.updateSort flippedSort col.sortBy)
                               , children:
@@ -415,11 +417,11 @@ table = make component
                   }
 
     renderLumiTable self columns renderChildren =
-      element (R.unsafeCreateDOMComponent "lumi-table")
+      lumiTableEl
         { children:
             [ if not self.state.showMenu
                 then empty
-                else guard (self.props.dropdownMenu) $ renderFilterDropdown
+                else guard self.props.dropdownMenu $ renderFilterDropdown
                   { close: closeMenu self
                   , reorderItems: setColumnSort self <<< map \{ name, hidden } ->
                       { name: ColumnName name
@@ -434,7 +436,7 @@ table = make component
                   , style: R.css self.state.menuStyle
                   }
             , selectorRef (QuerySelector "lumi-table-inner") \maybeTableRef ->
-                element (R.unsafeCreateDOMComponent "lumi-table-inner")
+                lumiTableInnerEl
                   { children:
                       case maybeTableRef of
                         Nothing       -> []
@@ -457,9 +459,13 @@ table = make component
           }
           $ filterDropdown
               { items
-              , onChange: mkEffectFn1 reorderItems
+              , onChange: reorderItems
               , style
               }
+
+    lumiTableEl = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-table")
+    lumiTableInnerEl = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-table-inner")
+    lumiRowEl = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-row")
 
 type TableRowProps row col_ pcol_ =
   { tableProps ::
@@ -551,33 +557,34 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
         }
 
     renderPrimaryCell onNavigate row col =
-      element (R.unsafeCreateDOMComponent "td")
-        { key: col.name
+      R.td
+        { key: un ColumnName col.name
         , className: joinWith " " $ fold
             [ ["primary-cell"]
             , guard col.sticky ["sticky-column"]
             ]
         , style: col.style
-        , "data-required": true
+        , _data: fromHomogeneous { required: show true }
         , children:
-            case col.getLink of
-              Nothing ->
-                col.renderCell row
-              Just getLink ->
-                Link.link Link.defaults
-                  { href = getLink row
-                  , navigate = Just (runEffectFn1 onNavigate (getLink row))
-                  , text = col.renderCell row
-                  , className = Just "primary-cell-link"
-                  }
+            [ case col.getLink of
+                Nothing ->
+                  col.renderCell row
+                Just getLink ->
+                  Link.link Link.defaults
+                    { href = getLink row
+                    , navigate = Just (runEffectFn1 onNavigate (getLink row))
+                    , text = col.renderCell row
+                    , className = Just "primary-cell-link"
+                    }
+            ]
         }
 
     renderBodyRowCell row col =
-      element (R.unsafeCreateDOMComponent "td")
-        { key: col.name
+      R.td
+        { key: un ColumnName col.name
         , style: col.style
         , className: guard col.sticky "sticky-column"
-        , "data-required": col.required
+        , _data: fromHomogeneous { required: show col.required }
         , children: [ col.renderCell row ]
         }
 

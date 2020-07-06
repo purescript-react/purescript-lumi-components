@@ -9,7 +9,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Navigation (navigation)
 import Lumi.Components.Text (h2_)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import Web.HTML.History (URL(..))
 
 docs :: JSX

@@ -8,7 +8,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Link (link, defaults)
 import Lumi.Components.Text (body_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
 

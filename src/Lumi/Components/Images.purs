@@ -3,10 +3,11 @@ module Lumi.Components.Images where
 import Prelude
 
 import Color (cssStringHSLA)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size)
-import React.Basic (JSX, element)
+import React.Basic.Classic (JSX, element)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 avatar
@@ -15,12 +16,14 @@ avatar
      , style :: CSS
      }
   -> JSX
-avatar { image, size, style }=
-  element (unsafeCreateDOMComponent "lumi-avatar")
+avatar = \{ image, size, style } ->
+  avatarEl
     { "data-size": show size
     , children: image
     , style
     }
+  where
+  avatarEl = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-avatar")
 
 productThumb
   :: { image :: JSX
@@ -28,12 +31,14 @@ productThumb
      , style :: CSS
      }
   -> JSX
-productThumb { image, size, style } =
-  element (unsafeCreateDOMComponent "lumi-product-thumb")
+productThumb = \{ image, size, style } ->
+  productThumbEl
     { "data-size": show size
     , children: image
     , style
     }
+  where
+  productThumbEl = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-product-thumb")
 
 avatar_ :: { image :: JSX, size :: Size } -> JSX
 avatar_ { image, size } = avatar { image, size, style: css {} }

@@ -7,7 +7,7 @@ import Data.Nullable as Nullable
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, lumiComponentFromHook)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.Hooks (Hook, UnsafeReference(..), UseEffect, UseState, coerceHook, useEffect, useState, (/\))
 import React.Basic.Hooks as React
 import Web.DOM (Element, Node)

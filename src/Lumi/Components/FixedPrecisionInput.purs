@@ -19,7 +19,7 @@ import Data.String.Regex.Flags (noFlags)
 import Effect.Uncurried (EffectFn2, mkEffectFn2, runEffectFn2)
 import Lumi.Components.Size (Size(..))
 import Math as Math
-import React.Basic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, mergeStyles)
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events (SyntheticEvent, syntheticEvent)

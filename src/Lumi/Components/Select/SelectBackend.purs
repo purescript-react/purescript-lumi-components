@@ -18,7 +18,7 @@ import Data.String as String
 import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Aff (Aff, message, runAff_)
-import React.Basic (Component, JSX, createComponent, make)
+import React.Basic.Classic (Component, JSX, createComponent, make)
 import React.Basic.DOM.Components.GlobalEvents (windowEvents)
 import React.Basic.DOM.Components.Ref (ref)
 import Unsafe.Coerce (unsafeCoerce)

@@ -6,7 +6,7 @@ import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (body_, p_)
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Clip (clip)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =

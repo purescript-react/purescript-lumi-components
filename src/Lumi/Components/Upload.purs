@@ -54,7 +54,7 @@ import Lumi.Components.Icon (IconType(..), icon_)
 import Lumi.Components.Progress (progressBar, progressCircle, progressDefaults)
 import Lumi.Components.Svg (userSvg)
 import Lumi.Components.Text (body_, nbsp)
-import React.Basic (Component, JSX, createComponent, element, elementKeyed, empty, fragment, make, readProps)
+import React.Basic.Classic (Component, JSX, createComponent, element, elementKeyed, empty, fragment, make, readProps)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (defaultOptions, globalEvents)
 import React.Basic.DOM.Events (capture, capture_, nativeEvent, preventDefault, stopPropagation, target)
@@ -633,27 +633,27 @@ upload = make component { initialState, render }
                 , children: [ userSvg ]
                 }
 
-    lumiUpload = element (R.unsafeCreateDOMComponent "lumi-upload")
-    lumiUploadLabel = elementKeyed (R.unsafeCreateDOMComponent "label")
-    lumiUploadDragMask = element (R.unsafeCreateDOMComponent "lumi-upload-drag-mask")
-    lumiUploadPlaceholder = element (R.unsafeCreateDOMComponent "lumi-upload-placeholder")
-    lumiUploadInput = element (R.unsafeCreateDOMComponent "input")
+    lumiUpload = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload")
+    lumiUploadLabel = elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "label")
+    lumiUploadDragMask = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-drag-mask")
+    lumiUploadPlaceholder = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-placeholder")
+    lumiUploadInput = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "input")
 
-    lumiUploadImageList = element (R.unsafeCreateDOMComponent "lumi-upload-image-list")
-    lumiUploadImage = elementKeyed (R.unsafeCreateDOMComponent "lumi-upload-image")
-    lumiUploadImageHoverOverlay = element (R.unsafeCreateDOMComponent "lumi-upload-image-hover-overlay")
-    lumiUploadImageRemove = element (R.unsafeCreateDOMComponent "lumi-upload-image-remove-icon")
-    lumiUploadImageProgress = element (R.unsafeCreateDOMComponent "lumi-upload-image-progress")
+    lumiUploadImageList = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-image-list")
+    lumiUploadImage = elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-image")
+    lumiUploadImageHoverOverlay = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-image-hover-overlay")
+    lumiUploadImageRemove = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-image-remove-icon")
+    lumiUploadImageProgress = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-image-progress")
 
-    lumiUploadFileList = element (R.unsafeCreateDOMComponent "lumi-upload-file-list")
-    lumiUploadFile = elementKeyed (R.unsafeCreateDOMComponent "lumi-upload-file")
-    lumiUploadFileImage = element (R.unsafeCreateDOMComponent "lumi-upload-file-image")
-    lumiUploadFileInfo = element (R.unsafeCreateDOMComponent "lumi-upload-file-info")
-    lumiUploadFileRemove = element (R.unsafeCreateDOMComponent "lumi-upload-file-remove")
+    lumiUploadFileList = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-file-list")
+    lumiUploadFile = elementKeyed (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-file")
+    lumiUploadFileImage = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-file-image")
+    lumiUploadFileInfo = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-file-info")
+    lumiUploadFileRemove = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-file-remove")
 
-    lumiUploadAvatar = element (R.unsafeCreateDOMComponent "lumi-upload-avatar")
-    lumiUploadAvatarImage = element (R.unsafeCreateDOMComponent "lumi-upload-avatar-image")
-    lumiUploadAvatarActions = element (R.unsafeCreateDOMComponent "lumi-upload-avatar-actions")
+    lumiUploadAvatar = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-avatar")
+    lumiUploadAvatarImage = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-avatar-image")
+    lumiUploadAvatarActions = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-upload-avatar-actions")
 
 mergeFileIds :: Boolean -> Array FileId -> Array FileId -> Array FileId
 mergeFileIds allowMultiple newValues existingValues =

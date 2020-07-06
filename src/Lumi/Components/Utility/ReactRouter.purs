@@ -3,7 +3,7 @@ module Lumi.Components.Utility.ReactRouter where
 import Prelude
 
 import Effect.Uncurried (EffectFn1)
-import React.Basic (ReactComponent)
+import React.Basic.Classic (ReactComponent)
 import Web.HTML.History (URL)
 
 type RouterProps props =

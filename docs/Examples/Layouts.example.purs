@@ -25,7 +25,7 @@ import Lumi.Components.Tab (TabId(..), TabKey(..), urlParts)
 import Lumi.Components.Table (ColumnName(..), table)
 import Lumi.Components.Text (body_, h2_, p_, sectionHeader_)
 import Lumi.Components.Utility.ReactRouter (RouterProps, withRouter)
-import React.Basic (Component, JSX, createComponent, element, toReactComponent)
+import React.Basic.Classic (Component, JSX, createComponent, element, toReactComponent)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
 

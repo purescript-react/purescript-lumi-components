@@ -7,7 +7,7 @@ import Lumi.Components.Divider (divider_, flexDivider_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Row (row)
 import Lumi.Components.Text as T
-import React.Basic (Component, JSX, createComponent, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, makeStateless)
 import React.Basic.DOM as R
 
 component :: Component Unit

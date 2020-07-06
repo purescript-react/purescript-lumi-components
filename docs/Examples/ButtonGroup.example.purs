@@ -10,7 +10,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.NativeSelect (nativeSelect, defaults)
 import Lumi.Components.Text (h2_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

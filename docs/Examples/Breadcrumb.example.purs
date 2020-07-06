@@ -9,7 +9,7 @@ import Lumi.Components.Breadcrumb (breadcrumb, compactBreadcrumb)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Text (h2_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import Web.HTML.History (URL(..))
 
 docs :: JSX

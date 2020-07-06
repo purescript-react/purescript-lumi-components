@@ -30,10 +30,6 @@ module.exports = (_env, options) => ({
   optimization: {
     minimizer: [
       new TerserPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: false,
-        exclude: [/\.min\.js$/gi],
         terserOptions: {
           mangle: true,
           ie8: false,
@@ -119,7 +115,8 @@ module.exports = (_env, options) => ({
                 ]
               }
             }
-          }
+          },
+          { test: /\.cbor$/, use: "null-loader" }
         ]
       }
     ]

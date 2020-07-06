@@ -1,7 +1,10 @@
 module Lumi.Components.Column where
 
+import Prelude
+
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 
 component :: Component ColumnProps
@@ -15,7 +18,7 @@ type ColumnProps =
 column :: ColumnProps -> JSX
 column = makeStateless component lumiColumnElement
   where
-    lumiColumnElement = element (unsafeCreateDOMComponent "lumi-column")
+    lumiColumnElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-column")
 
 column_ :: Array JSX -> JSX
 column_ children = column { children, style: css {} }
@@ -29,7 +32,7 @@ columnSelfStretch children = column
 responsiveColumn :: ColumnProps -> JSX
 responsiveColumn = makeStateless component lumiResponsiveColumnElement
   where
-    lumiResponsiveColumnElement = element (unsafeCreateDOMComponent "lumi-responsive-column")
+    lumiResponsiveColumnElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-responsive-column")
 
 responsiveColumn_ :: Array JSX -> JSX
 responsiveColumn_ children = responsiveColumn { children, style: css {} }

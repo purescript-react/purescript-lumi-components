@@ -3,9 +3,10 @@ module Lumi.Components.Divider where
 import Prelude
 
 import Color (cssStringHSLA)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 
 type DividerProps =
@@ -27,12 +28,9 @@ divider_ :: JSX
 divider_ = divider { style: R.css {} }
 
 flexDivider :: DividerProps -> JSX
-flexDivider { style } =
-  lumiFlexDividerElement
-    { style
-    }
+flexDivider = \{ style } -> lumiFlexDividerElement { style }
   where
-    lumiFlexDividerElement = element (R.unsafeCreateDOMComponent "lumi-flex-divider")
+    lumiFlexDividerElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-flex-divider")
 
 flexDivider_ :: JSX
 flexDivider_ = flexDivider { style: R.css {} }

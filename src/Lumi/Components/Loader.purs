@@ -1,11 +1,13 @@
 module Lumi.Components.Loader where
 
 import Prelude
+
 import Color (cssStringHSLA)
 import Data.Nullable (Nullable)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 
 type LoaderProps
@@ -19,7 +21,7 @@ component = createComponent "Loader"
 loader :: LoaderProps -> JSX
 loader = makeStateless component $ loaderElement <<< mapProps
   where
-  loaderElement = element (unsafeCreateDOMComponent "lumi-loader")
+  loaderElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-loader")
 
   mapProps props =
     { style: props.style

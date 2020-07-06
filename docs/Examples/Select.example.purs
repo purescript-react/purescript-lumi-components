@@ -13,7 +13,7 @@ import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (labeledField, RequiredField(..))
 import Lumi.Components.Select (asyncMultiSelect, asyncSingleSelect, multiSelect, singleSelect)
 import Lumi.Components.Text (h2_)
-import React.Basic (Component, JSX, createComponent, make)
+import React.Basic.Classic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetChecked)

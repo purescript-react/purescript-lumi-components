@@ -12,7 +12,7 @@ import Lumi.Components.Modal (dialog, errorModal, modal, modalTitle)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text (body_)
 import Lumi.Components.Example (example)
-import React.Basic (Component, JSX, createComponent, fragment, make)
+import React.Basic.Classic (Component, JSX, createComponent, fragment, make)
 import React.Basic.DOM.Events (capture_)
 
 data ModalTestId

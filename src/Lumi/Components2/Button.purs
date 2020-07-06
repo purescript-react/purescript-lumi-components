@@ -4,10 +4,10 @@ import Prelude
 
 import Color (Color)
 import Data.Array as Array
-import Data.Maybe (Maybe(..))
-import Data.Nullable as Nullable
+import Data.Maybe (Maybe(..), fromMaybe)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
+import Foreign.Object (fromHomogeneous)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier)
 import Lumi.Components.Button (invisibleSpace)
 import Lumi.Components.Size (Size(..))
@@ -15,11 +15,10 @@ import Lumi.Styles (toCSS)
 import Lumi.Styles.Button (ButtonKind(..), ButtonState(..))
 import Lumi.Styles.Button as Styles.Button
 import Lumi.Styles.Theme (useTheme)
-import Prim.Row (class Union)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Events (handler_)
-import React.Basic.Hooks (JSX, ReactComponent)
+import React.Basic.Hooks (JSX)
 import React.Basic.Hooks as React
 
 type ButtonProps
@@ -38,16 +37,6 @@ button =
   unsafePerformEffect do
     lumiComponent "Button" defaults render
   where
-  lumiButtonElement ::
-    forall attrs attrs_.
-    Union attrs attrs_ ( | R.Props_button ) =>
-    ReactComponent
-      { className :: String
-      , "aria-label" :: Nullable.Nullable String
-      | attrs
-      }
-  lumiButtonElement = R.unsafeCreateDOMComponent "button"
-
   defaults :: Record ButtonProps
   defaults =
     { accessibilityLabel: mempty
@@ -63,8 +52,8 @@ button =
   render props = React.do
     theme <- useTheme
     pure
-      $ E.element lumiButtonElement
-          { "aria-label": Nullable.toNullable props.accessibilityLabel
+      $ E.element R.button'
+          { _aria: fromHomogeneous { label: fromMaybe "" props.accessibilityLabel }
           , children
           , className: props.className
           , css:

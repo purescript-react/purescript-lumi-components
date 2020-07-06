@@ -6,13 +6,14 @@ import Color (cssStringHSLA)
 import Data.Foldable (foldMap)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (notNull)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colorNames, colors)
 import Lumi.Components.Images (avatar_, productThumb_)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components.Text as T
-import React.Basic (JSX, createComponent, element, fragment, makeStateless)
+import React.Basic.Classic (JSX, createComponent, element, fragment, makeStateless)
 import React.Basic.DOM as R
 
 lockup
@@ -23,11 +24,11 @@ lockup
   -> JSX
 lockup = makeStateless (createComponent "Lockup") render
   where
-    lumiLockup = element (R.unsafeCreateDOMComponent "lumi-lockup")
-    lumiLockupImage = element (R.unsafeCreateDOMComponent "lumi-lockup-image")
-    lumiLockupDescription = element (R.unsafeCreateDOMComponent "lumi-lockup-description")
-    lumiLockupDescriptionTitle = element (R.unsafeCreateDOMComponent "lumi-lockup-description-title")
-    lumiLockupDescriptionBody = element (R.unsafeCreateDOMComponent "lumi-lockup-description-body")
+    lumiLockup = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-lockup")
+    lumiLockupImage = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-lockup-image")
+    lumiLockupDescription = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-lockup-description")
+    lumiLockupDescriptionTitle = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-lockup-description-title")
+    lumiLockupDescriptionBody = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-lockup-description-body")
 
     render props =
       lumiLockup

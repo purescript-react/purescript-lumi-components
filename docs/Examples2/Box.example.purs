@@ -9,7 +9,7 @@ import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (h2_, p_)
 import Lumi.Components2.Box (box, column, row)
 import Lumi.Styles.Box (FlexAlign(..), _alignSelf, _justify, _row)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.Emotion as E
 
 docs :: JSX

@@ -42,7 +42,7 @@ import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tre
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Text (subtext, text)
 import Prim.RowList as RL
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 -- | A `Validator` takes a possibly invalid form `result` and produces

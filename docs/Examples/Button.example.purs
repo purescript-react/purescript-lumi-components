@@ -12,7 +12,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Icon (IconType(..))
 import Lumi.Components.Text (h2_, h4_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM (css)
 import React.Basic.DOM as R
 

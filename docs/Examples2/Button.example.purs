@@ -11,7 +11,7 @@ import Lumi.Components.Text (h2_, h4_)
 import Lumi.Components2.Button (_linkStyle, button, _secondary)
 import Lumi.Styles.Box (_interactive)
 import Lumi.Styles.Button (ButtonState(..))
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 import Web.HTML (window)
 import Web.HTML.Window (alert)

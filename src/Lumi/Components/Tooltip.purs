@@ -4,11 +4,12 @@ import Prelude
 
 import Color (cssStringHSLA)
 import Data.Nullable (Nullable)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Size (Size)
 import Lumi.Components.ZIndex (ziTooltip)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, unsafeCreateDOMComponent)
 
 type TooltipProps =
@@ -25,8 +26,8 @@ component = createComponent "Tooltip"
 tooltip :: TooltipProps -> JSX
 tooltip = makeStateless component render
   where
-    lumiTooltipElement = element (unsafeCreateDOMComponent "lumi-tooltip")
-    lumiTooltipTextElement = element (unsafeCreateDOMComponent "lumi-tooltip-text")
+    lumiTooltipElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-tooltip")
+    lumiTooltipTextElement = element (unsafePerformEffect $ unsafeCreateDOMComponent "lumi-tooltip-text")
 
     render props =
       lumiTooltipElement

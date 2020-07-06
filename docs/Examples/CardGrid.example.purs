@@ -11,7 +11,7 @@ import Lumi.Components.CardGrid (cardGrid)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Text (h2_, p_)
 import Lumi.Components.Example (example)
-import React.Basic (JSX, createComponent, make)
+import React.Basic.Classic (JSX, createComponent, make)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
 

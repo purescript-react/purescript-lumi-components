@@ -6,7 +6,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Icon (IconType(..), icon_)
 import Lumi.Components.Text (body, body_, text)
 import Lumi.Components.Example (example)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =

@@ -11,7 +11,7 @@ import Lumi.Components.Icon as Icon
 import Lumi.Components.Row (row)
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (body_, h2_, subsectionHeader_)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

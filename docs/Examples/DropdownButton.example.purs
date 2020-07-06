@@ -16,7 +16,7 @@ import Lumi.Components.Input (input, text_)
 import Lumi.Components.InputGroup (inputGroup)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (body_, h2_)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

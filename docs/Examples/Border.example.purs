@@ -6,7 +6,7 @@ import Lumi.Components.Border (borderBottom, borderRound, borderSquare, borderSq
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Text (h2_)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 
 docs :: JSX

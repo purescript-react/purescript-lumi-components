@@ -12,7 +12,7 @@ import Lumi.Components.Text (body_)
 import Lumi.Components.Text as T
 import Lumi.Components.Example (example)
 import Lumi.Components.Tooltip (tooltip)
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
 

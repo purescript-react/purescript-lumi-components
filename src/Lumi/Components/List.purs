@@ -2,16 +2,17 @@ module Lumi.Components.List where
 
 import Prelude
 
-import Data.Nullable (notNull)
 import Color (cssStringHSLA)
 import Data.Array (mapMaybe)
 import Data.Maybe (Maybe(..))
+import Data.Nullable (notNull)
+import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors, colorNames)
 import Lumi.Components.Row (row)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Text as T
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
+import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM as R
 
 type ListProps r =
@@ -41,9 +42,9 @@ listComponent = makeStateless (createComponent "List") $ lumiList <<< mapProps
         renderRowCell rowCell =
           lumiListRowCell { children: [ rowCell ] }
 
-    lumiList = element (R.unsafeCreateDOMComponent "lumi-list")
-    lumiListRow = element (R.unsafeCreateDOMComponent "lumi-list-row")
-    lumiListRowCell = element (R.unsafeCreateDOMComponent "lumi-list-row-cell")
+    lumiList = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-list")
+    lumiListRow = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-list-row")
+    lumiListRowCell = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-list-row-cell")
 
 list :: ListProps () -> JSX
 list props =
@@ -117,9 +118,9 @@ keyValueList
   -> JSX
 keyValueList { rightAligned, rows, borders } =
   let
-    lumiKeyValueListElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list")
-    lumiKeyValueListLabelElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list-label")
-    lumiKeyValueListValueElement = element (R.unsafeCreateDOMComponent "lumi-key-value-list-value")
+    lumiKeyValueListElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-key-value-list")
+    lumiKeyValueListLabelElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-key-value-list-label")
+    lumiKeyValueListValueElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-key-value-list-value")
 
     toRows r =
       r <#> \{ label, value } ->

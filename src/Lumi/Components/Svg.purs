@@ -1,6 +1,6 @@
 module Lumi.Components.Svg where
 
-import React.Basic (JSX)
+import React.Basic.Classic (JSX)
 import React.Basic.DOM.SVG as RS
 
 clientSvg :: JSX

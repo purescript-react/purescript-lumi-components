@@ -5,18 +5,21 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Effect.Uncurried (mkEffectFn1)
+import Foreign.Object (fromHomogeneous)
 import JSS (JSS, jss)
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusInvalidStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputInvalidStyles, lumiInputPlaceholderStyles, lumiInputStyles)
-import React.Basic (Component, JSX, createComponent, element, makeStateless)
-import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
+import React.Basic.Classic (Component, JSX, createComponent, makeStateless)
+import React.Basic.DOM (CSS, css)
+import React.Basic.DOM as R
 import React.Basic.Events (EventHandler)
+import Unsafe.Coerce (unsafeCoerce)
 
 type TextareaProps
   = { autoComplete :: String
     , disabled :: Boolean
     , lines :: Int
-    , maxLength :: Nullable Number
-    , minLength :: Nullable Number
+    , maxLength :: Nullable Int
+    , minLength :: Nullable Int
     , name :: String
     , onBlur :: Nullable EventHandler
     , onChange :: EventHandler
@@ -37,18 +40,20 @@ textarea :: TextareaProps -> JSX
 textarea = makeStateless component render
   where
   render props =
-    element (unsafeCreateDOMComponent "textarea")
-      { "data-testid": props.testId
-      , "data-disable-resize": not props.resizable
+    R.textarea
+      { _data: fromHomogeneous
+          { testid: unsafeNullable props.testId
+          , "disable-resize": show (not props.resizable)
+          }
       , autoComplete: props.autoComplete
       , className: "lumi"
       , disabled: props.disabled
-      , maxLength: props.maxLength
-      , minLength: props.minLength
+      , maxLength: unsafeNullable props.maxLength
+      , minLength: unsafeNullable props.minLength
       , name: props.name
-      , onBlur: props.onBlur
+      , onBlur: unsafeNullable props.onBlur
       , onChange: props.onChange
-      , onFocus: props.onFocus
+      , onFocus: unsafeNullable props.onFocus
       , placeholder: props.placeholder
       , required: props.required
       , readOnly: props.readOnly
@@ -56,6 +61,9 @@ textarea = makeStateless component render
       , style: props.style
       , value: props.value
       }
+
+  unsafeNullable :: forall a. Nullable a -> a
+  unsafeNullable = unsafeCoerce
 
 defaults :: TextareaProps
 defaults =
