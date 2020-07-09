@@ -169,12 +169,12 @@ defaultRenderForm
   -> JSX
 defaultRenderForm renderProps@{ inlineTable, forceTopLabels } { readonly } forest =
   R.div
-    { className: "lumi-form" <>
-        ( String.joinWith " " $ fold
-          [ guard inlineTable ["inline-table"]
+    { className:
+        String.joinWith " " $ fold
+          [ [ "lumi-form" ]
+          , guard inlineTable ["inline-table"]
           , guard readonly ["readonly"]
           ]
-        )
     , children:
         [ surround fieldDivider
           $ defaultRenderForest { forceTopLabels }
@@ -289,7 +289,7 @@ useForm' editor initialState props = Hooks.do
 -- | _Note_: this function should be fully applied, to avoid remounting
 -- | the component on each render.
 formState ::
-  forall props unvalidated result. 
+  forall props unvalidated result.
   { initialState :: unvalidated
   , form :: FormBuilder { readonly :: Boolean | props } unvalidated result
   , inlineTable :: Boolean
