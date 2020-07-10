@@ -8,6 +8,7 @@ module Lumi.Components2.Text
   , TextModifier
   , body, strong, emphasized, subtext
   , muted, color
+  , noMargin, truncate
 
   , ParagraphProps
   , paragraph_, paragraph
@@ -135,6 +136,15 @@ color f =
 
 noMargin :: forall c. TextModifier c
 noMargin = S.style_ $ S.css { marginBottom: S.px 0 }
+
+truncate :: forall c. TextModifier c
+truncate =
+  S.style_
+    $ S.css
+      { whiteSpace: S.str "nowrap"
+      , overflow: S.str "hidden"
+      , textOverflow: S.str "ellipsis"
+      }
 
 -- Paragraph
 
