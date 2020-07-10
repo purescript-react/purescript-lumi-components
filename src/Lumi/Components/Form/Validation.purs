@@ -176,7 +176,10 @@ newtype ModifyValidated = ModifyValidated (Validated ~> Validated)
 
 instance modifyValidated :: Mapping ModifyValidated a a => Mapping ModifyValidated (Validated a) (Validated a) where
   mapping m@(ModifyValidated f) = over _Validated (mapping m) <<< f
-else instance modifyValidatedRecord :: (RL.RowToList r xs, MapRecordWithIndex xs (ConstMapping ModifyValidated) r r) => Mapping ModifyValidated {| r} {| r} where
+else instance modifyValidatedRecord ::
+  (RL.RowToList r xs, MapRecordWithIndex xs (ConstMapping ModifyValidated) r r) =>
+  Mapping ModifyValidated {| r} {| r}
+  where
   mapping d = hmap d
 else instance modifyValidatedArray :: Mapping ModifyValidated a a => Mapping ModifyValidated (Array a) (Array a) where
   mapping d = map (mapping d)

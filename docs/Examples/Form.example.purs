@@ -6,6 +6,7 @@ import Color (cssStringHSLA)
 import Control.Coroutine.Aff (close, emit, produceAff)
 import Control.MonadZero (guard)
 import Data.Array as Array
+import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Foldable (foldMap)
 import Data.Int as Int
 import Data.Lens (iso)
@@ -127,7 +128,7 @@ mkUserFormExample = do
                   -- from reloading the page on submission.
       { onSubmit: handler preventDefault \_ ->
           case validated of
-            Nothing ->
+            Nothing -> do
               setModified
             Just { firstName, lastName } ->
               setUserDialog \_ -> Just { firstName, lastName }
@@ -199,7 +200,7 @@ type User =
   , height :: Validated String
   , addresses :: Validated (Array Address)
   , pets :: Validated (Array Pet)
-  , leastFavoriteColors :: Array String
+  , leastFavoriteColors :: Validated (Array String)
   , notes :: String
   , avatar :: Maybe Upload.FileId
   }
@@ -214,7 +215,7 @@ type ValidatedUser =
   , height :: Maybe Number
   , addresses :: Array ValidatedAddress
   , pets :: Array ValidatedPet
-  , leastFavoriteColors :: Array String
+  , leastFavoriteColors :: NonEmptyArray String
   , notes :: String
   , avatar :: Maybe Upload.FileId
   }
@@ -315,6 +316,7 @@ userForm = ado
   leastFavoriteColors <-
     F.indent "Least Favorite Colors" Neither
     $ F.focus (prop (SProxy :: SProxy "leastFavoriteColors"))
+    $ F.validated (F.nonEmptyArray "Required")
     $ F.multiSelect show
     $ map (\x -> { label: x, value: x })
     $ [ "Beige"

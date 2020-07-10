@@ -75,6 +75,7 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Unsafe (unsafePerformEffect)
+import Heterogeneous.Mapping (class Mapping)
 import JSS (JSS, jss)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column)
@@ -82,8 +83,7 @@ import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
 import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (Forest, FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
-import Lumi.Components.Form.Validation (setModified)
-import Lumi.Components.Form.Validation (Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, validNumber, validInt, validDate, optional, setFresh, setModified, validated, warn) as Validation
+import Lumi.Components.Form.Validation (ModifyValidated(..), Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, optional, setFresh, setModified, validDate, validInt, validNumber, validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..), labeledField, labeledFieldValidationErrorStyles, labeledFieldValidationWarningStyles)
@@ -219,7 +219,8 @@ defaultRenderForest renderProps@{ forceTopLabels } = map case _ of
 -- | Render a form with state managed automatically.
 useForm
   :: forall props unvalidated result
-   . FormBuilder
+   . Mapping Validation.ModifyValidated unvalidated unvalidated
+  => FormBuilder
        { readonly :: Boolean
        | props
        }
@@ -254,7 +255,8 @@ useForm editor props = Hooks.do
 -- | to be provided as an additional argument.
 useForm'
   :: forall ui props unvalidated result
-   . FormBuilder' ui props unvalidated result
+   . Mapping Validation.ModifyValidated unvalidated unvalidated
+  => FormBuilder' ui props unvalidated result
   -> unvalidated
   -> props
   -> Hooks.Hook (Hooks.UseState unvalidated)
@@ -275,7 +277,7 @@ useForm' editor initialState props = Hooks.do
   pure
     { formData
     , setFormData
-    , setModified: setFormData setModified
+    , setModified: setFormData Validation.setModified
     , reset: setFormData \_ -> initialState
     , validated
     , form: ui
@@ -290,6 +292,7 @@ useForm' editor initialState props = Hooks.do
 -- | the component on each render.
 formState ::
   forall props unvalidated result.
+  Mapping Validation.ModifyValidated unvalidated unvalidated =>
   { initialState :: unvalidated
   , form :: FormBuilder { readonly :: Boolean | props } unvalidated result
   , inlineTable :: Boolean
