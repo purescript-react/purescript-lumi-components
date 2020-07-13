@@ -18,7 +18,8 @@ import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
 import Lumi.Components2.Button (_linkStyle, button)
 import Lumi.Styles (style_, toCSS)
-import Lumi.Styles.Box (FlexAlign(..), _justify)
+import Lumi.Styles as S
+import Lumi.Styles.Box (FlexAlign(..), _align, _justify)
 import Lumi.Styles.Box as Styles.Box
 import Lumi.Styles.Clip as Styles.Clip
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
@@ -42,6 +43,7 @@ clip =
       ref <- useRef Nullable.null
       { copied, copy } <- useClip ref
       let
+        buttonWidth = "64px"
         copyButton =
           button
             $ _linkStyle
@@ -72,12 +74,14 @@ clip =
                   , css:
                     theme
                       # toCSS (Styles.Box.box <<< Styles.Box._justify Center)
-                      <> props.css
+                      <> toCSS (S.style_ (S.css { flex: S.str $ "0 0 calc(100% - " <> buttonWidth <> ")", minWidth: S.str "0" }))
                   , ref
                   , children: props.content
                   }
               , box
                   $ _justify Center
+                  $ _align End
+                  $ S.style_ (S.css { flex: S.str $ "0 0 " <> buttonWidth, minWidth: S.str buttonWidth })
                   $ _ { content = [ copyButton ] }
               ]
             }
