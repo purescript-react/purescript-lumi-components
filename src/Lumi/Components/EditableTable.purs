@@ -87,8 +87,14 @@ editableTable :: forall row. EditableTableProps row -> JSX
 editableTable = makeStateless component render
   where
     render props =
-      container
-        [ header props.columns
+      let
+        lengthRows = case _ of
+          Left arr -> Array.length arr
+          Right arr -> NonEmptyArray.length arr
+      in container
+        [ if props.readonly && lengthRows props.rows == 0
+            then mempty
+            else header props.columns
         , body case props.rows of
             Left rows -> map (row_ (not props.readonly)) rows
             Right rows ->
@@ -99,9 +105,6 @@ editableTable = makeStateless component render
                 else
                   map (row_ (not props.readonly)) (NonEmptyArray.toArray rows)
         , let
-            lengthRows = case _ of
-              Left arr -> Array.length arr
-              Right arr -> NonEmptyArray.length arr
             canAddRows = not props.readonly && lengthRows props.rows < props.maxRows
           in
             footer
