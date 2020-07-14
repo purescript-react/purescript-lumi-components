@@ -36,7 +36,7 @@ derive instance ntUseQRCode :: Newtype (UseQRCode hooks) _
 data ErrorCorrectLevel
   = ECLLow
   | ECLMedium
-  | ECLQuality
+  | ECLQuartile
   | ECLHigh
 
 derive instance eqErrorCorrectLevel :: Eq ErrorCorrectLevel
@@ -45,7 +45,7 @@ errorCorrectLevelToString :: ErrorCorrectLevel -> String
 errorCorrectLevelToString = case _ of
   ECLLow -> "L"
   ECLMedium -> "M"
-  ECLQuality -> "Q"
+  ECLQuartile -> "Q"
   ECLHigh -> "H"
 
 useQRCode :: ErrorCorrectLevel -> String -> Hook UseQRCode { qrcode :: LumiComponent (), url :: Maybe URL }

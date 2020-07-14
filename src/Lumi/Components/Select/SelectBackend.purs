@@ -8,6 +8,7 @@ module Lumi.Components.Select.Backend
 
 import Prelude
 
+import Control.Alt ((<|>))
 import Data.Array as Array
 import Data.Either (either)
 import Data.Foldable (for_, traverse_)
@@ -31,6 +32,7 @@ import Web.HTML (window)
 import Web.HTML.HTMLDocument (activeElement)
 import Web.HTML.HTMLElement as HTMLElement
 import Web.HTML.Window (document)
+import Web.UIEvent.KeyboardEvent as KE
 
 type SelectOption = { value :: String , label :: String }
 
@@ -57,6 +59,7 @@ type SelectBackendProps option =
       , closeSelect :: Effect Unit
       , focusedIndex :: Maybe Int
       , isOpen :: Boolean
+      , isActive :: Boolean
       , keydownEventHandler :: Event -> Effect Unit
       , openSelect :: Effect Unit
       , options :: SelectOptions option
@@ -73,6 +76,7 @@ type SelectBackendState option =
   { focusedIndex :: Maybe Int
   , isMouseDown :: Boolean
   , isOpen :: Boolean
+  , isActive :: Boolean
   , optionCache :: Map.Map String (SelectOptions (SelectOptionInternal option))
   , searchTerm :: String
   }
@@ -86,6 +90,7 @@ data Action option
   = IsMouseDown Boolean
   | OpenSelect
   | CloseSelect
+  | Blur
   | FocusIndexUp
   | FocusIndexDown
   | AddSelectedOption option
@@ -108,6 +113,7 @@ selectBackend = make component
       { focusedIndex: Nothing
       , isMouseDown: false
       , isOpen: false
+      , isActive: false
       , optionCache: Map.empty
       , searchTerm: ""
       }
@@ -133,33 +139,67 @@ selectBackend = make component
 
           OpenSelect -> do
             unless state.isOpen do
-              self.setState _ { isOpen = true }
+              self.setState \s -> s
+                { isOpen = true
+                , isActive = true
+                , focusedIndex = s.focusedIndex <|>
+                    if (getOptions s # maybe 0 optionsLength) > 0 then
+                      Just 0
+                    else
+                      Nothing
+                }
               send self $ LoadOptions self.state.searchTerm
 
           CloseSelect -> do
+            when (not String.null state.searchTerm) do
+              -- This call to `props.onChange` looks like a noop,
+              -- but it communicates to parent components that a
+              -- choice has not been made. This is like typing in
+              -- a normal text field and then clearing the value
+              -- and this allows parent components and forms to
+              -- mark the field as "modified" and display
+              -- validation messages.
+              self.props.onChange self.props.value
             unless (not state.isOpen) do
-              self.setState _ { isOpen = false, focusedIndex = Nothing }
+              self.setState _
+                { isOpen = false
+                , searchTerm = ""
+                }
+
+          Blur -> do
+            when state.isActive do
+              self.setState _ { isActive = false }
 
           FocusIndexUp -> do
-            self.setState _
-              { focusedIndex = Just $
-                  max 0 (maybe 0 (_ - 1) state.focusedIndex)
+            self.setState \s -> s
+              { focusedIndex = do
+                  options <- getOptions s
+                  let iMax = optionsLength options - 1
+                  pure
+                    case fromMaybe 0 s.focusedIndex of
+                      i | i <= 0 -> iMax -- wrap to end
+                      i -> min iMax (i - 1)
               }
 
           FocusIndexDown -> do
-            self.setState _
-              { focusedIndex = Map.lookup state.searchTerm state.optionCache <#> \options ->
-                  min (optionsLength options - 1) (maybe 0 (_ + 1) state.focusedIndex)
+            self.setState \s -> s
+              { focusedIndex = do
+                  options <- getOptions s
+                  let iMax = optionsLength options - 1
+                  pure
+                    case fromMaybe (-1) s.focusedIndex of
+                      i | i >= iMax -> 0 -- wrap to start
+                      i -> max 0 (i + 1)
               }
 
           AddSelectedOption option -> do
             let
-              valueToRemove :: String
-              valueToRemove = (props.toSelectOption option).value
+              valueToAdd :: String
+              valueToAdd = (props.toSelectOption option).value
 
               isOptionSelected :: Boolean
               isOptionSelected =
-                Array.any (\v -> (props.toSelectOption v).value == valueToRemove) props.value
+                Array.any (\v -> (props.toSelectOption v).value == valueToAdd) props.value
             when (not isOptionSelected) do
               self.props.onChange
                 if self.props.allowMultiple
@@ -191,7 +231,7 @@ selectBackend = make component
               send self $ LoadOptions searchTerm
 
           LoadOptions searchTerm -> do
-            when (isNothing $ Map.lookup searchTerm self.state.optionCache) do
+            when (isNothing $ getOptions { searchTerm, optionCache: self.state.optionCache }) do
               let
                 tidyUp =
                     map
@@ -208,7 +248,13 @@ selectBackend = make component
                 (tidyUp <$> self.props.loadOptions searchTerm)
 
           SetOptions searchTerm options ->
-            self.setState _ { optionCache = Map.insert searchTerm options state.optionCache }
+            self.setState \s -> s
+              { optionCache = Map.insert searchTerm options s.optionCache
+              , focusedIndex =
+                  case options of
+                    Ready a | not Array.null a -> Just 0
+                    _ -> Nothing
+              }
 
     render self =
       let
@@ -218,9 +264,9 @@ selectBackend = make component
           , openSelect: send self OpenSelect
           , closeSelect: send self CloseSelect
           , isOpen: self.state.isOpen
+          , isActive: self.state.isActive
           , keydownEventHandler
-          , options: map _.external $ fromMaybe Loading $
-              Map.lookup self.state.searchTerm self.state.optionCache
+          , options: map _.external $ fromMaybe Loading $ getOptions self.state
           , removeAllSelectedOptions: send self RemoveAllSelectedOptions
           , removeSelectedOption: send self <<< RemoveSelectedOption
           , searchTerm: self.state.searchTerm
@@ -240,12 +286,13 @@ selectBackend = make component
                   for_ (Node.fromEventTarget =<< E.target e) \target -> do
                     send self $ IsMouseDown false
                     for_ mRootRef \rootRef -> do
-                      when self.state.isOpen do
+                      when (self.state.isOpen || self.state.isActive) do
                         eventTargetIsChild <- isOrContainsNode rootRef target
                         mActiveNodeIsChild <- isOrContainsActiveNode rootRef
                         for_ mActiveNodeIsChild \activeNodeIsChild -> do
                           when (not eventTargetIsChild && not activeNodeIsChild) do
-                            childProps.closeSelect
+                            send self CloseSelect
+                            send self Blur
               }
             , { eventType: EventType "touchstart"
               , options: { capture: false, once: false, passive: true }
@@ -256,14 +303,14 @@ selectBackend = make component
                       when self.state.isOpen do
                         eventTargetIsChild <- isOrContainsNode rootRef target
                         when (not eventTargetIsChild) do
-                          childProps.closeSelect
+                            send self CloseSelect
+                            send self Blur
               }
             , { eventType: EventType "keydown"
               , options: { capture: false, once: false, passive: false }
               , handler: \e -> do
-                  if not self.state.isOpen
-                    then pure unit
-                    else keydownEventHandler e
+                  when self.state.isActive do
+                    keydownEventHandler e
               }
             ]
             child
@@ -271,8 +318,7 @@ selectBackend = make component
         keydownEventHandler :: Event -> Effect Unit
         keydownEventHandler e = do
           when (not self.props.disabled) do
-            let mKey = eventKey e
-            for_ mKey case _ of
+            for_ (eventKey e) case _ of
               "ArrowUp" -> do
                 E.preventDefault e
                 E.stopPropagation e
@@ -283,26 +329,69 @@ selectBackend = make component
                 E.stopPropagation e
                 send self OpenSelect
                 send self FocusIndexDown
+              "p" -> do
+                when (ctrlKey e) do
+                  E.preventDefault e
+                  E.stopPropagation e
+                  send self OpenSelect
+                  send self FocusIndexUp
+              "n" -> do
+                when (ctrlKey e) do
+                  E.preventDefault e
+                  E.stopPropagation e
+                  send self OpenSelect
+                  send self FocusIndexDown
+              "Tab" -> do
+                if self.state.isOpen then do
+                  E.preventDefault e
+                  E.stopPropagation e
+                  if shiftKey e then do
+                    send self OpenSelect
+                    send self FocusIndexUp
+                  else do
+                    send self OpenSelect
+                    send self FocusIndexDown
+                else do
+                  send self Blur
               "Enter" -> do
-                E.preventDefault e
-                E.stopPropagation e
-                traverse_ (send self <<< AddSelectedOption) $ map _.external $ join $
-                  getOption <$> self.state.focusedIndex <*> Map.lookup self.state.searchTerm self.state.optionCache
+                when self.state.isOpen do
+                  E.preventDefault e
+                  E.stopPropagation e
+                  traverse_ (send self <<< AddSelectedOption) do
+                    options <- getOptions self.state
+                    focusedIndex <- self.state.focusedIndex
+                    option <- getOption focusedIndex options
+                    pure option.external
               "Escape" -> do
-                E.preventDefault e
-                E.stopPropagation e
-                send self $ SetSearchTerm ""
-                send self CloseSelect
-              "Backspace" -> when (String.null self.state.searchTerm && not Array.null self.props.value) do
-                E.preventDefault e
-                E.stopPropagation e
-                traverse_ (send self <<< RemoveSelectedOption) $ Array.last self.props.value
+                when self.state.isOpen do
+                  E.preventDefault e
+                  E.stopPropagation e
+                  send self $ SetSearchTerm ""
+                  send self CloseSelect
+              "Backspace" -> do
+                let
+                  inputIsEmpty = String.null self.state.searchTerm
+                  hasSelectedValues = not Array.null self.props.value
+                when (inputIsEmpty && hasSelectedValues) do
+                  E.preventDefault e
+                  E.stopPropagation e
+                  traverse_ (send self <<< RemoveSelectedOption) do
+                    Array.last self.props.value
               _ -> pure unit
 
 optionsLength :: forall a. SelectOptions a -> Int
 optionsLength = case _ of
   Ready xs -> Array.length xs
   _        -> 0
+
+getOptions ::
+  forall a r.
+  { searchTerm :: String
+  , optionCache :: Map.Map String (SelectOptions a)
+  | r
+  } ->
+  Maybe (SelectOptions a)
+getOptions { searchTerm, optionCache } = Map.lookup searchTerm optionCache
 
 getOption :: forall a. Int -> SelectOptions a -> Maybe a
 getOption i = case _ of
@@ -322,6 +411,12 @@ isOrContainsActiveNode parent = do
 
 eventKey :: Event -> Maybe String
 eventKey = toMaybe <<< _.key <<< unsafeCoerce
+
+shiftKey :: Event -> Boolean
+shiftKey = KE.shiftKey <<< (unsafeCoerce :: Event -> KE.KeyboardEvent)
+
+ctrlKey :: Event -> Boolean
+ctrlKey = KE.ctrlKey <<< (unsafeCoerce :: Event -> KE.KeyboardEvent)
 
 data ComparisonWeight a = Exact a | StartsWith a | Contains a | Other a
 
