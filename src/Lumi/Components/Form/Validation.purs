@@ -1,8 +1,10 @@
 module Lumi.Components.Form.Validation
   ( Validator
   , nonEmpty, nonEmptyArray, nonNull
+  , nonEmpty', nonEmptyArray', nonNull'
   , mustEqual, mustBe
   , validNumber, validInt, validDate
+  , validNumber', validInt', validDate'
   , optional
   , Validated(..)
   , _Validated, _Fresh, _Modified
@@ -58,15 +60,27 @@ type WarningValidator result =
 
 -- | A `Validator` which verifies that an input string is non-empty.
 nonEmpty :: String -> Validator String NonEmptyString
-nonEmpty name = note (name <> " is required") <<< NES.fromString
+nonEmpty name = nonEmpty' (name <> " is required")
+
+-- | `nonEmpty`, but the argument is the entire validation message.
+nonEmpty' :: String -> Validator String NonEmptyString
+nonEmpty' msg = note msg <<< NES.fromString
 
 -- | A `Validator` which verifies that an input array is non-empty.
 nonEmptyArray :: forall a. String -> Validator (Array a) (NonEmptyArray a)
-nonEmptyArray name = note (name <> " cannot be empty") <<< NEA.fromArray
+nonEmptyArray name = nonEmptyArray' (name <> " cannot be empty")
+
+-- | `nonEmptyArray`, but the argument is the entire validation message.
+nonEmptyArray' :: forall a. String -> Validator (Array a) (NonEmptyArray a)
+nonEmptyArray' msg = note msg <<< NEA.fromArray
 
 -- | A `Validator` which verifies that an optional field is specified.
 nonNull :: forall a. String -> Validator (Maybe a) a
-nonNull name = note (name <> " is required")
+nonNull name = nonNull' (name <> " is required")
+
+-- | `nonNull`, but the argument is the entire validation message.
+nonNull' :: forall a. String -> Validator (Maybe a) a
+nonNull' msg = note msg
 
 -- | A `Validator` which verifies that its input equals some value.
 mustEqual :: forall a. Eq a => a -> String -> Validator a a
@@ -80,17 +94,30 @@ mustBe cond error value
 
 -- | A `Validator` which verifies that its input can be parsed as a number.
 validNumber :: String -> Validator String Number
-validNumber name = note (name <> " must be a number") <<< Number.fromString
+validNumber name = validNumber' (name <> " must be a number")
+
+-- | `validNumber`, but the argument is the entire validation message.
+validNumber' :: String -> Validator String Number
+validNumber' msg = note msg <<< Number.fromString
 
 -- | A `Validator` which verifies that its input can be parsed as an integer.
 validInt :: String -> Validator String Int
-validInt name = note (name <> " must be a whole number") <<< Int.fromString
+validInt name = validInt' (name <> " must be a whole number")
+
+-- | `validInt`, but the argument is the entire validation message.
+validInt' :: String -> Validator String Int
+validInt' msg = note msg <<< Int.fromString
 
 -- | A `Validator` which verifies that its input can be parsed as a date.
 -- | Dates are of the format "YYYY-MM-DD".
 validDate :: String -> Validator String Date.Date
-validDate name input =
-  note (name <> " must be a date") result
+validDate name =
+  validDate' (name <> " must be a date")
+
+-- | `validDate`, but the argument is the entire validation message.
+validDate' :: String -> Validator String Date.Date
+validDate' msg input =
+  note msg result
   where
     result = case traverse Int.fromString $ split (Pattern "-") input of
       Just [y, m, d] -> join $ Date.exactDate <$> toEnum y <*> toEnum m <*> toEnum d

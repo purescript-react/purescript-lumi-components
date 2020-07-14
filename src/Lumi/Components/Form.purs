@@ -83,7 +83,7 @@ import Lumi.Components.FetchCache as FetchCache
 import Lumi.Components.Form.Defaults (formDefaults) as Defaults
 import Lumi.Components.Form.Internal (Forest, FormBuilder'(..), FormBuilder, SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, pruneTree, sequential)
 import Lumi.Components.Form.Internal (Forest, FormBuilder', FormBuilder, SeqFormBuilder', SeqFormBuilder, Tree(..), formBuilder, formBuilder_, invalidate, listen, parallel, revalidate, sequential) as Internal
-import Lumi.Components.Form.Validation (ModifyValidated(..), Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, optional, setFresh, setModified, validDate, validInt, validNumber, validated, warn) as Validation
+import Lumi.Components.Form.Validation (ModifyValidated(..), Validated(..), Validator, _Validated, fromValidated, mustBe, mustEqual, nonEmpty, nonEmptyArray, nonNull, nonEmpty', nonEmptyArray', nonNull', optional, setFresh, setModified, validDate, validInt, validNumber, validDate', validInt', validNumber', validated, warn) as Validation
 import Lumi.Components.Input (alignToInput)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..), labeledField, labeledFieldValidationErrorStyles, labeledFieldValidationWarningStyles)
@@ -609,7 +609,7 @@ multiSelect encode opts = formBuilder_ \{ readonly } selected onChange ->
         , id: ""
         , name: ""
         , noResultsText: "No results"
-        , placeholder: "Select an option ..."
+        , placeholder: "Select an option..."
         , disabled: false
         , loading: false
         , optionRenderer: R.text <<< _.label
@@ -646,7 +646,7 @@ asyncSelect loadOptions toSelectOption optionRenderer =
         , disabled: false
         , loading: false
         , noResultsText: "No results"
-        , placeholder: "Search ..."
+        , placeholder: "Search..."
         , optionRenderer
         , optionSort: Nothing
         , toSelectOption
@@ -693,7 +693,7 @@ asyncSelectByKey getData loadOptions fromId toId toSelectOption optionRenderer =
                 , disabled: false
                 , loading: isJust value && isNothing data_
                 , noResultsText: "No results"
-                , placeholder: "Search ..."
+                , placeholder: "Search..."
                 , optionRenderer
                 , optionSort: Nothing
                 , toSelectOption

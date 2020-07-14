@@ -11,7 +11,7 @@ import Data.Foldable (foldMap)
 import Data.Int as Int
 import Data.Lens (iso)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..), maybe)
+import Data.Maybe (Maybe(..), isNothing, maybe)
 import Data.Monoid as Monoid
 import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
@@ -225,7 +225,7 @@ type Pet =
   , lastName :: Validated String
   , animal :: Validated (Maybe String)
   , age :: Validated String
-  , color :: Maybe String
+  , color :: Validated (Maybe String)
   }
 
 type ValidatedPet =
@@ -314,9 +314,9 @@ userForm = ado
         , editor: addressForm
         }
   leastFavoriteColors <-
-    F.indent "Least Favorite Colors" Neither
+    F.indent "Least Favorite Colors" Required
     $ F.focus (prop (SProxy :: SProxy "leastFavoriteColors"))
-    $ F.validated (F.nonEmptyArray "Required")
+    $ F.validated (F.nonEmptyArray' "This is absolutely essential. Don't skip it!!")
     $ F.multiSelect show
     $ map (\x -> { label: x, value: x })
     $ [ "Beige"
@@ -348,7 +348,7 @@ userForm = ado
             , lastName: F.Fresh ""
             , animal: F.Fresh Nothing
             , age: F.Fresh "1"
-            , color: Nothing
+            , color: F.Fresh Nothing
             }
         , maxRows: top
         , rowMenu: FT.defaultRowMenu
@@ -401,6 +401,11 @@ userForm = ado
               FT.column_ "Color"
               $ F.withProps \props ->
                   F.focus (prop (SProxy :: SProxy "color"))
+                  $ F.warn (\x ->
+                      Monoid.guard
+                        (isNothing x)
+                        (pure "Your pet has no color??")
+                    )
                   $ F.asyncSelectByKey
                       (loadColor props.simulatePauses)
                       (loadColors props.simulatePauses)

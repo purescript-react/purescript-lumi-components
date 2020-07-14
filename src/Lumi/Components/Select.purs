@@ -27,12 +27,14 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, important, jss)
+import Lumi.Components (($$$))
 import Lumi.Components.Color (colors)
 import Lumi.Components.Icon as Icon
 import Lumi.Components.Input (lumiInputDisabledStyles, lumiInputFocusStyles, lumiInputHoverStyles, lumiInputStyles)
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Select.Backend (SelectBackendProps, SelectOption, SelectOptions(..), selectBackend)
 import Lumi.Components.ZIndex (ziSelect)
+import Lumi.Components2.Text as T
 import React.Basic.Classic (Component, JSX, createComponent, element, elementKeyed, empty, makeStateless)
 import React.Basic.DOM (CSS, css)
 import React.Basic.DOM as R
@@ -226,7 +228,7 @@ select = makeStateless component render
                 , value: props.value
                 , render: \selectState ->
                     lumiSelectInnerElement
-                      { "data-focus": selectState.isOpen
+                      { "data-focus": selectState.isActive
                       , children:
                           [ renderInput props selectState
                           , if selectState.isOpen
@@ -262,7 +264,11 @@ select = makeStateless component render
                           then
                             [ lumiSelectInputPlaceholder
                                 { key: "lumi-select-placeholder"
-                                , children: R.text props.placeholder
+                                , title: props.placeholder
+                                , children:
+                                    T.text
+                                      $ T.truncate
+                                      $$$ props.placeholder
                                 }
                             ]
                           else
@@ -342,7 +348,7 @@ select = makeStateless component render
                 , children: R.text props.noResultsText
                 }
             ]
-          renderOptions options_ = options_ `flip Array.mapWithIndex` \index option ->
+          renderOptions options_ = options_ # Array.mapWithIndex \index option ->
             let
               { label, value } = props.toSelectOption option
             in
@@ -437,6 +443,7 @@ styles = jss
               { margin: "-2px" -- (gap)
 
               , display: "flex"
+              , position: "relative"
               , flexFlow: "row wrap"
               , flex: "1 1 auto"
               , minWidth: 0
@@ -451,6 +458,9 @@ styles = jss
               , lineHeight: "32px"
               , flex: "1 1 0%"
               , display: "block"
+              , position: "absolute"
+              , width: "100%"
+              , maxWidth: "calc(100% - " <> clearIconWidth <> ")"
               , overflow: "hidden"
               , whiteSpace: "nowrap"
               , textOverflow: "ellipsis"
@@ -502,7 +512,7 @@ styles = jss
               , fontSize: "8px"
               , cursor: "pointer"
               , height: "26px"
-              , width: "20px"
+              , width: clearIconWidth
               , flex: "0 0 auto"
               , paddingTop: "3px"
               , "@media (min-width: 860px)":
@@ -630,3 +640,5 @@ styles = jss
       , overflow: "hidden"
       , textOverflow: "ellipsis"
       }
+
+    clearIconWidth = "20px"
