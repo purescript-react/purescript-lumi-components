@@ -23,7 +23,7 @@ docs =
             $ clip
             $ _ { content =
                     [ T.paragraph
-                      $ S.style_ (S.css { marginBottom: S.int 0 })
+                      $ S.style_ (S.css { marginBottom: S.px 0 })
                       $ T.truncate
                       $$$ [ T.text $$$ "someone@email.com" ]
                     ]
