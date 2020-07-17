@@ -114,13 +114,15 @@ editableTable = makeStateless component render
               props.summary
               (Array.length props.columns + 1)
         ]
+        props.readonly
       where
         row_ = tableRow props.columns props.onRowRemove props.removeCell
 
 
-    container children =
+    container children readonly =
       editableTableElement
         { children: R.table { children, className: "lumi" }
+        , "data-readonly": readonly
         }
 
     header columns =
@@ -210,7 +212,7 @@ styles = jss
               , "& th, & td":
                   { "&:not(:first-child)": { paddingLeft: "8px" }
                   , "&:not(:last-child)": { paddingRight: "8px" }
-                  , padding: "16px 0"
+                  , padding: "12px 0"
                   }
 
               , "& th":
@@ -234,6 +236,13 @@ styles = jss
                   }
 
               , "& tfoot": { padding: "16px 0" }
+              }
+          , "&[data-readonly=\"true\"]":
+              { "& > table.lumi":
+                  { "& th, & td":
+                    { padding: "8px 0"
+                    }
+                  }
               }
           }
       }
