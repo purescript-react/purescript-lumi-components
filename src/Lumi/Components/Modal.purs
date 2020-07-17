@@ -495,6 +495,10 @@ styles = jss
                       , overflowY: "auto"
                       }
                   }
+
+              , "&[data-variant=\"top-aligned\"] lumi-modal":
+                  { margin: "0"
+                  }
               }
           }
       }

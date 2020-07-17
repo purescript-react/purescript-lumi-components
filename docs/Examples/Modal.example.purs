@@ -26,6 +26,7 @@ data ModalTestId
   | LongModal
   | ErrorModal
   | ErrorModalWithAction
+  | TopAlignedModal
 
 derive instance eqModalId :: Eq ModalTestId
 
@@ -298,6 +299,30 @@ docs = unit # make component
               , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
               , actionButtonTitle: "Send"
               , children: body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              }
+
+        , example $
+            button secondary
+              { onPress = capture_ $ self.setState _ { modalId = Just TopAlignedModal }
+              , title = "Open top-aligned modal"
+              }
+
+        , guard (self.state.modalId == Just TopAlignedModal) $
+            modal
+              { modalOpen: true
+              , closeButton: true
+              , onRequestClose: self.setState _ { modalId = Nothing }
+              , onActionButtonClick: notNull $ self.setState \state -> state { clicks = state.clicks + 1 }
+              , actionButtonTitle: "Add clicks"
+              , actionButtonState: Button.Enabled
+              , size: Large
+              , title: modalTitle "Modal title -- Top-aligned content"
+              , variant: "top-aligned"
+              , internalBorders: true
+              , children:
+                  fragment
+                    [ body_ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pretium nec tellus ornare tincidunt. Phasellus ultrices porta finibus. In id mollis diam. Praesent efficitur lectus quis odio convallis placerat. Suspendisse metus tortor, faucibus nec imperdiet quis, iaculis id risus. Pellentesque a auctor turpis, a lacinia nulla. Pellentesque malesuada suscipit ante, sed convallis est pharetra eu. In sed enim nec lacus dignissim malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In metus arcu, efficitur et magna a, fermentum lacinia nulla. Mauris ligula erat, posuere sed diam a, sodales vestibulum ante."
+                    ]
               }
       ]
   }
