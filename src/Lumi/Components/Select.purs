@@ -289,10 +289,10 @@ select = makeStateless component render
                                     ]
                                 }
                   in
-                    guard
+                    (guard
                       (props.allowMultiple || String.null selectState.searchTerm)
-                      renderedSelectedValues
-                      <> guard props.searchable [ renderNativeInput ]
+                      renderedSelectedValues)
+                      <> (guard props.searchable [ renderNativeInput ])
               }
 
         renderNativeInput =
@@ -491,7 +491,8 @@ styles = jss
               , "& > lumi-select-clear-icon": { display: "none" }
               }
           , "& lumi-select-input-selected-value + input.select-native-input":
-              { visibility: "hidden"
+              { visibility: "visible"
+              , padding: "0 7px 0 1px"
               }
 
           , "& input.select-native-input":
@@ -538,10 +539,6 @@ styles = jss
                       , paddingTop: "0"
                       }
                   }
-              , "& lumi-select-input-selected-value + input.select-native-input":
-                  { visibility: "visible"
-                  , padding: "0 7px 0 1px"
-                  }
 
                 -- hide the blank input line when not in focus
               , "& input.select-native-input[value=\"\"]:not(:focus)":
@@ -554,10 +551,6 @@ styles = jss
 
           , "&[data-disabled=\"true\"] lumi-select-input-selected-value > lumi-select-clear-icon":
               { color: cssStringHSLA colors.black1
-              }
-
-          , "&[data-multi=\"true\"] lumi-select-input > lumi-select-clear-icon":
-              { display: "none"
               }
 
           , "& lumi-select-menu-anchor":
