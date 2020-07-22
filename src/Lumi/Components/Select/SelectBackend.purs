@@ -19,7 +19,7 @@ import Data.String as String
 import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Aff (Aff, message, runAff_)
-import React.Basic.Classic (Component, JSX, createComponent, make)
+import React.Basic.Classic (Component, JSX, createComponent, make, readProps, readState)
 import React.Basic.DOM.Components.GlobalEvents (windowEvents)
 import React.Basic.DOM.Components.Ref (ref)
 import Unsafe.Coerce (unsafeCoerce)
@@ -130,7 +130,9 @@ selectBackend = make component
       when (isOpen /= self.state.isOpen) do
         send self if isOpen then CloseSelect else OpenSelect
 
-    send self@{ props, state } action =
+    send self action = do
+      props <- readProps self
+      state <- readState self
       unless props.disabled do
         case action of
           IsMouseDown isMouseDown -> do
@@ -148,7 +150,7 @@ selectBackend = make component
                     else
                       Nothing
                 }
-              send self $ LoadOptions self.state.searchTerm
+              send self $ LoadOptions state.searchTerm
 
           CloseSelect -> do
             when (not String.null state.searchTerm) do
@@ -159,7 +161,7 @@ selectBackend = make component
               -- and this allows parent components and forms to
               -- mark the field as "modified" and display
               -- validation messages.
-              self.props.onChange self.props.value
+              props.onChange props.value
             unless (not state.isOpen) do
               self.setState _
                 { isOpen = false
@@ -201,12 +203,14 @@ selectBackend = make component
               isOptionSelected =
                 Array.any (\v -> (props.toSelectOption v).value == valueToAdd) props.value
             when (not isOptionSelected) do
-              self.props.onChange
-                if self.props.allowMultiple
-                  then self.props.value <> [ option ]
+              props.onChange
+                if props.allowMultiple
+                  then props.value <> [ option ]
                   else [ option ]
-            send self $ SetSearchTerm ""
-            send self CloseSelect
+            self.setState _
+              { isOpen = false
+              , searchTerm = ""
+              }
 
           RemoveSelectedOption option ->
             let
@@ -217,13 +221,15 @@ selectBackend = make component
               valueMinusSelectedOption =
                 Array.filter (\v -> (props.toSelectOption v).value /= valueToRemove) props.value
             in do
-              when (Array.length self.props.value /= Array.length valueMinusSelectedOption) do
-                self.props.onChange valueMinusSelectedOption
+              when (Array.length props.value /= Array.length valueMinusSelectedOption) do
+                props.onChange valueMinusSelectedOption
 
           RemoveAllSelectedOptions -> do
-            self.props.onChange []
-            send self $ SetSearchTerm ""
-            send self CloseSelect
+            props.onChange []
+            self.setState _
+              { isOpen = false
+              , searchTerm = ""
+              }
 
           SetSearchTerm searchTerm -> do
             unless props.disabled do
@@ -231,21 +237,21 @@ selectBackend = make component
               send self $ LoadOptions searchTerm
 
           LoadOptions searchTerm -> do
-            when (isNothing $ getOptions { searchTerm, optionCache: self.state.optionCache }) do
+            when (isNothing $ getOptions { searchTerm, optionCache: state.optionCache }) do
               let
                 tidyUp =
                     map
-                      (\external -> let { label, value } = self.props.toSelectOption external
+                      (\external -> let { label, value } = props.toSelectOption external
                                     in { label, value, external })
                       <<< Array.nubBy
                             ((fromMaybe
-                              (defaultOptionSort (_.label <<< self.props.toSelectOption)) self.props.optionSort)
+                              (defaultOptionSort (_.label <<< props.toSelectOption)) props.optionSort)
                               searchTerm)
                       <<< Array.take 10000
 
               runAff_
                 (send self <<< SetOptions searchTerm <<< either (Failed <<< message) Ready)
-                (tidyUp <$> self.props.loadOptions searchTerm)
+                (tidyUp <$> props.loadOptions searchTerm)
 
           SetOptions searchTerm options ->
             self.setState \s -> s
@@ -317,7 +323,9 @@ selectBackend = make component
       where
         keydownEventHandler :: Event -> Effect Unit
         keydownEventHandler e = do
-          when (not self.props.disabled) do
+          props <- readProps self
+          state <- readState self
+          when (not props.disabled) do
             for_ (eventKey e) case _ of
               "ArrowUp" -> do
                 E.preventDefault e
@@ -342,7 +350,7 @@ selectBackend = make component
                   send self OpenSelect
                   send self FocusIndexDown
               "Tab" -> do
-                if self.state.isOpen then do
+                if state.isOpen then do
                   E.preventDefault e
                   E.stopPropagation e
                   if shiftKey e then do
@@ -354,29 +362,28 @@ selectBackend = make component
                 else do
                   send self Blur
               "Enter" -> do
-                when self.state.isOpen do
+                when state.isOpen do
                   E.preventDefault e
                   E.stopPropagation e
                   traverse_ (send self <<< AddSelectedOption) do
-                    options <- getOptions self.state
-                    focusedIndex <- self.state.focusedIndex
+                    options <- getOptions state
+                    focusedIndex <- state.focusedIndex
                     option <- getOption focusedIndex options
                     pure option.external
               "Escape" -> do
-                when self.state.isOpen do
+                when state.isOpen do
                   E.preventDefault e
                   E.stopPropagation e
-                  send self $ SetSearchTerm ""
                   send self CloseSelect
               "Backspace" -> do
                 let
-                  inputIsEmpty = String.null self.state.searchTerm
-                  hasSelectedValues = not Array.null self.props.value
+                  inputIsEmpty = String.null state.searchTerm
+                  hasSelectedValues = not Array.null props.value
                 when (inputIsEmpty && hasSelectedValues) do
                   E.preventDefault e
                   E.stopPropagation e
                   traverse_ (send self <<< RemoveSelectedOption) do
-                    Array.last self.props.value
+                    Array.last props.value
               _ -> pure unit
 
 optionsLength :: forall a. SelectOptions a -> Int
