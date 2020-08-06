@@ -16,7 +16,7 @@ import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, lumiComponent)
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
-import Lumi.Components2.Button (_linkStyle, button)
+import Lumi.Components2.Button (linkButton, varButtonBlack)
 import Lumi.Styles (style_, toCSS)
 import Lumi.Styles as S
 import Lumi.Styles.Box (FlexAlign(..), _align, _justify)
@@ -45,8 +45,7 @@ clip =
       let
         buttonWidth = "64px"
         copyButton =
-          button
-            $ _linkStyle
+          linkButton
             $ style_
                 ( E.merge
                     [ E.css
@@ -55,14 +54,14 @@ clip =
                         }
                     , guard copied do
                         E.css
-                          { color: E.color colors.black1
+                          { color: varButtonBlack
                           , "&:hover": E.nested $ E.css { textDecoration: E.none }
                           }
                     ]
                 )
             $ _
                 { content = [ R.text if copied then "Copied!" else "Copy" ]
-                , onPress = copy
+                , onPress = liftEffect copy
                 }
       pure
         $ E.element R.div'

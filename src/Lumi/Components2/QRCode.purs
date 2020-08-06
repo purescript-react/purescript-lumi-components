@@ -1,14 +1,22 @@
-module Lumi.Components2.QRCode where
+module Lumi.Components2.QRCode
+  ( useQRCode
+  , UseQRCode
+  , ErrorCorrectLevel(..)
+  , errorCorrectLevelToString
+  , qrcode_
+  , generateSVGUrl
+  ) where
 
 import Prelude
+
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Nullable as Nullable
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, lumiComponent)
-import Lumi.Styles (toCSS)
-import Lumi.Styles.QRCode as Styles.QRCode
+import Lumi.Styles (StyleModifier, style_, toCSS)
+import Lumi.Styles.Box (box)
 import Lumi.Styles.Theme (useTheme)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
@@ -16,37 +24,6 @@ import React.Basic.Hooks (type (/\), Hook, ReactComponent, Ref, UnsafeReference(
 import React.Basic.Hooks as React
 import Web.DOM (Node)
 import Web.HTML.History (URL(..))
-
-newtype UseQRCode hooks
-  = UseQRCode
-  ( UseEffect
-      (UnsafeReference (LumiComponent ()))
-      ( UseState
-          (Maybe URL)
-          ( UseMemo
-              (String /\ ErrorCorrectLevel)
-              (LumiComponent ())
-              (UseRef (Nullable.Nullable Node) hooks)
-          )
-      )
-  )
-
-derive instance ntUseQRCode :: Newtype (UseQRCode hooks) _
-
-data ErrorCorrectLevel
-  = ECLLow
-  | ECLMedium
-  | ECLQuartile
-  | ECLHigh
-
-derive instance eqErrorCorrectLevel :: Eq ErrorCorrectLevel
-
-errorCorrectLevelToString :: ErrorCorrectLevel -> String
-errorCorrectLevelToString = case _ of
-  ECLLow -> "L"
-  ECLMedium -> "M"
-  ECLQuartile -> "Q"
-  ECLHigh -> "H"
 
 useQRCode :: ErrorCorrectLevel -> String -> Hook UseQRCode { qrcode :: LumiComponent (), url :: Maybe URL }
 useQRCode level value =
@@ -72,7 +49,7 @@ useQRCode level value =
                       ]
                   , ref
                   , className: props.className
-                  , css: theme # toCSS Styles.QRCode.qrcode <> props.css
+                  , css: theme # toCSS qrcodeStyle <> props.css
                   }
     url /\ setUrl <- useState Nothing
     useEffect (UnsafeReference qrcode) do
@@ -80,6 +57,40 @@ useQRCode level value =
       setUrl \_ -> Just $ URL svgUrl.url
       pure svgUrl.dispose
     pure { qrcode, url }
+
+qrcodeStyle :: StyleModifier
+qrcodeStyle = box <<< style_ (E.css { label: E.str "qrcode" })
+
+newtype UseQRCode hooks
+  = UseQRCode
+  ( UseEffect
+      ( UnsafeReference (LumiComponent ()) )
+      ( UseState
+          ( Maybe URL )
+          ( UseMemo
+              (String /\ ErrorCorrectLevel)
+              (LumiComponent ())
+              (UseRef (Nullable.Nullable Node) hooks)
+          )
+      )
+  )
+
+derive instance ntUseQRCode :: Newtype (UseQRCode hooks) _
+
+data ErrorCorrectLevel
+  = ECLLow
+  | ECLMedium
+  | ECLQuartile
+  | ECLHigh
+
+derive instance eqErrorCorrectLevel :: Eq ErrorCorrectLevel
+
+errorCorrectLevelToString :: ErrorCorrectLevel -> String
+errorCorrectLevelToString = case _ of
+  ECLLow -> "L"
+  ECLMedium -> "M"
+  ECLQuartile -> "Q"
+  ECLHigh -> "H"
 
 foreign import qrcode_ ::
   ReactComponent

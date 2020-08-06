@@ -1,16 +1,19 @@
 module Lumi.Components2.Examples.Button where
 
 import Prelude
+
 import Data.Array (intercalate)
+import Effect.Aff (Milliseconds(..), delay)
+import Effect.Class (liftEffect)
+import Lumi.Components (propsModifier, ($$$))
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Icon (IconType(..), icon)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (h2_, h4_)
-import Lumi.Components2.Button (_linkStyle, button, _secondary)
+import Lumi.Components2.Button (ButtonState(..), button, linkButton, resize, secondary)
 import Lumi.Styles.Box (_interactive)
-import Lumi.Styles.Button (ButtonState(..))
 import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
 import Web.HTML (window)
@@ -22,45 +25,38 @@ docs =
     $ intercalate [ vspace S16 ]
         [ [ example
               $ button
-              $ _ { content = [ R.text "Button" ] }
+              $ propsModifier _ { onPress = delay $ Milliseconds 1000.0 }
+              $$$ [ column_ [ R.text "Click me" ] ]
           ]
         , [ h2_ "Disabled"
           , example
               $ button
-              $ _ { content = [ R.text "Button" ] }
+              $$$ [ R.text "Button" ]
           ]
         , [ h2_ "Size"
           , h4_ "Medium (default)"
           , example
               $ button
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = Medium
-                  }
+              $ resize Medium
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Small"
           , example
               $ button
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = Small
-                  }
+              $ resize Small
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Large"
           , example
               $ button
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = Large
-                  }
+              $ resize Large
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Extra Large"
           , example
               $ button
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = ExtraLarge
-                  }
+              $ resize ExtraLarge
+              $$$ [ R.text "Button" ]
           ]
         , [ h2_ "Color"
           , h4_ "Primary (default)"
@@ -80,104 +76,90 @@ docs =
         , [ h4_ "Secondary (outline)"
           , example
               $ button
-              $ _secondary
+              $ secondary
               $ _ { content = [ R.text "Button" ] }
           ]
         , [ h4_ "Secondary Small"
           , example
               $ button
-              $ _secondary
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = Small
-                  }
+              $ secondary
+              $ resize Small
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Secondary Large"
           , example
               $ button
-              $ _secondary
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = Large
-                  }
+              $ secondary
+              $ resize Large
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Secondary Extra Large"
           , example
               $ button
-              $ _secondary
-              $ _
-                  { content = [ R.text "Button" ]
-                  , size = ExtraLarge
-                  }
+              $ secondary
+              $ resize ExtraLarge
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Secondary + Disabled"
           , example
               $ button
-              $ _secondary
-              $ _
-                  { content = [ R.text "Button" ]
-                  , state = Disabled
-                  }
+              $ secondary
+              $ propsModifier _ { state = Disabled }
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Icon button"
           , example
               $ button
-              $ _ { content = [ buttonIcon Plus, hspace S8, R.text "Add new item" ] }
+              $$$ [ buttonIcon Plus, hspace S8, R.text "Add new item" ]
           ]
         , [ h4_ "Icon button"
           , example
               $ button
-              $ _secondary
-              $ _ { content = [ buttonIcon Plus, hspace S8, R.text "Add new item" ] }
+              $ secondary
+              $$$ [ buttonIcon Plus, hspace S8, R.text "Add new item" ]
           ]
         , [ h4_ "Icon button"
           , example
               $ button
-              $ _ { content = [ R.text "Add new item", hspace S8, buttonIcon Plus ] }
+              $$$ [ R.text "Add new item", hspace S8, buttonIcon Plus ]
           ]
         , [ h4_ "Link style"
           , example
-              $ button
-              $ _linkStyle
-              $ _ { content = [ R.text "Button w/ link style" ]
-                  , onPress = alert "asdf" =<< window
-                  }
+              $ linkButton
+              $ propsModifier _ { onPress = liftEffect do alert "asdf" =<< window }
+              $$$ [ R.text "Button w/ link style" ]
           , example
-              $ button
-              $ _linkStyle
-              $ _ { state = Disabled
-                  , content = [ R.text "Button w/ link style" ]
-                  , onPress = alert "asdf" =<< window
-                  }
+              $ linkButton
+              $ propsModifier _ { onPress = liftEffect do alert "asdf" =<< window }
+              $ propsModifier _ { state = Disabled }
+              $$$ [ R.text "Button w/ link style" ]
           ]
         , [ h4_ "Loading (Medium/default)"
           , example
               $ button
-              $ _ { state = Loading }
+              $ propsModifier _ { state = Loading }
+              $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (Small) "
           , example
               $ button
-              $ _
-                  { state = Loading
-                  , size = Small
-                  }
+              $ resize Small
+              $ propsModifier _ { state = Loading }
+              $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (Large) "
           , example
               $ button
-              $ _
-                  { state = Loading
-                  , size = Large
-                  }
+              $ resize Large
+              $ propsModifier _ { state = Loading }
+              $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (ExtraLarge) "
           , example
               $ button
-              $ _
-                  { state = Loading
-                  , size = ExtraLarge
-                  }
+              $ resize ExtraLarge
+              $ propsModifier _ { state = Loading }
+              $$$ [ R.text "Save" ]
           ]
         ]
   where

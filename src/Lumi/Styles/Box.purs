@@ -85,7 +85,7 @@ _focusable :: StyleModifier
 _focusable =
   style \(LumiTheme theme) ->
     css
-      { "&:focus, &:active":
+      { "&:focus-within, &:active":
         nested
           $ css
               { outline: str "0"

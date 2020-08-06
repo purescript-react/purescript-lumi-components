@@ -10,6 +10,7 @@ import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Effect (Effect)
+import Effect.Class (liftEffect)
 import Effect.Unsafe (unsafePerformEffect)
 import JSS (JSS, jss)
 import Lumi.Components (($$$))
@@ -18,10 +19,10 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Icon (IconType(..), icon, icon_)
 import Lumi.Components.Text (nbsp)
 import Lumi.Components2.Box (row)
-import Lumi.Components2.Button (button, _linkStyle)
+import Lumi.Components2.Button (linkButton, recolor, varButtonHueDarker, varButtonHueDarkest)
 import Lumi.Components2.Text as T
 import Lumi.Styles as S
-import Lumi.Styles.Box (FlexAlign(..), _align, _justify, _row)
+import Lumi.Styles.Box (FlexAlign(..), _align, _justify)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Classic (Component, JSX, createComponent, element, empty, makeStateless)
 import React.Basic.DOM as R
@@ -59,24 +60,25 @@ editableTableDefaults =
 defaultRemoveCell :: forall row. Maybe (row -> Effect Unit) -> row -> JSX
 defaultRemoveCell onRowRemove item =
   onRowRemove # Array.foldMap \onRowRemove' ->
-    button
-    $ _linkStyle
+    linkButton -- TODO: this link button should be a new "icon button" style
+    $ recolor _.black1
     $ S.style
         ( \(LumiTheme { colors }) ->
           S.css
             { fontSize: S.px 20
-            , lineHeight: S.px 20
             , textDecoration: S.important S.none
-            , color: S.color colors.black1
             , "&:hover": S.nested $ S.css
-                { color: S.color colors.black
+                { color: varButtonHueDarker
+                }
+            , "&:focus, &:active": S.nested $ S.css
+                { color: varButtonHueDarkest
                 }
             , "lumi-font-icon::before": S.nested $ S.css
                 { verticalAlign: S.str "baseline"
                 }
             }
         )
-    $ _ { onPress = onRowRemove' item
+    $ _ { onPress = liftEffect do onRowRemove' item
         , content = [ icon_ Bin ]
         }
 
@@ -160,10 +162,7 @@ editableTable = makeStateless component render
                       $ S.style_ (S.css { flexFlow: S.str "row-reverse wrap" })
                       $$$ [ summary
                           , guard canAddRows
-                              $ button
-                              $ _linkStyle
-                              $ _row
-                              $ _align Baseline
+                              $ linkButton
                               $ S.style_
                                   ( S.css
                                       { fontSize: S.px 14
@@ -173,7 +172,7 @@ editableTable = makeStateless component render
                                           }
                                       }
                                   )
-                              $ _ { onPress = onRowAdd
+                              $ _ { onPress = liftEffect onRowAdd
                                   , content =
                                       [ icon
                                           { type_: Plus
