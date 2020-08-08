@@ -13,6 +13,8 @@ module Lumi.Components2.Button
   , varButtonHue, varButtonHueDarker, varButtonHueDarkest
   , varButtonHueDisabled, varButtonGrey1, varButtonGrey2
   , varButtonBlack, varButtonWhite
+
+  , submit, reset, onPress, autoFocus, tabIndex, ariaLabel
   ) where
 
 import Prelude
@@ -25,7 +27,7 @@ import Effect.Aff (Aff, finally, launchAff_)
 import Effect.Class (liftEffect)
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (fromHomogeneous)
-import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, unsafeMaybeToNullableAttr)
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier, unsafeMaybeToNullableAttr)
 import Lumi.Components.Button (invisibleSpace)
 import Lumi.Components.Color (ColorMap, shade)
 import Lumi.Components.Size (Size(..))
@@ -59,9 +61,6 @@ type ButtonProps
     , onPress :: Aff Unit
     , type :: ButtonType
     , state :: ButtonState
-    -- Set `ariaLabel` when the button content is not legible text,
-    -- for example a button that only contains an X might set this
-    -- label to "Close".
     , ariaLabel :: Maybe String
     , content :: Array JSX
     )
@@ -124,21 +123,23 @@ button = primary >>>
                 else
                   Nothing
           , children:
-              [ Box.box _
-                  { className = "button-content"
-                  , content =
-                      if Array.length props.content == 0 then
-                        [ R.text invisibleSpace ] -- preserves button size when content is empty
-                      else
-                        props.content
-                  }
+              [ Box.box
+                  $ _row
+                  $ _align Center
+                  $ _justify Center
+                  $ _ { className = "button-content"
+                      , content =
+                          if Array.length props.content == 0 then
+                            [ R.text invisibleSpace ] -- preserves button size when content is empty
+                          else
+                            props.content
+                      }
               ]
           }
     where
     buttonStyle :: StyleModifier
     buttonStyle =
       box
-        <<< _row
         <<< _align Center
         <<< _justify Center
         <<< _interactive
@@ -179,8 +180,8 @@ button = primary >>>
                                         , mkLoader
                                             { color: colors.white
                                             , highlightColor: colors.transparent
-                                            , radius: "16px"
-                                            , borderWidth: "2px"
+                                            , radius: px 16
+                                            , borderWidth: px 2
                                             }
                                         ]
                               , "> .button-content": nested $ css { opacity: str "0" }
@@ -188,7 +189,18 @@ button = primary >>>
                           ]
                 }
 
-type ButtonModifier c = forall r. PropsModifier ( component :: c | r )
+type ButtonModifier c =
+  forall r.
+  PropsModifier
+    ( component :: c
+    , autoFocus :: Boolean
+    , tabIndex :: Maybe Int
+    , type :: ButtonType
+    , state :: ButtonState
+    , onPress :: Aff Unit
+    , ariaLabel :: Maybe String
+    | r
+    )
 
 -- The default button style
 primary :: ButtonModifier Button
@@ -258,7 +270,7 @@ secondary =
 
 resize :: Size -> ButtonModifier Button
 resize size =
-  style \(LumiTheme { fontSizes, lineHeightFactor, textMarginFactor }) ->
+  style \(LumiTheme { colors, fontSizes, lineHeightFactor, textMarginFactor }) ->
     css
       { "@media (min-width: 860px)":
           nested
@@ -269,6 +281,8 @@ resize size =
                         { fontSize: px fontSizes.subtext
                         , padding: str "6px 16px"
                         , height: px 28
+                        , "&[data-loading]":
+                            loadingStyles colors { radius: px 12, borderWidth: px 2 }
                         }
                     Medium ->
                       mempty
@@ -277,58 +291,40 @@ resize size =
                         { fontSize: px fontSizes.subsectionHeader
                         , padding: str "12px 24px"
                         , height: px 48
+                        , "&[data-loading]":
+                            loadingStyles colors { radius: px 24, borderWidth: px 3 }
                         }
                     ExtraLarge ->
                       css
                         { fontSize: px fontSizes.sectionHeader
                         , padding: str "16px 32px"
                         , height: px 64
+                        , "&[data-loading]":
+                            loadingStyles colors { radius: px 34, borderWidth: px 4 }
                         }
                     ExtraExtraLarge ->
                       css
                         { fontSize: px fontSizes.sectionHeader
                         , padding: str "16px 32px"
                         , height: px 64
+                        , "&[data-loading]":
+                            loadingStyles colors { radius: px 34, borderWidth: px 4 }
                         }
                 ]
       }
-
-    -- loadingStyles theme size =
-    --   merge
-    --     [ spin
-    --     , css
-    --         { label: str "loading"
-    --         , "&:after": nested $ mkLoader theme { radius: "16px", borderWidth: "2px" }
-    --         , "@media (min-width: 860px)":
-    --             nested case size of
-    --               Small ->
-    --                 css
-    --                   { "&:after":
-    --                       nested
-    --                         $ mkLoader theme { radius: "12px", borderWidth: "2px" }
-    --                   }
-    --               Medium -> mempty
-    --               Large ->
-    --                 css
-    --                   { "&:after":
-    --                       nested
-    --                         $ mkLoader theme { radius: "24px", borderWidth: "3px" }
-    --                   }
-    --               ExtraLarge ->
-    --                 css
-    --                   { "&:after":
-    --                       nested
-    --                         $ mkLoader theme { radius: "34px", borderWidth: "4px" }
-    --                   }
-    --               ExtraExtraLarge ->
-    --                 css
-    --                   { "&:after":
-    --                       nested
-    --                         $ mkLoader theme { radius: "34px", borderWidth: "4px" }
-    --                   }
-    --         }
-    --     ]
-
+    where
+    loadingStyles colors { radius, borderWidth } =
+      nested
+        $ css
+            { "&:after":
+                nested
+                  $ mkLoader
+                      { color: colors.white
+                      , highlightColor: colors.transparent
+                      , radius
+                      , borderWidth
+                      }
+            }
 
 data LinkButton = LinkButton
 
@@ -339,9 +335,6 @@ type LinkButtonProps
     , onPress :: Aff Unit
     , type :: ButtonType
     , state :: ButtonState
-    -- Set `ariaLabel` when the button content is not legible text,
-    -- for example a button that only contains an X might set this
-    -- label to "Close".
     , ariaLabel :: Maybe String
     , content :: Array JSX
     )
@@ -444,7 +437,7 @@ linkButton = recolor _.primary >>>
                           }
                 }
 
-recolor :: forall b. (ColorMap Color -> Color) -> ButtonModifier b
+recolor :: forall c. (ColorMap Color -> Color) -> ButtonModifier c
 recolor f =
   style
     ( \theme@(LumiTheme { colors: colors@{ black, white } }) ->
@@ -487,6 +480,42 @@ varButtonBlack = var "--button-black"
 
 varButtonWhite :: StyleProperty
 varButtonWhite = var "--button-white"
+
+-- | A form submit button. This helper takes the button state
+-- | as an argument because a form's buttons are generally
+-- | tied to the validity and `onSubmit` behavior of the form,
+-- | rather than providing an `onPress` action to the button
+-- | itself.
+submit :: forall c. ButtonState -> ButtonModifier c
+submit state = propsModifier _ { type = Submit, state = state }
+
+-- | A form reset button. This helper takes the button state
+-- | as an argument because a form's buttons are generally
+-- | tied to the validity and `onSubmit` behavior of the form,
+-- | rather than providing an `onPress` action to the button
+-- | itself.
+reset :: forall c. ButtonState -> ButtonModifier c
+reset state = propsModifier _ { type = Reset, state = state }
+
+-- | A non-form button with customized `onPress` behavior. The
+-- | button will automatically display a loading state while
+-- | the action is in-progress.
+onPress :: forall c. Aff Unit -> ButtonModifier c
+onPress a = propsModifier _ { onPress = a }
+
+-- | Auto-focus this button. Only one element on the page should
+-- | have `autoFocus` set at a time.
+autoFocus :: forall c. ButtonModifier c
+autoFocus = propsModifier _ { autoFocus = true }
+
+tabIndex :: forall c. Int -> ButtonModifier c
+tabIndex i = propsModifier _ { tabIndex = Just i }
+
+-- | Set `ariaLabel` when the button content is not legible text,
+-- | for example a button that only contains an X might set this
+-- | label to "Close".
+ariaLabel :: forall c. String -> ButtonModifier c
+ariaLabel l = propsModifier _ { ariaLabel = Just l }
 
 ------------------------------------------------------
 

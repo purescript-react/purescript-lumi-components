@@ -139,7 +139,7 @@ lumiElement (LumiInternalComponent { component, defaults, className }) modifyPro
 -- | Unsafely nulls out a value so the resulting html attributes are less noisy
 -- | Ex: `R.input { type: unsafeMaybeToNullableAttr Nothing }` avoids rendering
 -- | the `type` attribute while still validating the type of the Maybe's content
--- | matches the type of the DOM field. It's slightly safer than using
+-- | matches the type of the DOM field. It's only slightly safer than using
 -- | `unsafeCreateDOMComponent` to avoid DOM type checking entirely.
 unsafeMaybeToNullableAttr :: forall a. Maybe a -> a
 unsafeMaybeToNullableAttr = unsafeCoerce <<< toNullable

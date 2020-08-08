@@ -20,56 +20,38 @@ docs =
     $ [ h2_ "Not Joined"
       , example
           $ buttonGroup
-          $ _
-              { content =
-                [ button _ { content = [ R.text "Button" ] }
-                , button
-                    $ secondary
-                    $ _ { content = [ R.text "Button" ] }
-                ]
-              }
-      , h2_ "Not Joined"
-      , example
-          $ buttonGroup
-          $ _
-              { content =
-                [ button _ { content = [ R.text "Button" ] }
-                , button
-                    $ secondary
-                    $ _ { content = [ R.text "Button" ] }
-                , button
-                    $ secondary
-                    $ _ { content = [ R.text "Button" ] }
-                ]
-              }
-      , h2_ "Not Joined"
-      , example
-          $ buttonGroup
-          $ _
-              { content =
-                [ button _ { content = [ R.text "Button" ] }
-                , nativeSelect
-                    defaults
-                      { options = []
-                      , onChange = mkEffectFn1 \_ -> log "onChange"
-                      , value = "Foo bar"
-                      }
-                , button
-                    $ secondary
-                    $ _ { content = [ R.text "Button" ] }
-                ]
-              }
-      , h2_ "Joined"
-      , example
-          $ buttonGroup
-          $ joined
           $$$
-            [ button
-                $ secondary
-                $ _ { content = [ R.text "Button" ] }
+            [ button $$$ [ R.text "Button" ]
             , button
                 $ secondary
-                $ _ { content = [ R.text "Button" ] }
+                $$$ [ R.text "Button" ]
+            ]
+      , h2_ "Not Joined"
+      , example
+          $ buttonGroup
+          $$$
+            [ button $$$ [ R.text "Button" ]
+            , button
+                $ secondary
+                $$$ [ R.text "Button" ]
+            , button
+                $ secondary
+                $$$ [ R.text "Button" ]
+            ]
+      , h2_ "Not Joined"
+      , example
+          $ buttonGroup
+          $$$
+            [ button $$$ [ R.text "Button" ]
+            , nativeSelect
+                defaults
+                  { options = []
+                  , onChange = mkEffectFn1 \_ -> log "onChange"
+                  , value = "Foo bar"
+                  }
+            , button
+                $ secondary
+                $$$ [ R.text "Button" ]
             ]
       , h2_ "Joined"
       , example
@@ -78,12 +60,24 @@ docs =
           $$$
             [ button
                 $ secondary
-                $ _ { content = [ R.text "Button" ] }
+                $$$ [ R.text "Button" ]
             , button
                 $ secondary
-                $ _ { content = [ R.text "Button" ] }
+                $$$ [ R.text "Button" ]
+            ]
+      , h2_ "Joined"
+      , example
+          $ buttonGroup
+          $ joined
+          $$$
+            [ button
+                $ secondary
+                $$$ [ R.text "Button" ]
             , button
                 $ secondary
-                $ _ { content = [ R.text "Button" ] }
+                $$$ [ R.text "Button" ]
+            , button
+                $ secondary
+                $$$ [ R.text "Button" ]
             ]
       ]

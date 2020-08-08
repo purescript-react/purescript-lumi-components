@@ -19,7 +19,7 @@ import Lumi.Components.Column (column_)
 import Lumi.Components.Icon (IconType(..), icon, icon_)
 import Lumi.Components.Text (nbsp)
 import Lumi.Components2.Box (row)
-import Lumi.Components2.Button (linkButton, recolor, varButtonHueDarker, varButtonHueDarkest)
+import Lumi.Components2.Button (linkButton, onPress, recolor, varButtonHueDarker, varButtonHueDarkest)
 import Lumi.Components2.Text as T
 import Lumi.Styles as S
 import Lumi.Styles.Box (FlexAlign(..), _align, _justify)
@@ -78,9 +78,8 @@ defaultRemoveCell onRowRemove item =
                 }
             }
         )
-    $ _ { onPress = liftEffect do onRowRemove' item
-        , content = [ icon_ Bin ]
-        }
+    $ onPress do liftEffect do onRowRemove' item
+    $$$ [ icon_ Bin ]
 
 component :: forall row. Component (EditableTableProps row)
 component = createComponent "EditableTableExample"
@@ -172,15 +171,14 @@ editableTable = makeStateless component render
                                           }
                                       }
                                   )
-                              $ _ { onPress = liftEffect onRowAdd
-                                  , content =
-                                      [ icon
-                                          { type_: Plus
-                                          , style: R.css { fontSize: "11px" }
-                                          }
-                                      , T.text $$$ nbsp <> nbsp <> addLabel
-                                      ]
-                                  }
+                              $ onPress do liftEffect onRowAdd
+                              $$$
+                                [ icon
+                                    { type_: Plus
+                                    , style: R.css { fontSize: "11px" }
+                                    }
+                                , T.text $$$ nbsp <> nbsp <> addLabel
+                                ]
                           ]
                     ]
                 , colSpan: columnCount

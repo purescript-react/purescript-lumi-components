@@ -13,10 +13,10 @@ import Effect.Class (liftEffect)
 import Effect.Console as Console
 import Effect.Uncurried (EffectFn1, EffectFn3, mkEffectFn1, runEffectFn3)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, lumiComponent)
+import Lumi.Components (LumiComponent, lumiComponent, ($$$))
 import Lumi.Components.Spacing (Space(..))
 import Lumi.Components2.Box (box)
-import Lumi.Components2.Button (linkButton, varButtonBlack)
+import Lumi.Components2.Button (linkButton, onPress, varButtonBlack)
 import Lumi.Styles (style_, toCSS)
 import Lumi.Styles as S
 import Lumi.Styles.Box (FlexAlign(..), _align, _justify)
@@ -59,10 +59,8 @@ clip =
                           }
                     ]
                 )
-            $ _
-                { content = [ R.text if copied then "Copied!" else "Copy" ]
-                , onPress = liftEffect copy
-                }
+            $ onPress do liftEffect copy
+            $$$ [ R.text if copied then "Copied!" else "Copy" ]
       pure
         $ E.element R.div'
             { className: props.className

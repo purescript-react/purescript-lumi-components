@@ -3,7 +3,7 @@ module Lumi.Styles.Loader where
 import Prelude
 
 import Lumi.Components.Color (Color)
-import Lumi.Styles (Style, StyleModifier, color, css, merge, str, style)
+import Lumi.Styles (Style, StyleModifier, StyleProperty, color, css, merge, px, str, style)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (nested)
 
@@ -14,8 +14,8 @@ loader =
         [ mkLoader
             { color: colors.black1
             , highlightColor: colors.black4
-            , radius: "38px"
-            , borderWidth: "5px"
+            , radius: px 38
+            , borderWidth: px 5
             }
         , spin
         ]
@@ -35,8 +35,8 @@ spin =
 mkLoader ::
   { color :: Color
   , highlightColor :: Color
-  , radius :: String
-  , borderWidth :: String
+  , radius :: StyleProperty
+  , borderWidth :: StyleProperty
   } ->
   Style
 mkLoader { color: c, highlightColor, radius, borderWidth } =
@@ -44,9 +44,9 @@ mkLoader { color: c, highlightColor, radius, borderWidth } =
     { boxSizing: str "border-box"
     , content: str "\"\""
     , display: str "inline-block"
-    , height: str radius
-    , width: str radius
-    , borderWidth: str borderWidth
+    , height: radius
+    , width: radius
+    , borderWidth: borderWidth
     , borderStyle: str "solid"
     , borderColor: color c
     , borderTopColor: color highlightColor

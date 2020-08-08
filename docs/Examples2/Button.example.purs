@@ -5,14 +5,14 @@ import Prelude
 import Data.Array (intercalate)
 import Effect.Aff (Milliseconds(..), delay)
 import Effect.Class (liftEffect)
-import Lumi.Components (propsModifier, ($$$))
+import Lumi.Components (($$$))
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Icon (IconType(..), icon)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (h2_, h4_)
-import Lumi.Components2.Button (ButtonState(..), button, linkButton, resize, secondary)
+import Lumi.Components2.Button (ButtonState(..), button, linkButton, onPress, resize, secondary, submit)
 import Lumi.Styles.Box (_interactive)
 import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
@@ -25,7 +25,8 @@ docs =
     $ intercalate [ vspace S16 ]
         [ [ example
               $ button
-              $ propsModifier _ { onPress = delay $ Milliseconds 1000.0 }
+              $ onPress do
+                  delay $ Milliseconds 1000.0
               $$$ [ column_ [ R.text "Click me" ] ]
           ]
         , [ h2_ "Disabled"
@@ -63,21 +64,19 @@ docs =
           , example
               $ button
               $ _interactive
-              $ _ { content = [ R.text "Button" ] }
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Primary + Disabled"
           , example
               $ button
-              $ _
-                  { content = [ R.text "Button" ]
-                  , state = Disabled
-                  }
+              $ submit Disabled
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Secondary (outline)"
           , example
               $ button
               $ secondary
-              $ _ { content = [ R.text "Button" ] }
+              $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Secondary Small"
           , example
@@ -104,7 +103,7 @@ docs =
           , example
               $ button
               $ secondary
-              $ propsModifier _ { state = Disabled }
+              $ submit Disabled
               $$$ [ R.text "Button" ]
           ]
         , [ h4_ "Icon button"
@@ -126,39 +125,41 @@ docs =
         , [ h4_ "Link style"
           , example
               $ linkButton
-              $ propsModifier _ { onPress = liftEffect do alert "asdf" =<< window }
+              $ onPress do
+                  liftEffect do alert "asdf" =<< window
               $$$ [ R.text "Button w/ link style" ]
           , example
               $ linkButton
-              $ propsModifier _ { onPress = liftEffect do alert "asdf" =<< window }
-              $ propsModifier _ { state = Disabled }
-              $$$ [ R.text "Button w/ link style" ]
+              $ submit Disabled
+              $ onPress do
+                  liftEffect do alert "asdf" =<< window
+              $$$ [ R.text "Button w/ link style (disabled)" ]
           ]
         , [ h4_ "Loading (Medium/default)"
           , example
               $ button
-              $ propsModifier _ { state = Loading }
+              $ submit Loading
               $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (Small) "
           , example
               $ button
               $ resize Small
-              $ propsModifier _ { state = Loading }
+              $ submit Loading
               $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (Large) "
           , example
               $ button
               $ resize Large
-              $ propsModifier _ { state = Loading }
+              $ submit Loading
               $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (ExtraLarge) "
           , example
               $ button
               $ resize ExtraLarge
-              $ propsModifier _ { state = Loading }
+              $ submit Loading
               $$$ [ R.text "Save" ]
           ]
         ]
