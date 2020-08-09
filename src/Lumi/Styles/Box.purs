@@ -1,8 +1,9 @@
 module Lumi.Styles.Box where
 
 import Prelude
+
 import Color (cssStringHSLA)
-import Lumi.Styles (StyleModifier, px, style, style_)
+import Lumi.Styles (StyleModifier, baseline, borderBox, center, column, flex, flexEnd, flexStart, manipulation, minContent, none, pointer, px, row, spaceAround, spaceBetween, spaceEvenly, stretch, style, style_, wrap)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (class IsStyleProperty, css, nested, prop, str)
 
@@ -11,11 +12,11 @@ box =
   style_
     $ css
         { label: str "box"
-        , display: str "flex"
-        , flexDirection: str "column"
-        , boxSizing: str "border-box"
+        , display: flex
+        , flexDirection: column
+        , boxSizing: borderBox
         , minHeight: px 0
-        , minWidth: str "min-content"
+        , minWidth: minContent
         , flex: str "0 0 auto"
         , margin: px 0
         , padding: px 0
@@ -24,17 +25,17 @@ box =
 _row :: StyleModifier
 _row =
   style_
-    $ css { flexDirection: str "row" }
+    $ css { flexDirection: row }
 
 _column :: StyleModifier
 _column =
   style_
-    $ css { flexDirection: str "column" }
+    $ css { flexDirection: column }
 
 _wrap :: StyleModifier
 _wrap =
   style_
-    $ css { flexWrap: str "wrap" }
+    $ css { flexWrap: wrap }
 
 _flex :: StyleModifier
 _flex =
@@ -53,15 +54,15 @@ data FlexAlign
 
 instance isStylePropertyFlexAlign :: IsStyleProperty FlexAlign where
   prop a =
-    str case a of
-      Start -> "flex-start"
-      End -> "flex-end"
-      Center -> "center"
-      Stretch -> "stretch"
-      Baseline -> "baseline"
-      SpaceAround -> "space-around"
-      SpaceBetween -> "space-between"
-      SpaceEvenly -> "space-evenly"
+    case a of
+      Start -> flexStart
+      End -> flexEnd
+      Center -> center
+      Stretch -> stretch
+      Baseline -> baseline
+      SpaceAround -> spaceAround
+      SpaceBetween -> spaceBetween
+      SpaceEvenly -> spaceEvenly
 
 _justify :: FlexAlign -> StyleModifier
 _justify a = style_ $ css { justifyContent: prop a }
@@ -76,9 +77,9 @@ _interactive :: StyleModifier
 _interactive =
   style_
     $ css
-    $ { touchAction: str "manipulation"
-      , userSelect: str "none"
-      , cursor: str "pointer"
+    $ { touchAction: manipulation
+      , userSelect: none
+      , cursor: pointer
       }
 
 _focusable :: StyleModifier

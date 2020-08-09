@@ -7,7 +7,7 @@ module Lumi.Components2.Button
   , LinkButton
 
   , ButtonModifier
-  , primary, secondary, resize
+  , primary, secondary, resize, loadingContent
 
   , recolor
   , varButtonHue, varButtonHueDarker, varButtonHueDarkest
@@ -32,9 +32,9 @@ import Lumi.Components.Button (invisibleSpace)
 import Lumi.Components.Color (ColorMap, shade)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components2.Box as Box
-import Lumi.Styles (StyleModifier, StyleProperty, color, css, inherit, merge, nested, none, px, str, style, style_, toCSS)
+import Lumi.Styles (StyleModifier, StyleProperty, absolute, color, css, default, ellipsis, hidden, inherit, inlineFlex, merge, nested, none, nowrap, pointer, px, px2, solid, str, style, style_, toCSS, underline, var)
 import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
-import Lumi.Styles.Loader (mkLoader, spin)
+import Lumi.Styles.Loader (mkLoader)
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
@@ -151,42 +151,39 @@ button = primary >>>
                 , outline: none
                 , minWidth: px 70
                 , lineHeight: px 1
-                , whiteSpace: str "nowrap"
-                , textOverflow: str "ellipsis"
-                , overflow: str "hidden"
+                , whiteSpace: nowrap
+                , textOverflow: ellipsis
+                , overflow: hidden
                 , borderRadius: px 3
                 , borderWidth: px 1
-                , borderStyle: str "solid"
+                , borderStyle: solid
                 , fontSize: px fontSizes.body
-                , padding: str "10px 20px"
+                , padding: px2 10 20
                 , height: px 40
                 , "@media (min-width: 860px)":
                     nested
                       $ css
                           { fontSize: px fontSizes.body
-                          , padding: str "6px 16px"
+                          , padding: px2 6 16
                           , height: px 32
                           }
-                , "&:disabled": nested $ css { cursor: str "default" }
+                , "&:disabled": nested $ css { cursor: default }
                 , "&[data-loading]":
                     nested
-                      $ merge
-                          [ spin
-                          , css
-                              { "&:after":
-                                  nested
-                                    $ merge
-                                        [ css { position: str "absolute" }
-                                        , mkLoader
-                                            { color: colors.white
-                                            , highlightColor: colors.transparent
-                                            , radius: px 16
-                                            , borderWidth: px 2
-                                            }
-                                        ]
-                              , "> .button-content": nested $ css { opacity: str "0" }
-                              }
-                          ]
+                      $ css
+                          { "&:after":
+                              nested
+                                $ merge
+                                    [ css { position: absolute }
+                                    , mkLoader
+                                        { color: colors.white
+                                        , highlightColor: colors.transparent
+                                        , radius: px 16
+                                        , borderWidth: px 2
+                                        }
+                                    ]
+                          , "> .button-content": nested $ css { visibility: hidden }
+                          }
                 }
 
 type ButtonModifier c =
@@ -279,7 +276,7 @@ resize size =
                     Small ->
                       css
                         { fontSize: px fontSizes.subtext
-                        , padding: str "6px 16px"
+                        , padding: px2 6 16
                         , height: px 28
                         , "&[data-loading]":
                             loadingStyles colors { radius: px 12, borderWidth: px 2 }
@@ -289,7 +286,7 @@ resize size =
                     Large ->
                       css
                         { fontSize: px fontSizes.subsectionHeader
-                        , padding: str "12px 24px"
+                        , padding: px2 12 24
                         , height: px 48
                         , "&[data-loading]":
                             loadingStyles colors { radius: px 24, borderWidth: px 3 }
@@ -297,7 +294,7 @@ resize size =
                     ExtraLarge ->
                       css
                         { fontSize: px fontSizes.sectionHeader
-                        , padding: str "16px 32px"
+                        , padding: px2 16 32
                         , height: px 64
                         , "&[data-loading]":
                             loadingStyles colors { radius: px 34, borderWidth: px 4 }
@@ -305,7 +302,7 @@ resize size =
                     ExtraExtraLarge ->
                       css
                         { fontSize: px fontSizes.sectionHeader
-                        , padding: str "16px 32px"
+                        , padding: px2 16 32
                         , height: px 64
                         , "&[data-loading]":
                             loadingStyles colors { radius: px 34, borderWidth: px 4 }
@@ -337,6 +334,7 @@ type LinkButtonProps
     , state :: ButtonState
     , ariaLabel :: Maybe String
     , content :: Array JSX
+    , loadingContent :: Maybe (Array JSX)
     )
 
 linkButton :: LumiComponent LinkButtonProps
@@ -354,11 +352,23 @@ linkButton = recolor _.primary >>>
     , state: Enabled
     , ariaLabel: Nothing
     , content: mempty
+    , loadingContent: Nothing
     }
 
   render props = React.do
     theme <- useTheme
     clickInProgress /\ setClickInProgress <- useState' false
+    let
+      loading =
+        clickInProgress || case props.state of
+          Enabled -> false
+          Disabled -> false
+          Loading -> true
+      disabled =
+        loading || case props.state of
+          Enabled -> false
+          Disabled -> true
+          Loading -> true
     pure
       $ E.element R.button'
           { _aria:
@@ -378,38 +388,48 @@ linkButton = recolor _.primary >>>
                 Button -> "button"
                 Submit -> "submit"
                 Reset -> "reset"
-          , disabled:
-              clickInProgress ||
-                case props.state of
-                  Enabled -> false
-                  Disabled -> true
-                  Loading -> true
+          , disabled
+          , _data:
+              unsafeMaybeToNullableAttr
+                if loading then
+                  Just (fromHomogeneous { loading: "" })
+                else
+                  Nothing
           , children:
-              if Array.length props.content == 0 then
-                [ R.text invisibleSpace ] -- preserves button size when content is empty
-              else
-                props.content
+              [ props.loadingContent # Array.foldMap \lc ->
+                  Box.box
+                    $ _row
+                    $ _justify Baseline
+                    $ _ { className = "button-loading-content"
+                        , content = lc
+                        }
+              , Box.box
+                  $ _row
+                  $ _justify Baseline
+                  $ _ { className = "button-content"
+                      , content = props.content
+                      }
+              ]
           }
     where
     linkButtonStyle :: StyleModifier
     linkButtonStyle =
       box
-        <<< _row
-        <<< _align Baseline
         <<< _interactive
         <<< _focusable
-        <<< style \(LumiTheme { fontSizes }) ->
-              css
+        <<< style_
+            ( css
                 { label: str "link-button"
                 , appearance: none
                 , outline: none
                 , background: none
                 , border: none
-                , display: str "inline-flex"
-                , whiteSpace: str "nowrap"
-                , textOverflow: str "ellipsis"
-                , overflow: str "hidden"
-                , fontSize: inherit -- TODO: Set fixed link button size? -- px fontSizes.body
+                , display: inlineFlex
+                , whiteSpace: nowrap
+                , textOverflow: ellipsis
+                , overflow: hidden
+                , fontSize: inherit -- A link button might appear in a paragraph of text
+                                    -- and should inherit its size accordingly
                 , color: varButtonHue
                 , textDecoration: none
                 , "&:visited":
@@ -421,8 +441,8 @@ linkButton = recolor _.primary >>>
                 , "&:hover":
                     nested
                       $ css
-                          { cursor: str "pointer"
-                          , textDecoration: str "underline"
+                          { cursor: pointer
+                          , textDecoration: underline
                           }
                 , "&:disabled":
                     nested
@@ -431,11 +451,24 @@ linkButton = recolor _.primary >>>
                           , "&:hover, &:active":
                               nested
                                 $ css
-                                    { cursor: str "default"
+                                    { cursor: default
                                     , textDecoration: none
                                     }
                           }
+                , "&[data-loading] > .button-loading-content + .button-content, &:not([data-loading]) > .button-loading-content":
+                    -- Flattens the button content which is not currently active.
+                    -- This preserves the button width regardless which state the
+                    -- button is in.
+                    nested $ css { height: px 0, overflow: hidden }
                 }
+            )
+
+-- | `loadingContent` sets the content to display while a link button
+-- | is in its loading state. The size of the link button will always
+-- | fit the larger content, regardless which state it's in.
+loadingContent :: Array JSX -> forall r. PropsModifier ( component :: LinkButton, loadingContent :: Maybe (Array JSX) | r )
+loadingContent a =
+  propsModifier _ { loadingContent = Just a }
 
 recolor :: forall c. (ColorMap Color -> Color) -> ButtonModifier c
 recolor f =
@@ -497,11 +530,12 @@ submit state = propsModifier _ { type = Submit, state = state }
 reset :: forall c. ButtonState -> ButtonModifier c
 reset state = propsModifier _ { type = Reset, state = state }
 
--- | A non-form button with customized `onPress` behavior. The
--- | button will automatically display a loading state while
--- | the action is in-progress.
+-- | A button with customized `onPress` behavior. The button will
+-- | automatically display a loading state while the action is in-progress.
+-- | Using `onPress` on a button multiple times chains the effects together
+-- | from the first applied, out.
 onPress :: forall c. Aff Unit -> ButtonModifier c
-onPress a = propsModifier _ { onPress = a }
+onPress a = propsModifier \props -> props { onPress = props.onPress *> a }
 
 -- | Auto-focus this button. Only one element on the page should
 -- | have `autoFocus` set at a time.
@@ -516,9 +550,3 @@ tabIndex i = propsModifier _ { tabIndex = Just i }
 -- | label to "Close".
 ariaLabel :: forall c. String -> ButtonModifier c
 ariaLabel l = propsModifier _ { ariaLabel = Just l }
-
-------------------------------------------------------
-
--- TODO: move to react-basic-emotion
-var :: String -> StyleProperty
-var n = str ("var(" <> n <> ")")

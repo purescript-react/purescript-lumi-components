@@ -2,33 +2,30 @@ module Lumi.Components2.Clip where
 
 import Prelude
 
+import Data.Either (Either(..))
 import Data.Foldable (for_)
-import Data.Monoid (guard)
-import Data.Newtype (class Newtype)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Effect (Effect)
-import Effect.Aff (Error, Milliseconds(..), delay, message)
+import Effect.Aff (Aff, Error, Milliseconds(..), delay, makeAff, message, nonCanceler)
 import Effect.Class (liftEffect)
 import Effect.Console as Console
 import Effect.Uncurried (EffectFn1, EffectFn3, mkEffectFn1, runEffectFn3)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, lumiComponent, ($$$))
-import Lumi.Components.Spacing (Space(..))
+import Lumi.Components.Spacing (Space(..), hspace)
 import Lumi.Components2.Box (box)
-import Lumi.Components2.Button (linkButton, onPress, varButtonBlack)
-import Lumi.Styles (style_, toCSS)
+import Lumi.Components2.Button (linkButton, loadingContent, onPress)
+import Lumi.Styles (toCSS)
 import Lumi.Styles as S
-import Lumi.Styles.Box (FlexAlign(..), _align, _justify)
+import Lumi.Styles.Box (FlexAlign(..), _align, _flex)
 import Lumi.Styles.Box as Styles.Box
 import Lumi.Styles.Clip as Styles.Clip
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
-import React.Basic.Hooks (Hook, JSX, Ref, UseState, coerceHook, readRefMaybe, useRef, useState, (/\), type (/\))
+import React.Basic.Hooks (JSX, Ref, readRefMaybe, useRef)
 import React.Basic.Hooks as React
-import React.Basic.Hooks.Aff (UseAff, useAff)
-import React.Basic.Hooks.ResetToken (ResetToken, UseResetToken, useResetToken)
 import Web.DOM (Node)
 
 type ClipProps
@@ -41,26 +38,15 @@ clip =
     lumiComponent "Clip" defaults \props -> React.do
       theme@(LumiTheme { colors }) <- useTheme
       ref <- useRef Nullable.null
-      { copied, copy } <- useClip ref
       let
-        buttonWidth = "64px"
         copyButton =
           linkButton
-            $ style_
-                ( E.merge
-                    [ E.css
-                        { marginLeft: E.prop S16
-                        , lineHeight: E.str "1.2"
-                        }
-                    , guard copied do
-                        E.css
-                          { color: varButtonBlack
-                          , "&:hover": E.nested $ E.css { textDecoration: E.none }
-                          }
-                    ]
-                )
-            $ onPress do liftEffect copy
-            $$$ [ R.text if copied then "Copied!" else "Copy" ]
+            $ S.style_ (S.css { "&:disabled": S.nested $ S.css { color: S.color colors.black1 } })
+            $ onPress do
+                copy ref
+                delay $ Milliseconds 5000.0
+            $ loadingContent [ box $ _flex $ _align End $$$ [ R.text "Copied!" ] ]
+            $$$ [ box $ _flex $ _align End $$$ [ R.text "Copy" ] ]
       pure
         $ E.element R.div'
             { className: props.className
@@ -68,47 +54,31 @@ clip =
             , children:
               [ E.element R.div'
                   { className: ""
-                  , css:
-                    theme
-                      # toCSS (Styles.Box.box <<< Styles.Box._justify Center)
-                      <> toCSS (S.style_ (S.css { flex: S.str $ "0 0 calc(100% - " <> buttonWidth <> ")", minWidth: S.str "0" }))
+                  , css: theme # toCSS (Styles.Box.box <<< Styles.Box._justify Center)
                   , ref
                   , children: props.content
                   }
+              , hspace S8
               , box
-                  $ _justify Center
                   $ _align End
-                  $ S.style_ (S.css { flex: S.str $ "0 0 " <> buttonWidth, minWidth: S.str buttonWidth })
-                  $ _ { content = [ copyButton ] }
+                  $$$ [ copyButton ]
               ]
             }
   where
   defaults = { content: [] }
 
-newtype UseClip hooks
-  = UseClip (UseAff (ResetToken /\ Boolean) Unit (UseState Boolean (UseResetToken hooks)))
-
-derive instance ntUseClip :: Newtype (UseClip hooks) _
-
-useClip :: Ref (Nullable Node) -> Hook UseClip { copied :: Boolean, copy :: Effect Unit }
-useClip nodeRef =
-  coerceHook React.do
-    token /\ resetToken <- useResetToken
-    copied /\ setCopied <- useState false
-    let
-      copy = do
-        node <- readRefMaybe nodeRef
-        for_ node
-          $ runEffectFn3 copyNodeContents
-              ( do
-                  setCopied \_ -> true
-                  resetToken
-              )
-              (mkEffectFn1 $ Console.error <<< message)
-    useAff (token /\ copied) do
-      when copied do
-        delay $ Milliseconds 5000.0
-        liftEffect $ setCopied \_ -> false
-    pure { copied, copy }
+copy :: Ref (Nullable Node) -> Aff Unit
+copy nodeRef = do
+  nodeM <- liftEffect do readRefMaybe nodeRef
+  for_ nodeM \node ->
+    makeAff \done -> do
+      runEffectFn3 copyNodeContents
+        ( done $ Right unit )
+        ( mkEffectFn1 \e -> do
+            Console.error $ message e
+            done $ Right unit
+        )
+        node
+      pure nonCanceler
 
 foreign import copyNodeContents :: EffectFn3 (Effect Unit) (EffectFn1 Error Unit) Node Unit

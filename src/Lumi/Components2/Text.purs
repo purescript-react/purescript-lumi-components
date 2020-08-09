@@ -85,9 +85,9 @@ text =
       S.css
         { fontSize: maybe S.inherit (S.px <<< textFontSize theme <<< textTheme) ty
         , lineHeight: maybe S.inherit (S.px <<< textLineHeight theme <<< textTheme) ty
-        , whiteSpace: S.str "pre-wrap"
-        , margin: S.str "0"
-        , padding: S.str "0"
+        , whiteSpace: S.preWrap
+        , margin: S.px 0
+        , padding: S.px 0
         }
 
     textElement :: TextType -> TextElement
@@ -141,9 +141,9 @@ truncate :: forall c. TextModifier c
 truncate =
   S.style_
     $ S.css
-      { whiteSpace: S.str "nowrap"
-      , overflow: S.str "hidden"
-      , textOverflow: S.str "ellipsis"
+      { whiteSpace: S.nowrap
+      , overflow: S.hidden
+      , textOverflow: S.ellipsis
       }
 
 -- Paragraph
@@ -203,9 +203,9 @@ paragraph =
     defaultParagraphStyle theme ty =
       S.merge
         [ S.css
-            { whiteSpace: S.str "pre-wrap"
-            , margin: S.str "0"
-            , padding: S.str "0"
+            { whiteSpace: S.preWrap
+            , margin: S.px 0
+            , padding: S.px 0
             }
         , S.toCSS (textStyle (textTheme (fromMaybe Body ty))) theme
         ]
@@ -265,8 +265,8 @@ mkHeaderComponent el =
       S.merge
         [ S.css
             { fontWeight: S.str "400"
-            , padding: S.str "0"
-            , margin: S.str "0"
+            , padding: S.px 0
+            , margin: S.px 0
             }
         , S.toCSS (textStyle _.subsectionHeader) theme
         ]

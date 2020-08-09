@@ -60,7 +60,7 @@ editableTableDefaults =
 defaultRemoveCell :: forall row. Maybe (row -> Effect Unit) -> row -> JSX
 defaultRemoveCell onRowRemove item =
   onRowRemove # Array.foldMap \onRowRemove' ->
-    linkButton -- TODO: this link button should be a new "icon button" style
+    linkButton
     $ recolor _.black1
     $ S.style
         ( \(LumiTheme { colors }) ->

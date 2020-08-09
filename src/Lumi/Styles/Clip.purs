@@ -1,6 +1,7 @@
 module Lumi.Styles.Clip where
 
 import Prelude
+
 import Lumi.Styles (StyleModifier, style)
 import Lumi.Styles.Border (_round, border)
 import Lumi.Styles.Box (FlexAlign(..), _justify, _row)

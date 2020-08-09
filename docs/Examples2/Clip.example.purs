@@ -28,6 +28,5 @@ docs =
                       $$$ [ T.text $$$ "someone@email.com" ]
                     ]
                 }
-        , T.paragraph_ $$$ "The Clip behavior is also available as a React hook."
         ]
       }

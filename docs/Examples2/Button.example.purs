@@ -2,6 +2,8 @@ module Lumi.Components2.Examples.Button where
 
 import Prelude
 
+import Color (lighten)
+import Color.Scheme.MaterialDesign as Colors
 import Data.Array (intercalate)
 import Effect.Aff (Milliseconds(..), delay)
 import Effect.Class (liftEffect)
@@ -12,7 +14,9 @@ import Lumi.Components.Icon (IconType(..), icon)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (h2_, h4_)
-import Lumi.Components2.Button (ButtonState(..), button, linkButton, onPress, resize, secondary, submit)
+import Lumi.Components2.Button (ButtonState(..), button, linkButton, loadingContent, onPress, resize, secondary, submit)
+import Lumi.Styles (style_)
+import Lumi.Styles as S
 import Lumi.Styles.Box (_interactive)
 import React.Basic.Classic (JSX)
 import React.Basic.DOM as R
@@ -127,7 +131,21 @@ docs =
               $ linkButton
               $ onPress do
                   liftEffect do alert "asdf" =<< window
+              $ loadingContent [ R.text "Loading..." ]
               $$$ [ R.text "Button w/ link style" ]
+          , example
+              $ linkButton
+              $ style_
+                  ( S.css
+                      { borderColor: S.color $ lighten 0.4 Colors.purple
+                      , borderStyle: S.solid
+                      , borderSize: S.px 2
+                      }
+                  )
+              $ onPress do
+                  delay $ Milliseconds 1000.0
+              $ loadingContent [ R.text "Border size remains unchanged -->" ]
+              $$$ [ R.text "Link buttons retain their size when displaying their loading state (click me)" ]
           , example
               $ linkButton
               $ submit Disabled

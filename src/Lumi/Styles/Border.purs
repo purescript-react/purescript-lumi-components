@@ -3,7 +3,7 @@ module Lumi.Styles.Border where
 import Prelude
 
 import Lumi.Components.Spacing (Space(..))
-import Lumi.Styles (StyleModifier, style, style_)
+import Lumi.Styles (StyleModifier, px2, solid, style, style_)
 import Lumi.Styles.Box (box)
 import Lumi.Styles.Box as Box
 import Lumi.Styles.Theme (LumiTheme(..))
@@ -17,8 +17,8 @@ border =
         { label: str "border"
         , borderWidth: px 1
         , borderColor: color theme.colors.black4
-        , borderStyle: str "solid"
-        , padding: str "8px 16px"
+        , borderStyle: solid
+        , padding: px2 8 16
         }
 
 _round :: StyleModifier
