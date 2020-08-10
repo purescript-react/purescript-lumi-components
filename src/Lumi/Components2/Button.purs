@@ -14,7 +14,8 @@ module Lumi.Components2.Button
   , varButtonHueDisabled, varButtonGrey1, varButtonGrey2
   , varButtonBlack, varButtonWhite
 
-  , submit, reset, onPress, autoFocus, tabIndex, ariaLabel
+  , submit, reset, onPress, onPress'
+  , autoFocus, tabIndex, ariaLabel
   ) where
 
 import Prelude
@@ -536,6 +537,11 @@ reset state = propsModifier _ { type = Reset, state = state }
 -- | from the first applied, out.
 onPress :: forall c. Aff Unit -> ButtonModifier c
 onPress a = propsModifier \props -> props { onPress = props.onPress *> a }
+
+-- | Like `onPress` but allows additional control over how the provided
+-- | behavior interacts with any existing behavior.
+onPress' :: forall c. (Aff Unit -> Aff Unit) -> ButtonModifier c
+onPress' f = propsModifier \props -> props { onPress = f props.onPress }
 
 -- | Auto-focus this button. Only one element on the page should
 -- | have `autoFocus` set at a time.
