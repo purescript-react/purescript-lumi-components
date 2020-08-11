@@ -1,9 +1,11 @@
 module Lumi.Components2.Button
   ( Button
   , ButtonState(..), ButtonType(..)
+  , ButtonProps
   , button
 
   , linkButton
+  , LinkButtonProps
   , LinkButton
 
   , ButtonModifier
