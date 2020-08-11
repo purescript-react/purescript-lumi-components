@@ -237,16 +237,40 @@ styles = jss
                   }
               }
           , "&[data-loading=\"true\"]":
-              { "&:after": spinnerMixin { radius: "16px", borderWidth: "2px" }
+              { "&:after":
+                  spinnerMixin
+                    { color: colors.white
+                    , highlightColor: colors.transparent
+                    , radius: "16px"
+                    , borderWidth: "2px"
+                    }
               , "@media (min-width: $break-point-mobile)":
                   { "&[data-size=\"small\"]":
-                      { "&:after": spinnerMixin { radius: "12px", borderWidth: "2px" }
+                      { "&:after":
+                          spinnerMixin
+                            { color: colors.white
+                            , highlightColor: colors.transparent
+                            , radius: "12px"
+                            , borderWidth: "2px"
+                            }
                       }
                   , "&[data-size=\"large\"]":
-                      { "&:after": spinnerMixin { radius: "24px", borderWidth: "3px" }
+                      { "&:after":
+                          spinnerMixin
+                            { color: colors.white
+                            , highlightColor: colors.transparent
+                            , radius: "24px"
+                            , borderWidth: "3px"
+                            }
                       }
                   , "&[data-size=\"extra-large\"]":
-                      { "&:after": spinnerMixin { radius: "34px", borderWidth: "4px" }
+                      { "&:after":
+                          spinnerMixin
+                            { color: colors.white
+                            , highlightColor: colors.transparent
+                            , radius: "34px"
+                            , borderWidth: "4px"
+                            }
                       }
                   }
               }

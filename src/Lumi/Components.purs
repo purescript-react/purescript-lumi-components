@@ -7,10 +7,13 @@ module Lumi.Components
   , lumiComponent
   , lumiComponentFromHook
   , withContent, ($$$)
+  , unsafeMaybeToNullableAttr
   ) where
 
 import Prelude
 
+import Data.Maybe (Maybe)
+import Data.Nullable (toNullable)
 import Data.String (toLower)
 import Effect (Effect)
 import Lumi.Styles.Theme (LumiTheme)
@@ -18,6 +21,7 @@ import Prim.Row (class Lacks)
 import React.Basic.Emotion as Emotion
 import React.Basic.Hooks (Hook, JSX, ReactComponent, Render, element, reactComponent, reactComponentFromHook)
 import Record.Unsafe.Union (unsafeUnion)
+import Unsafe.Coerce (unsafeCoerce)
 
 -- | A `LumiComponent` takes a function that updates its default props instead
 -- | of the plain record of props itself. This helps reduce the surface area for
@@ -129,3 +133,13 @@ lumiElement (LumiInternalComponent { component, defaults, className }) modifyPro
     props
       { className = className <> " " <> props.className
       }
+
+-- | WARNING: This is for JS interop -- don't use this to unwrap Maybes!
+-- |
+-- | Unsafely nulls out a value so the resulting html attributes are less noisy
+-- | Ex: `R.input { type: unsafeMaybeToNullableAttr Nothing }` avoids rendering
+-- | the `type` attribute while still validating the type of the Maybe's content
+-- | matches the type of the DOM field. It's only slightly safer than using
+-- | `unsafeCreateDOMComponent` to avoid DOM type checking entirely.
+unsafeMaybeToNullableAttr :: forall a. Maybe a -> a
+unsafeMaybeToNullableAttr = unsafeCoerce <<< toNullable

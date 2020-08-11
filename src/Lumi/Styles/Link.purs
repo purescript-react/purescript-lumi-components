@@ -1,7 +1,8 @@
 module Lumi.Styles.Link where
 
 import Prelude
-import Lumi.Styles (StyleModifier, color, nested, none, str, style)
+
+import Lumi.Styles (StyleModifier, color, nested, none, pointer, style, underline)
 import Lumi.Styles.Box (box)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (css)
@@ -22,7 +23,7 @@ link =
           , "&:hover":
             nested
               $ css
-                  { cursor: str "pointer"
-                  , textDecoration: str "underline"
+                  { cursor: pointer
+                  , textDecoration: underline
                   }
           }

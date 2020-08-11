@@ -4,9 +4,12 @@ module Lumi.Components.Color
   , ColorMap
   , colors
   , colorNames
+  , shade
   ) where
 
-import Color (rgb, rgba)
+import Prelude
+
+import Color (darken, desaturate, lighten, rgb, rgba)
 import Color as C
 import Data.Newtype (class Newtype)
 
@@ -114,3 +117,23 @@ colorNames =
   , transparent: ColorName "transparent"
   }
 
+shade ::
+  { hue :: Color, white :: Color, black :: Color } ->
+  { black :: Color
+  , grey1 :: Color
+  , grey2 :: Color
+  , hue :: Color
+  , hueDarker :: Color
+  , hueDarkest :: Color
+  , hueDisabled :: Color
+  , white :: Color
+  }
+shade { hue, white, black } =
+  let
+    hueDarker = darken 0.1 hue
+    hueDarkest = darken 0.15 hue
+    hueDisabled = lighten 0.4137 $ desaturate 0.1972 hue
+    grey1 = lighten 0.7 black
+    grey2 = lighten 0.82 black
+  in
+    { hue, hueDarker, hueDarkest, hueDisabled, grey1, grey2, white, black }
