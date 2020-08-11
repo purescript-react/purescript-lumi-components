@@ -158,10 +158,21 @@ docs =
               $ button
               $ submit Loading
               $$$ [ R.text "Save" ]
+          , example
+              $ button
+              $ secondary
+              $ submit Loading
+              $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (Small) "
           , example
               $ button
+              $ resize Small
+              $ submit Loading
+              $$$ [ R.text "Save" ]
+          , example
+              $ button
+              $ secondary
               $ resize Small
               $ submit Loading
               $$$ [ R.text "Save" ]
@@ -172,10 +183,22 @@ docs =
               $ resize Large
               $ submit Loading
               $$$ [ R.text "Save" ]
+          , example
+              $ button
+              $ secondary
+              $ resize Large
+              $ submit Loading
+              $$$ [ R.text "Save" ]
           ]
         , [ h4_ "Loading (ExtraLarge) "
           , example
               $ button
+              $ resize ExtraLarge
+              $ submit Loading
+              $$$ [ R.text "Save" ]
+          , example
+              $ button
+              $ secondary
               $ resize ExtraLarge
               $ submit Loading
               $$$ [ R.text "Save" ]

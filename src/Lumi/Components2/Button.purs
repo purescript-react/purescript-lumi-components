@@ -179,8 +179,7 @@ button = primary >>>
                                 $ merge
                                     [ css { position: absolute }
                                     , mkLoader
-                                        { color: colors.white
-                                        , highlightColor: colors.transparent
+                                        { color: var "--button-hue-loader"
                                         , radius: px 16
                                         , borderWidth: px 2
                                         }
@@ -211,6 +210,7 @@ primary =
             { color: varButtonWhite
             , borderColor: varButtonHue
             , backgroundColor: varButtonHue
+            , "--button-hue-loader": varButtonWhite
             , "&:hover":
                 nested
                   $ css
@@ -244,6 +244,7 @@ secondary =
             { color: varButtonBlack
             , borderColor: varButtonGrey1
             , backgroundColor: varButtonWhite
+            , "--button-hue-loader": varButtonGrey1
             , "&:hover":
                 nested
                   $ css
@@ -261,8 +262,8 @@ secondary =
             , "&:disabled":
                 nested
                   $ css
-                      { borderColor: varButtonGrey2
-                      , color: varButtonGrey1
+                      { color: varButtonGrey1
+                      , borderColor: varButtonGrey2
                       , backgroundColor: varButtonWhite
                       }
             }
@@ -282,7 +283,7 @@ resize size =
                         , padding: px2 6 16
                         , height: px 28
                         , "&[data-loading]":
-                            loadingStyles colors { radius: px 12, borderWidth: px 2 }
+                            loadingStyles { radius: px 12, borderWidth: px 2 }
                         }
                     Medium ->
                       mempty
@@ -292,7 +293,7 @@ resize size =
                         , padding: px2 12 24
                         , height: px 48
                         , "&[data-loading]":
-                            loadingStyles colors { radius: px 24, borderWidth: px 3 }
+                            loadingStyles { radius: px 24, borderWidth: px 3 }
                         }
                     ExtraLarge ->
                       css
@@ -300,7 +301,7 @@ resize size =
                         , padding: px2 16 32
                         , height: px 64
                         , "&[data-loading]":
-                            loadingStyles colors { radius: px 34, borderWidth: px 4 }
+                            loadingStyles { radius: px 34, borderWidth: px 4 }
                         }
                     ExtraExtraLarge ->
                       css
@@ -308,19 +309,18 @@ resize size =
                         , padding: px2 16 32
                         , height: px 64
                         , "&[data-loading]":
-                            loadingStyles colors { radius: px 34, borderWidth: px 4 }
+                            loadingStyles { radius: px 34, borderWidth: px 4 }
                         }
                 ]
       }
     where
-    loadingStyles colors { radius, borderWidth } =
+    loadingStyles { radius, borderWidth } =
       nested
         $ css
             { "&:after":
                 nested
                   $ mkLoader
-                      { color: colors.white
-                      , highlightColor: colors.transparent
+                      { color: var "--button-hue-loader"
                       , radius
                       , borderWidth
                       }

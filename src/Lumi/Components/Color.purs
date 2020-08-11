@@ -134,6 +134,6 @@ shade { hue, white, black } =
     hueDarkest = darken 0.15 hue
     hueDisabled = lighten 0.4137 $ desaturate 0.1972 hue
     grey1 = lighten 0.7 black
-    grey2 = lighten 0.82 black
+    grey2 = lighten 0.78 black
   in
     { hue, hueDarker, hueDarkest, hueDisabled, grey1, grey2, white, black }
