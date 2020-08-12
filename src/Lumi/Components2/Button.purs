@@ -16,7 +16,7 @@ module Lumi.Components2.Button
   , varButtonHueDisabled, varButtonGrey1, varButtonGrey2
   , varButtonBlack, varButtonWhite
 
-  , submit, reset, onPress, onPress'
+  , submit, reset, state, onPress, onPress'
   , autoFocus, tabIndex, ariaLabel
   ) where
 
@@ -31,7 +31,6 @@ import Effect.Class (liftEffect)
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (fromHomogeneous)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier, unsafeMaybeToNullableAttr)
-import Lumi.Components.Button (invisibleSpace)
 import Lumi.Components.Color (ColorMap, shade)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components2.Box as Box
@@ -523,7 +522,7 @@ varButtonWhite = var "--button-white"
 -- | rather than providing an `onPress` action to the button
 -- | itself.
 submit :: forall c. ButtonState -> ButtonModifier c
-submit state = propsModifier _ { type = Submit, state = state }
+submit s = propsModifier _ { type = Submit, state = s }
 
 -- | A form reset button. This helper takes the button state
 -- | as an argument because a form's buttons are generally
@@ -531,7 +530,21 @@ submit state = propsModifier _ { type = Submit, state = state }
 -- | rather than providing an `onPress` action to the button
 -- | itself.
 reset :: forall c. ButtonState -> ButtonModifier c
-reset state = propsModifier _ { type = Reset, state = state }
+reset s = propsModifier _ { type = Reset, state = s }
+
+-- | Set the button state. Generally you'll want to use `submit` or
+-- | `reset` instead, but this can still be useful for `onPress`
+-- | buttons which need to be disabled while some page state is
+-- | invalid or share in a collective page loading state.
+-- |
+-- | Note: When a page is in a loading state, any buttons which
+-- |   were _not_ interacted with should be set to `Disabled`, not
+-- |   `Loading`. A row of buttons containing the same spinner
+-- |   looks strange. You also do not need to track which button
+-- |   was interacted with, usually, because the `onPress` loading
+-- |   state will override this one within the button pressed.
+state :: forall c. ButtonState -> ButtonModifier c
+state s = propsModifier _ { state = s }
 
 -- | A button with customized `onPress` behavior. The button will
 -- | automatically display a loading state while the action is in-progress.
@@ -558,3 +571,8 @@ tabIndex i = propsModifier _ { tabIndex = Just i }
 -- | label to "Close".
 ariaLabel :: forall c. String -> ButtonModifier c
 ariaLabel l = propsModifier _ { ariaLabel = Just l }
+
+----------------------------
+
+invisibleSpace :: String
+invisibleSpace = "\x2063"

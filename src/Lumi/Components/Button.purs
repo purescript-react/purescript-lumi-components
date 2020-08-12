@@ -1,4 +1,7 @@
-module Lumi.Components.Button where
+module Lumi.Components.Button
+  ( module Lumi.Components.Button
+  , module Lumi.Components2.Button
+  ) where
 
 import Prelude
 
@@ -16,12 +19,11 @@ import Lumi.Components.Color (ColorName, colorNames, colors)
 import Lumi.Components.Icon (IconType, icon)
 import Lumi.Components.Loader (spinnerMixin)
 import Lumi.Components.Size (Size(..))
+import Lumi.Components2.Button (ButtonState(..))
 import React.Basic.Classic (Component, JSX, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, unsafeCreateDOMComponent)
 import React.Basic.DOM as R
 import React.Basic.Events (EventHandler)
-
-data ButtonState = Enabled | Disabled | Loading
 
 type CommonButtonProps rest =
   { accessibilityLabel :: Nullable String
