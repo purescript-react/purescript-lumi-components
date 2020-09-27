@@ -13,7 +13,7 @@ import Data.Nullable as Nullable
 import Data.Number (isNaN)
 import Data.Number.Format (fixed, toStringWith)
 import Effect.Console (log)
-import Global (readInt)
+import Global (readFloat)
 import Lumi.Components.Column (column_)
 import Lumi.Components.DropdownButton (dropdownIcon, dropdownIconDefaults)
 import Lumi.Components.EditableTable (editableTable, editableTableDefaults)
@@ -82,9 +82,10 @@ docs = unit # make component
                 , { label: "Price"
                   , renderCell: \row -> Input.input Input.number
                       { value = show row.price
+                      , step = Nullable.notNull $ Input.Step 0.01
                       , onChange = handler targetValue \value ->
                           updateRow self $ fromMaybe row do
-                            value' <- readInt 10 <$> value
+                            value' <- readFloat <$> value
                             pure if isNaN value'
                               then row
                               else row { price = value' }
