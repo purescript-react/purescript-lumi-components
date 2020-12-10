@@ -31,8 +31,10 @@ progressBar :: ProgressProps -> JSX
 progressBar = makeProgressComponent (createComponent "ProgressBar") \{ total, completed } ->
   RS.svg
     { xmlns: "http://www.w3.org/2000/svg"
+    , viewBox: "0 0 120 6"
+    , preserveAspectRatio: "none"
     , height: "6"
-    , width: "120"
+    , width: "100%"
     , children:
         [ backgroundPath
             { fill
