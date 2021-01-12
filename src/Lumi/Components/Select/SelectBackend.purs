@@ -145,7 +145,7 @@ selectBackend = make component
                 { isOpen = true
                 , isActive = true
                 , focusedIndex = s.focusedIndex <|>
-                    if (getOptions s # maybe 0 optionsLength) > 0 then
+                    if (getOptions props s # maybe 0 optionsLength) > 0 then
                       Just 0
                     else
                       Nothing
@@ -169,13 +169,13 @@ selectBackend = make component
                 }
 
           Blur -> do
-            when state.isActive do
+            when (state.isActive) do
               self.setState _ { isActive = false }
 
           FocusIndexUp -> do
             self.setState \s -> s
               { focusedIndex = do
-                  options <- getOptions s
+                  options <- getOptions props s
                   let iMax = optionsLength options - 1
                   pure
                     case fromMaybe 0 s.focusedIndex of
@@ -186,7 +186,7 @@ selectBackend = make component
           FocusIndexDown -> do
             self.setState \s -> s
               { focusedIndex = do
-                  options <- getOptions s
+                  options <- getOptions props s
                   let iMax = optionsLength options - 1
                   pure
                     case fromMaybe (-1) s.focusedIndex of
@@ -237,7 +237,7 @@ selectBackend = make component
               send self $ LoadOptions searchTerm
 
           LoadOptions searchTerm -> do
-            when (isNothing $ getOptions { searchTerm, optionCache: state.optionCache }) do
+            when (isNothing $ getOptions props { searchTerm, optionCache: state.optionCache }) do
               let
                 tidyUp =
                     map
@@ -272,7 +272,7 @@ selectBackend = make component
           , isOpen: self.state.isOpen
           , isActive: self.state.isActive
           , keydownEventHandler
-          , options: map _.external $ fromMaybe Loading $ getOptions self.state
+          , options: map _.external $ fromMaybe Loading $ getOptions self.props self.state
           , removeAllSelectedOptions: send self RemoveAllSelectedOptions
           , removeSelectedOption: send self <<< RemoveSelectedOption
           , searchTerm: self.state.searchTerm
@@ -366,7 +366,7 @@ selectBackend = make component
                   E.preventDefault e
                   E.stopPropagation e
                   traverse_ (send self <<< AddSelectedOption) do
-                    options <- getOptions state
+                    options <- getOptions props state
                     focusedIndex <- state.focusedIndex
                     option <- getOption focusedIndex options
                     pure option.external
@@ -392,13 +392,24 @@ optionsLength = case _ of
   _        -> 0
 
 getOptions ::
-  forall a r.
+  forall a p r.
+  { value :: Array a
+  , toSelectOption :: a -> SelectOption
+  | p
+  } ->
   { searchTerm :: String
-  , optionCache :: Map.Map String (SelectOptions a)
+  , optionCache :: Map.Map String (SelectOptions (SelectOptionInternal a))
   | r
   } ->
-  Maybe (SelectOptions a)
-getOptions { searchTerm, optionCache } = Map.lookup searchTerm optionCache
+  Maybe (SelectOptions (SelectOptionInternal a))
+getOptions { toSelectOption, value } { searchTerm, optionCache } =
+  Map.lookup searchTerm optionCache <#> case _ of
+    Ready os -> Ready $ isNotSelected os
+    so -> so
+  where
+  selected = map (_.value <<< toSelectOption) value
+
+  isNotSelected = Array.filter \v -> Array.notElem v.value selected
 
 getOption :: forall a. Int -> SelectOptions a -> Maybe a
 getOption i = case _ of
