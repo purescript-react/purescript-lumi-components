@@ -430,7 +430,7 @@ styles = jss
 
           , "&:hover lumi-select-input": lumiInputHoverStyles
 
-          , "&:focus lumi-select-input, & lumi-select-inner[data-focus=\"true\"] lumi-select-input":
+          , "&:focus-within lumi-select-input, & lumi-select-inner[data-focus=\"true\"] lumi-select-input":
               { extend: lumiInputFocusStyles
               , "& lumi-select-input-placeholder":
                   { display: "none"
@@ -541,7 +541,7 @@ styles = jss
                   }
 
                 -- hide the blank input line when not in focus
-              , "& input.select-native-input[value=\"\"]:not(:focus)":
+              , "& lumi-select-inner:not([data-focus=\"true\"]) input.select-native-input[value=\"\"]":
                   { width: 0
                   , minWidth: 0
                   , padding: 0
