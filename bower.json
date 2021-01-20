@@ -45,7 +45,8 @@
     "purescript-heterogeneous": ">=0.3.0 <0.5.0",
     "purescript-free": "^5.1.0",
     "purescript-colors": "^5.0.0",
-    "purescript-web-uievents": "^2.0.0"
+    "purescript-web-uievents": "^2.0.0",
+    "purescript-foreign-generic": "^10.0.0"
   },
   "devDependencies": {
     "purescript-debug": "^4.0.0",

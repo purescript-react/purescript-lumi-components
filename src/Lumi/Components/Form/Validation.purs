@@ -10,7 +10,7 @@ module Lumi.Components.Form.Validation
   , _Validated, _Fresh, _Modified
   , setFresh, setModified
   , ModifyValidated(..)
-  , ValidatedNewtype(..), _ValidatedNewtype
+  , ModifyValidatedProxy(..), class CustomModifyValidated, customModifyValidated
   , class CanValidate, fresh, modified, fromValidated
   , validated
   , warn
@@ -26,8 +26,10 @@ import Data.Either (Either(..), either, hush, note)
 import Data.Enum (toEnum)
 import Data.Eq (class Eq1)
 import Data.Foldable (foldMap)
+import Data.Function (on)
+import Data.Generic.Rep (class Generic, from, to)
 import Data.Int as Int
-import Data.Lens (Lens, Prism', Iso', lens, over, prism', review, view)
+import Data.Lens (Lens, Prism', lens, over, prism', review, view)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
@@ -40,6 +42,7 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
 import Data.String.Pattern (Pattern(..))
 import Data.Traversable (traverse)
+import Foreign.Generic (class Decode, class Encode, decode, encode)
 import Heterogeneous.Mapping (class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column)
 import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
@@ -160,6 +163,18 @@ instance applyValidated :: Apply Validated where
 instance applicativeValidated :: Applicative Validated where
   pure = Fresh
 
+instance genericValidated :: Generic value rep => Generic (Validated value) rep where
+  to = Fresh <<< to
+  from (Fresh value) = from value
+  from (Modified value) = from value
+
+instance decodeValidated :: Decode value => Decode (Validated value) where
+  decode value = Fresh <$> decode value
+
+instance encodeValidated :: Encode value => Encode (Validated value) where
+  encode (Fresh value) = encode value
+  encode (Modified value) = encode value
+
 -- | Lens for viewing and modifying `Validated` values.
 _Validated :: forall a b. Lens (Validated a) (Validated b) a b
 _Validated = flip lens ($>) $
@@ -203,12 +218,31 @@ setModified = mapping (ModifyValidated (Modified <<< view _Validated))
 -- | records containing `Validated` values.
 newtype ModifyValidated = ModifyValidated (Validated ~> Validated)
 
-newtype ValidatedNewtype a = ValidatedNewtype a
+newtype ModifyValidatedProxy a = ModifyValidatedProxy a
 
-derive instance ntMVP :: Newtype (ValidatedNewtype a) _
+unModifyValidatedProxy :: forall value. ModifyValidatedProxy value -> value
+unModifyValidatedProxy (ModifyValidatedProxy value) = value
 
-_ValidatedNewtype :: forall s a. Newtype s a => Iso' (ValidatedNewtype s) a
-_ValidatedNewtype = _Newtype <<< _Newtype
+derive instance ntMVP :: Newtype (ModifyValidatedProxy a) _
+
+instance eqValidatedNewtype :: Eq value => Eq (ModifyValidatedProxy value) where
+  eq = eq `on` unModifyValidatedProxy
+
+instance ordValidatedNewtype :: Ord value => Ord (ModifyValidatedProxy value) where
+  compare = compare `on` unModifyValidatedProxy
+
+instance genericValidatedNewtype :: Generic value rep => Generic (ModifyValidatedProxy value) rep where
+  to = ModifyValidatedProxy <<< to
+  from = from <<< unModifyValidatedProxy
+
+instance decodeValidatedNewtype :: Decode value => Decode (ModifyValidatedProxy value) where
+  decode value = ModifyValidatedProxy <$> decode value
+
+instance encodeValidatedNewtype :: Encode value => Encode (ModifyValidatedProxy value) where
+  encode (ModifyValidatedProxy value) = encode value
+
+class CustomModifyValidated a where
+  customModifyValidated :: ModifyValidated -> a -> a
 
 instance modifyValidated :: Mapping ModifyValidated a a => Mapping ModifyValidated (Validated a) (Validated a) where
   mapping m@(ModifyValidated f) = over _Validated (mapping m) <<< f
@@ -219,8 +253,10 @@ else instance modifyValidatedRecord ::
   mapping d = hmap d
 else instance modifyValidatedArray :: Mapping ModifyValidated a a => Mapping ModifyValidated (Array a) (Array a) where
   mapping d = map (mapping d)
-else instance modifyValidatedNewtype :: (Newtype a b, Mapping ModifyValidated b b) => Mapping ModifyValidated (ValidatedNewtype a) (ValidatedNewtype a) where
-  mapping d = over (_Newtype <<< _Newtype) (mapping d)
+else instance modifyValidatedMaybe :: Mapping ModifyValidated a a => Mapping ModifyValidated (Maybe a) (Maybe a) where
+  mapping d = map (mapping d)
+else instance modifyValidatedProxy :: (CustomModifyValidated a, Mapping ModifyValidated a a) => Mapping ModifyValidated (ModifyValidatedProxy a) (ModifyValidatedProxy a) where
+  mapping f = over _Newtype (customModifyValidated f)
 else instance modifyValidatedIdentity :: Mapping ModifyValidated a a where
   mapping _ = identity
 
