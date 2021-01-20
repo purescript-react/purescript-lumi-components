@@ -10,6 +10,7 @@ module Lumi.Components.Form.Validation
   , _Validated, _Fresh, _Modified
   , setFresh, setModified
   , ModifyValidated(..)
+  , ValidatedNewtype(..), _ValidatedNewtype
   , class CanValidate, fresh, modified, fromValidated
   , validated
   , warn
@@ -26,10 +27,11 @@ import Data.Enum (toEnum)
 import Data.Eq (class Eq1)
 import Data.Foldable (foldMap)
 import Data.Int as Int
-import Data.Lens (Lens, Prism', lens, over, prism', review, view)
+import Data.Lens (Lens, Prism', Iso', lens, over, prism', review, view)
+import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
-import Data.Newtype (un)
+import Data.Newtype (class Newtype, un)
 import Data.Nullable (notNull)
 import Data.Number as Number
 import Data.Ord (class Ord1)
@@ -201,6 +203,13 @@ setModified = mapping (ModifyValidated (Modified <<< view _Validated))
 -- | records containing `Validated` values.
 newtype ModifyValidated = ModifyValidated (Validated ~> Validated)
 
+newtype ValidatedNewtype a = ValidatedNewtype a
+
+derive instance ntMVP :: Newtype (ValidatedNewtype a) _
+
+_ValidatedNewtype :: forall s a. Newtype s a => Iso' (ValidatedNewtype s) a
+_ValidatedNewtype = _Newtype <<< _Newtype
+
 instance modifyValidated :: Mapping ModifyValidated a a => Mapping ModifyValidated (Validated a) (Validated a) where
   mapping m@(ModifyValidated f) = over _Validated (mapping m) <<< f
 else instance modifyValidatedRecord ::
@@ -210,6 +219,8 @@ else instance modifyValidatedRecord ::
   mapping d = hmap d
 else instance modifyValidatedArray :: Mapping ModifyValidated a a => Mapping ModifyValidated (Array a) (Array a) where
   mapping d = map (mapping d)
+else instance modifyValidatedNewtype :: (Newtype a b, Mapping ModifyValidated b b) => Mapping ModifyValidated (ValidatedNewtype a) (ValidatedNewtype a) where
+  mapping d = over (_Newtype <<< _Newtype) (mapping d)
 else instance modifyValidatedIdentity :: Mapping ModifyValidated a a where
   mapping _ = identity
 

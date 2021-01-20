@@ -10,6 +10,7 @@ import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Foldable (foldMap)
 import Data.Int as Int
 import Data.Lens (iso)
+import Data.Lens.Iso (mapping)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(..), isNothing, maybe)
 import Data.Monoid as Monoid
@@ -30,6 +31,7 @@ import Lumi.Components.Form (FormBuilder, Validated)
 import Lumi.Components.Form as F
 import Lumi.Components.Form.Defaults (formDefaults)
 import Lumi.Components.Form.Table as FT
+import Lumi.Components.Form.Validation (ValidatedNewtype, _ValidatedNewtype)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..))
 import Lumi.Components.Modal (dialog)
@@ -199,7 +201,9 @@ type User =
   , descriptiveCheckbox :: Boolean
   , height :: Validated String
   , addresses :: Validated (Array Address)
-  , pets :: Validated (Array Pet)
+  , pets :: Validated (Array (ValidatedNewtype Pet))
+  -- ^ validation helpers like `setModified` need a little assistance getting
+  --     into Newtypes like `Pet`, hence this `ValidatedNewtype` wrapper
   , leastFavoriteColors :: Validated (Array String)
   , notes :: String
   , avatar :: Maybe Upload.FileId
@@ -220,13 +224,15 @@ type ValidatedUser =
   , avatar :: Maybe Upload.FileId
   }
 
-type Pet =
+newtype Pet = Pet
   { firstName :: Validated String
   , lastName :: Validated String
   , animal :: Validated (Maybe String)
   , age :: Validated String
   , color :: Validated (Maybe String)
   }
+
+derive instance ntPet :: Newtype Pet _
 
 type ValidatedPet =
   { name :: NonEmptyString
@@ -337,7 +343,7 @@ userForm = ado
 
   F.section "Pets"
   pets <-
-    F.focus (prop (SProxy :: SProxy "pets"))
+    F.focus (prop (SProxy :: SProxy "pets") <<< mapping (mapping _ValidatedNewtype))
     $ F.warn (\pets ->
         Monoid.guard (Array.null pets) (pure "You should adopt a pet.")
       )
