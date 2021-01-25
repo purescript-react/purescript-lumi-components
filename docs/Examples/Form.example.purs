@@ -11,6 +11,7 @@ import Data.Foldable (foldMap)
 import Data.Int as Int
 import Data.Lens (iso)
 import Data.Lens.Iso (mapping)
+import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(..), isNothing, maybe)
 import Data.Monoid as Monoid
@@ -23,15 +24,15 @@ import Effect.Aff (Milliseconds(..), delay, error, throwError)
 import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
 import Effect.Unsafe (unsafePerformEffect)
+import Heterogeneous.Mapping as H
 import Lumi.Components.Button as Button
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column, column_)
 import Lumi.Components.Example (example)
-import Lumi.Components.Form (FormBuilder, Validated)
+import Lumi.Components.Form (class CustomModifyValidated, FormBuilder, ModifyValidatedProxy, Validated)
 import Lumi.Components.Form as F
 import Lumi.Components.Form.Defaults (formDefaults)
 import Lumi.Components.Form.Table as FT
-import Lumi.Components.Form.Validation (ValidatedNewtype, _ValidatedNewtype)
 import Lumi.Components.Input as Input
 import Lumi.Components.LabeledField (RequiredField(..))
 import Lumi.Components.Modal (dialog)
@@ -201,7 +202,7 @@ type User =
   , descriptiveCheckbox :: Boolean
   , height :: Validated String
   , addresses :: Validated (Array Address)
-  , pets :: Validated (Array (ValidatedNewtype Pet))
+  , pets :: Validated (Array (ModifyValidatedProxy Pet))
   -- ^ validation helpers like `setModified` need a little assistance getting
   --     into Newtypes like `Pet`, hence this `ValidatedNewtype` wrapper
   , leastFavoriteColors :: Validated (Array String)
@@ -233,6 +234,9 @@ newtype Pet = Pet
   }
 
 derive instance ntPet :: Newtype Pet _
+
+instance cmvPet :: CustomModifyValidated Pet where
+  customModifyValidated f (Pet a) = Pet (H.mapping f a)
 
 type ValidatedPet =
   { name :: NonEmptyString
@@ -343,7 +347,7 @@ userForm = ado
 
   F.section "Pets"
   pets <-
-    F.focus (prop (SProxy :: SProxy "pets") <<< mapping (mapping _ValidatedNewtype))
+    F.focus (prop (SProxy :: SProxy "pets") <<< mapping (mapping (_Newtype <<< _Newtype)))
     $ F.warn (\pets ->
         Monoid.guard (Array.null pets) (pure "You should adopt a pet.")
       )
