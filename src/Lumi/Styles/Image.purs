@@ -3,14 +3,13 @@ module Lumi.Styles.Image where
 import Prelude
 
 import Lumi.Components.Spacing (Space(..))
-import Lumi.Styles (StyleModifier, px2, solid, style, style_)
+import Lumi.Styles (StyleModifier, style, style_)
 import Lumi.Styles.Box (box)
-import Lumi.Styles.Box as Box
 import Lumi.Styles.Theme (LumiTheme(..))
-import React.Basic.Emotion (color, css, px, nested, none, percent, prop, str)
+import React.Basic.Emotion (color, css, percent, prop, str)
 
-image :: StyleModifier
-image =
+imageThumb :: StyleModifier
+imageThumb =
   box
     <<< _medium
     <<< style \(LumiTheme theme) ->

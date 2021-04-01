@@ -2,55 +2,53 @@ module Lumi.Components2.Examples.Image where
 
 import Prelude
 
-import Effect.Console (log)
-import Effect.Uncurried (mkEffectFn1)
-import Lumi.Components (($$$))
-import Lumi.Components.Column (column_)
+import Data.Array as Array
 import Lumi.Components.Example (example)
-import Lumi.Components.NativeSelect (nativeSelect, defaults)
-import Lumi.Components.Spacing (Space(..))
-import Lumi.Components.Text (h2_)
+import Lumi.Components.Spacing (Space(..), vspace)
+import Lumi.Components.Text (h4_)
 import Lumi.Components2.Image as Image
 import Lumi.Styles.Image as Image.Styles
 import React.Basic.Classic (JSX)
-import React.Basic.DOM as R
 
 docs :: JSX
 docs =
   let imgSrc = "https://s3.amazonaws.com/lumi-flapjack-staging/mockups/9e7f08b801e6bb3a428ef72e93c49fe5.jpg"
-  in column_
-    [ Image.image
-        $ _ { src = " " }
-
-    , Image.small
+      flexo = "https://s3.amazonaws.com/lumi-blog/avatars/_x600/flexo.jpg"
+  in Array.intercalate (vspace S16)
+    [ example $ Image.imageThumb
+        $ Image.Styles._extraLarge
+        $ _ { src = ""
+            }
+    , h4_ "Small"
+    , example $ Image.small
         $ _ { src = imgSrc }
-    , Image.medium
+    , h4_ "Medium"
+    , example $ Image.medium
         $ _ { src = imgSrc }
-    , Image.large
+    , h4_ "Large"
+    , example $ Image.large
         $ _ { src = imgSrc }
-    , Image.extraLarge
-        $ _ { src = imgSrc }
-
-    -- @TODO need default size
-    -- , Image.round
-    --     $ _ { src = imgSrc }
-    , Image.small
-        $ Image.Styles._round
-        $ _ { src = imgSrc }
-    , Image.medium
-        $ Image.Styles._round
-        $ _ { src = imgSrc }
-    , Image.large
-        $ Image.Styles._round
-        $ _ { src = imgSrc }
-    , Image.extraLarge
-        $ Image.Styles._round
+    , h4_ "ExtraLarge"
+    , example $ Image.extraLarge
         $ _ { src = imgSrc }
 
-    , Image.image
-        $ Image._customSize S112
-        $ _ { src = imgSrc }
-    , Image.round
-        $ Image._customSize S112
-        $ _ { src = imgSrc }
+    , h4_ "Round"
+    , example $ Image.round
+        $ _ { src = flexo }
+    , h4_ "Round + small"
+    , example $ Image.small
+        $ Image.Styles._round
+        $ _ { src = flexo }
+    , h4_ "Round + medium"
+    , example $ Image.medium
+        $ Image.Styles._round
+        $ _ { src = flexo }
+    , h4_ "Round + large"
+    , example $ Image.large
+        $ Image.Styles._round
+        $ _ { src = flexo }
+    , h4_ "Round + extra large"
+    , example $ Image.extraLarge
+        $ Image.Styles._round
+        $ _ { src = flexo }
     ]

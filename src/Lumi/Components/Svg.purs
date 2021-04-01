@@ -1,7 +1,10 @@
 module Lumi.Components.Svg where
 
+import Prelude
+
 import React.Basic.Classic (JSX)
 import React.Basic.DOM.SVG as RS
+import Web.HTML.HTMLInputElement (placeholder)
 
 clientSvg :: JSX
 clientSvg =
