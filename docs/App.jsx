@@ -125,6 +125,7 @@ const componentv2Loaders = [
   "Button",
   "ButtonGroup",
   "Clip",
+  "Image",
   "Link",
   "QRCode",
   "Slat",
