@@ -14,7 +14,16 @@ docs :: JSX
 docs =
   let flexo = "https://s3.amazonaws.com/lumi-blog/avatars/_x600/flexo.jpg"
   in Array.intercalate (vspace S16)
-    [ h4_ "Thumbnail (always have a square aspect ratio)"
+    [ h4_ "Image default (will respect image's aspect ratio)"
+    , example
+        $ Image.image
+        $$$ "http://via.placeholder.com/640x360"
+    , h4_ "Image + resize { width: 90px, height: 50px }, constrained to image's aspect ratio"
+    , example
+        $ Image.image
+        $ Image.resize { width: 90, height: 50 }
+        $$$ "http://via.placeholder.com/640x360"
+    , h4_ "Thumbnail default (will always have a square aspect ratio)"
     , example
         $ Image.thumbnail
         $$$ "http://via.placeholder.com/640x360"
@@ -47,14 +56,6 @@ docs =
     , example
         $ Image.thumbnail
         $ Image.round
+        $ Image.extraLarge
         $$$ flexo
-    , h4_ "Image (no size restrictions)"
-    , example
-        $ Image.image
-        $$$ "http://via.placeholder.com/640x360"
-    , h4_ "Image + resize { width: 90px, height: 50px } "
-    , example
-        $ Image.image
-        $ Image.resize { width: 90, height: 50 }
-        $$$ "http://via.placeholder.com/640x360"
     ]

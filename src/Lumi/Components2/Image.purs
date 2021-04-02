@@ -16,10 +16,13 @@ import Prelude
 
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Monoid as Monoid
+import Data.Nullable as Nullable
 import Data.String as String
 import Data.Tuple.Nested ((/\))
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, ($$$))
+import Lumi.Components.Border (border)
+import Lumi.Components.Loader (loader)
 import Lumi.Components.Svg (placeholderSvg)
 import Lumi.Components2.Box as Box
 import Lumi.Styles (Style, StyleModifier, style, style_, toCSS)
@@ -42,7 +45,7 @@ type ImageProps
     )
 
 -- | An image has no size restrictions
--- | will flex fill it's container
+-- | will respect the image's original aspect ratio
 image :: LumiComponent ImageProps
 image =
   unsafePerformEffect do
@@ -60,9 +63,9 @@ image =
                       $ Styles.Box._align Center
                       $ Styles.Box._justify Center
                       $$$
-                        [ Monoid.guard (not loaded) $ placeholderSvg
+                        [ Monoid.guard (not loaded)
                             -- @TODO confirming with design
-                            -- $ loader { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }, testId: Nullable.toNullable Nothing }
+                            $ loader { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }, testId: Nullable.toNullable Nothing }
                         , E.element R.img'
                             { src: props.content
                             , className: ""
@@ -100,6 +103,7 @@ type ThumbnailProps
     )
 
 -- | A thumbnail can support size restrictions
+-- | will always have a square aspect ratio
 thumbnail :: LumiComponent ThumbnailProps
 thumbnail =
   unsafePerformEffect do
@@ -132,19 +136,8 @@ resize props =
       }
 
 -- | restricted to only Thumbnail
-defaultSize :: StyleModifier
-defaultSize =
-  style_ $ E.css
-      { width: E.px 30
-      , height: E.px 30
-      }
-
 round :: ImageModifier Thumbnail
-round =
-  style_
-    $ E.css
-      { borderRadius: E.percent 50.0
-      }
+round = style_ mkRound
 
 resizeSquare :: Int -> ImageModifier Thumbnail
 resizeSquare size =
@@ -158,19 +151,26 @@ small :: ImageModifier Thumbnail
 small =
   style_
     $ E.css
-      { width: E.px 24
-      , height: E.px 24
+      { width: E.px 40
+      , height: E.px 40
       }
 
 medium :: ImageModifier Thumbnail
 medium = defaultSize
 
+defaultSize :: StyleModifier
+defaultSize =
+  style_ $ E.css
+      { width: E.px 56
+      , height: E.px 56
+      }
+
 large :: ImageModifier Thumbnail
 large =
   style_
     $ E.css
-      { width: E.px 36
-      , height: E.px 36
+      { width: E.px 72
+      , height: E.px 72
       }
 
 extraLarge :: ImageModifier Thumbnail
@@ -181,4 +181,41 @@ extraLarge =
       , height: E.px 140
       }
 
+-- | we support two sizing scales for thumbnails
+-- | avatars use a smaller scale, whereas all other images use the above size scale
+smallAvatar :: ImageModifier Thumbnail
+smallAvatar =
+  style_
+    $ E.merge
+      [ E.css
+          { width: E.px 24
+          , height: E.px 24
+          }
+      , mkRound
+      ]
+
+mediumAvatar :: ImageModifier Thumbnail
+mediumAvatar =
+  style_
+    $ E.merge
+      [ E.css
+          { width: E.px 30
+          , height: E.px 30
+          }
+      , mkRound
+      ]
+
+largeAvatar :: ImageModifier Thumbnail
+largeAvatar =
+  style_
+    $ E.merge
+      [ E.css
+          { width: E.px 36
+          , height: E.px 36
+          }
+      , mkRound
+      ]
+
+mkRound :: Style
+mkRound = E.css { borderRadius: E.percent 50.0 }
 
