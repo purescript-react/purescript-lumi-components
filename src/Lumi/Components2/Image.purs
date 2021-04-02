@@ -21,7 +21,6 @@ import Data.String as String
 import Data.Tuple.Nested ((/\))
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, ($$$))
-import Lumi.Components.Border (border)
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Svg (placeholderSvg)
 import Lumi.Components2.Box as Box
@@ -64,13 +63,13 @@ image =
                       $ Styles.Box._justify Center
                       $$$
                         [ Monoid.guard (not loaded)
-                            -- @TODO confirming with design
                             $ loader { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }, testId: Nullable.toNullable Nothing }
                         , E.element R.img'
                             { src: props.content
                             , className: ""
                             , css: E.css { maxWidth: E.percent 100.0 }
                             , onLoad: handler_ $ setLoaded true
+                            , onError: handler_ $ setLoaded true
                             }
                         ]
                 ]

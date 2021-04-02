@@ -30,7 +30,7 @@
     "purescript-profunctor-lenses": ">=4.0.0 <7.0.0",
     "purescript-random": "^4.0.0",
     "purescript-react-basic": "^15.0.0",
-    "purescript-react-basic-dom": "lumihq/purescript-react-basic-dom#^2.0.0",
+    "purescript-react-basic-dom": "lumihq/purescript-react-basic-dom#^3.3.0",
     "purescript-react-basic-classic": "lumihq/purescript-react-basic-classic#^1.0.1",
     "purescript-react-basic-emotion": "^5.0.0",
     "purescript-react-basic-hooks": "^6.0.0",
