@@ -14,11 +14,14 @@ module Lumi.Components2.Image
 
 import Prelude
 
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Foldable (minimum)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Monoid as Monoid
 import Data.Nullable as Nullable
 import Data.String as String
+import Data.Traversable (traverse)
 import Data.Tuple.Nested ((/\))
+import Effect.Timer (clearTimeout, setTimeout)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, ($$$))
 import Lumi.Components.Loader (loader)
@@ -34,6 +37,7 @@ import React.Basic.Emotion as E
 import React.Basic.Events (handler_)
 import React.Basic.Hooks (JSX)
 import React.Basic.Hooks as Hooks
+import Web.HTML.HTMLElement as HTMLElement
 
 data Image = Image
 
@@ -51,9 +55,32 @@ image =
     lumiComponent "Image" defaults \props -> Hooks.do
       theme <- useTheme
       loaded /\ setLoaded <- Hooks.useState' false
+
+      containerRef <- Hooks.useRef Nullable.null
+      dimensions /\ setDimensions <- Hooks.useState { width: 20.0, height: 20.0 }
+      Hooks.useLayoutEffect unit do
+        container <- Hooks.readRefMaybe containerRef
+        case container of
+          Nothing -> mempty
+          Just container' -> do
+            rect <- traverse HTMLElement.getBoundingClientRect (HTMLElement.fromNode container')
+            let
+              newDimentions =
+                { height: maybe 0.0 (\r -> r.height + 2.0) rect
+                , width: maybe 0.0 (\r -> r.width + 2.0) rect
+                }
+            if newDimentions /= dimensions then do
+              timeout <-
+                setTimeout 10 do
+                  setDimensions \_ -> newDimentions
+              pure (clearTimeout timeout)
+            else
+              mempty
+
       pure
         $ E.element R.div'
-            { children:
+            { ref: containerRef
+            , children:
                 [ if String.null props.content
                     then fromMaybe placeholderSvg props.placeholder
                     else
@@ -63,7 +90,15 @@ image =
                       $ Styles.Box._justify Center
                       $$$
                         [ Monoid.guard (not loaded)
-                            $ loader { style: R.css { width: "20px", height: "20px", borderWidth: "2px" }, testId: Nullable.toNullable Nothing }
+                            $ let d = fromMaybe 20.0 ([ dimensions.height, dimensions.width ] # minimum)
+                              in loader
+                                { style: R.css
+                                    { width: d * 0.25
+                                    , height: d * 0.25
+                                    , borderWidth: "2px"
+                                    }
+                                , testId: Nullable.toNullable Nothing
+                                }
                         , E.element R.img'
                             { src: props.content
                             , className: ""
@@ -85,13 +120,16 @@ image =
 
       defaultImageStyle :: LumiTheme -> Style
       defaultImageStyle theme@(LumiTheme { colors }) =
-          E.css
-            { boxSizing: E.borderBox
-            , overflow: E.hidden
-            , display: E.flex
-            , border: E.str "1px solid"
-            , borderColor: E.color colors.black4
-            }
+        E.css
+          { boxSizing: E.borderBox
+          , overflow: E.hidden
+          , display: E.flex
+          , flexFlow: E.column
+          , alignItems: E.center
+          , border: E.str "1px solid"
+          , borderColor: E.color colors.black4
+          }
+
 
 data Thumbnail = Thumbnail
 

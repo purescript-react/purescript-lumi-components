@@ -18,10 +18,10 @@ docs =
     , example
         $ Image.image
         $$$ "http://via.placeholder.com/640x360"
-    , h4_ "Image + resize { width: 90px, height: 50px }, constrained to image's aspect ratio"
+    , h4_ "Image + resize { width: 120px, height: 40px }, respects image's aspect ratio & clips overflow"
     , example
         $ Image.image
-        $ Image.resize { width: 90, height: 50 }
+        $ Image.resize { width: 120, height: 40 }
         $$$ "http://via.placeholder.com/640x360"
     , h4_ "Thumbnail default (will always have a square aspect ratio)"
     , example
@@ -58,4 +58,13 @@ docs =
         $ Image.round
         $ Image.extraLarge
         $$$ flexo
+    , h4_ "Placeholders (can be overriden)"
+    , example
+        $ Image.image
+        $ Image.resize { width: 900, height: 50 }
+        $$$ ""
+    , example
+        $ Image.thumbnail
+        $ Image.medium
+        $$$ ""
     ]
