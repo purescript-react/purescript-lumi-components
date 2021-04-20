@@ -18,20 +18,20 @@ docs =
     , example
         $ Image.image
         $$$ "http://via.placeholder.com/640x360"
-    , h4_ "Image + resize { width: 120px, height: 40px }, respects image's aspect ratio & clips overflow"
+    , h4_ "Image + resize { width: 120px, height: 40px }, scales image to respect it's aspect ratio"
     , example
         $ Image.image
         $ Image.resize { width: 120, height: 40 }
-        $$$ "http://via.placeholder.com/640x360"
+        $$$ "http://via.placeholder.com/360x640"
     , h4_ "Thumbnail default (will always have a square aspect ratio)"
     , example
         $ Image.thumbnail
-        $$$ "http://via.placeholder.com/640x360"
-    , h4_ "Thumbnail + resize 48px"
+        $$$ "http://via.placeholder.com/360x640"
+    , h4_ "Thumbnail + resize 400px"
     , example
         $ Image.thumbnail
-        $ Image.resizeSquare 80
-        $$$ flexo
+        $ Image.resizeSquare 400
+        $$$ "" --  flexo
     , h4_ "Thumbnail + small"
     , example
         $ Image.thumbnail

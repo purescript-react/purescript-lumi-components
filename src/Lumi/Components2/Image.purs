@@ -102,7 +102,12 @@ image =
                         , E.element R.img'
                             { src: props.content
                             , className: ""
-                            , css: E.css { maxWidth: E.percent 100.0 }
+                            , css: E.css
+                                { maxWidth: E.percent 100.0
+                                , maxHeight: E.percent 100.0
+                                , objectFit: E.str "contain"
+                                , display: E.str $ if loaded then "block" else "none"
+                                }
                             , onLoad: handler_ $ setLoaded true
                             , onError: handler_ $ setLoaded true
                             }
