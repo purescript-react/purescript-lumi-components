@@ -31,7 +31,7 @@ docs =
     , example
         $ Image.thumbnail
         $ Image.resizeSquare 400
-        $$$ "" --  flexo
+        $$$ flexo
     , h4_ "Thumbnail + small"
     , example
         $ Image.thumbnail
