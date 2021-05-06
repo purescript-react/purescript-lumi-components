@@ -107,9 +107,9 @@ styles = jss
               }
 
           , extend: lumiInputStyles
-          , padding: "8px 20px 8px 7px"
+          , padding: "8px 24px 8px 7px"
           , "@media (min-width: 860px)":
-              { padding: "4px 20px 4px 7px"
+              { padding: "4px 24px 4px 7px"
               }
           , "&:hover": lumiInputHoverStyles
           , "&:invalid": lumiInputInvalidStyles
