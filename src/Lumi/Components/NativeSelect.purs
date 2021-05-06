@@ -108,6 +108,7 @@ styles = jss
 
           , extend: lumiInputStyles
           , padding: "8px 20px 8px 7px"
+          , paddingRight: "calc(10px + 10px + 14px) !important"
           , "@media (min-width: 860px)":
               { padding: "4px 20px 4px 7px"
               }
