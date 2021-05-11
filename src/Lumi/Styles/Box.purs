@@ -16,7 +16,7 @@ box =
         , flexDirection: column
         , boxSizing: borderBox
         , minHeight: px 0
-        , minWidth: minContent
+        , minWidth: str "auto"
         , flex: str "0 0 auto"
         , margin: px 0
         , padding: px 0
