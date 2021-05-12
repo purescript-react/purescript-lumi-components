@@ -23,6 +23,7 @@ module Lumi.Components2.Button
 import Prelude
 
 import Color (Color)
+import Control.Comonad.Store (pos)
 import Data.Array (fold)
 import Data.Array as Array
 import Data.Maybe (Maybe(..))
@@ -34,7 +35,7 @@ import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifi
 import Lumi.Components.Color (ColorMap, shade)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components2.Box as Box
-import Lumi.Styles (StyleModifier, StyleProperty, absolute, color, css, default, ellipsis, hidden, inherit, inlineFlex, merge, nested, none, nowrap, pointer, px, px2, solid, str, style, style_, toCSS, underline, var)
+import Lumi.Styles (StyleModifier, StyleProperty, absolute, color, css, default, ellipsis, hidden, inherit, inlineFlex, merge, nested, none, nowrap, pointer, px, px2, relative, solid, str, style, style_, toCSS, underline, var)
 import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
 import Lumi.Styles.Loader (mkLoader)
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
@@ -183,7 +184,12 @@ button = primary >>>
                                         , borderWidth: px 2
                                         }
                                     ]
-                          , "> .button-content": nested $ css { visibility: hidden }
+                          , "> .button-content":
+                              nested
+                                $ css
+                                  { visibility: hidden
+                                  , position: relative
+                                  }
                           }
                 }
 
