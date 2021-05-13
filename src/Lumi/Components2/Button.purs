@@ -162,6 +162,7 @@ button = primary >>>
                 , fontSize: px fontSizes.body
                 , padding: px2 10 20
                 , height: px 40
+                , position: relative
                 , "@media (min-width: 860px)":
                     nested
                       $ css
@@ -187,7 +188,6 @@ button = primary >>>
                               nested
                                 $ css
                                   { visibility: hidden
-                                  , position: relative
                                   }
                           }
                 }
