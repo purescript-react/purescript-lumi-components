@@ -23,7 +23,6 @@ module Lumi.Components2.Button
 import Prelude
 
 import Color (Color)
-import Control.Comonad.Store (pos)
 import Data.Array (fold)
 import Data.Array as Array
 import Data.Maybe (Maybe(..))
