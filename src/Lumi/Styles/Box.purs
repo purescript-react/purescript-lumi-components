@@ -3,7 +3,7 @@ module Lumi.Styles.Box where
 import Prelude
 
 import Color (cssStringHSLA)
-import Lumi.Styles (StyleModifier, baseline, borderBox, center, column, flex, flexEnd, flexStart, manipulation, minContent, none, pointer, px, row, spaceAround, spaceBetween, spaceEvenly, stretch, style, style_, wrap)
+import Lumi.Styles (StyleModifier, auto, baseline, borderBox, center, column, flex, flexEnd, flexStart, manipulation, minContent, none, pointer, px, row, spaceAround, spaceBetween, spaceEvenly, stretch, style, style_, wrap)
 import Lumi.Styles.Theme (LumiTheme(..))
 import React.Basic.Emotion (class IsStyleProperty, css, nested, prop, str)
 
@@ -16,7 +16,7 @@ box =
         , flexDirection: column
         , boxSizing: borderBox
         , minHeight: px 0
-        , minWidth: minContent
+        , minWidth: auto
         , flex: str "0 0 auto"
         , margin: px 0
         , padding: px 0

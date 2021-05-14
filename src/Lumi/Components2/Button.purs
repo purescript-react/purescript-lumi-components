@@ -34,7 +34,7 @@ import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifi
 import Lumi.Components.Color (ColorMap, shade)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components2.Box as Box
-import Lumi.Styles (StyleModifier, StyleProperty, absolute, color, css, default, ellipsis, hidden, inherit, inlineFlex, merge, nested, none, nowrap, pointer, px, px2, solid, str, style, style_, toCSS, underline, var)
+import Lumi.Styles (StyleModifier, StyleProperty, block, color, css, default, ellipsis, hidden, inherit, inlineFlex, merge, nested, none, nowrap, pointer, px, px2, solid, str, style, style_, toCSS, underline, var)
 import Lumi.Styles.Box (FlexAlign(..), _align, _focusable, _interactive, _justify, _row, box)
 import Lumi.Styles.Loader (mkLoader)
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
@@ -173,17 +173,21 @@ button = primary >>>
                 , "&[data-loading]":
                     nested
                       $ css
-                          { "&:after":
+                          { display: block
+                          , "&:after":
                               nested
                                 $ merge
-                                    [ css { position: absolute }
-                                    , mkLoader
+                                    [ mkLoader
                                         { color: var "--button-hue-loader"
                                         , radius: px 16
                                         , borderWidth: px 2
                                         }
                                     ]
-                          , "> .button-content": nested $ css { visibility: hidden }
+                          , "> .button-content":
+                              nested
+                                $ css
+                                  { visibility: hidden
+                                  }
                           }
                 }
 
