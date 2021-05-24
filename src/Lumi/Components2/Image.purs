@@ -10,9 +10,11 @@ module Lumi.Components2.Image
   , largeAvatar
   , resize
   , resizeSquare
-  -- , round
-  , Image
-  , Thumbnail
+  , round
+  , ImageProps
+  , ThumbnailProps
+  , Image(..)
+  , Thumbnail(..)
   ) where
 
 import Prelude
