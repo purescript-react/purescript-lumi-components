@@ -18,7 +18,7 @@ docs =
     , example
         $ Image.image
         $$$ "http://via.placeholder.com/640x360"
-    , h4_ "Image + resize { width: 120px, height: 40px }, scales image to respect it's aspect ratio"
+    , h4_ "Image + resize { width: 120px, height: 40px }, contains image to parent container's aspect ratio (will clip horizontal edges)"
     , example
         $ Image.image
         $ Image.resize { width: 120, height: 40 }
@@ -52,11 +52,20 @@ docs =
         $ Image.thumbnail
         $ Image.extraLarge
         $$$ flexo
-    , h4_ "Thumbnail + round"
+    , h4_ "Thumbnail + avatar (small)"
     , example
         $ Image.thumbnail
-        $ Image.round
-        $ Image.extraLarge
+        $ Image.smallAvatar
+        $$$ flexo
+    , h4_ "Thumbnail + avatar (medium)"
+    , example
+        $ Image.thumbnail
+        $ Image.mediumAvatar
+        $$$ flexo
+    , h4_ "Thumbnail + avatar (large)"
+    , example
+        $ Image.thumbnail
+        $ Image.largeAvatar
         $$$ flexo
     , h4_ "Placeholders (can be overriden)"
     , example

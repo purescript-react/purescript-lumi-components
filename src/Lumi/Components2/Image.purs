@@ -5,9 +5,12 @@ module Lumi.Components2.Image
   , medium
   , large
   , extraLarge
+  , smallAvatar
+  , mediumAvatar
+  , largeAvatar
   , resize
   , resizeSquare
-  , round
+  -- , round
   , Image
   , Thumbnail
   ) where
@@ -104,8 +107,8 @@ image =
                             , className: ""
                             , css: E.css
                                 { maxWidth: E.percent 100.0
-                                , maxHeight: E.percent 100.0
-                                , objectFit: E.str "contain"
+                                -- , maxHeight: E.percent 100.0
+                                , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
                             , onLoad: handler_ $ setLoaded true
