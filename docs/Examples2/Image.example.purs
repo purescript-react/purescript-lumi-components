@@ -18,7 +18,7 @@ docs =
     , example
         $ Image.image
         $$$ "http://via.placeholder.com/640x360"
-    , h4_ "Image + resize { width: 120px, height: 40px }, contains image to parent container's aspect ratio (will clip horizontal edges)"
+    , h4_ "Image + resize { width: 120px, height: 40px }, contains image to parent container's aspect ratio (will clip edges)"
     , example
         $ Image.image
         $ Image.resize { width: 120, height: 40 }

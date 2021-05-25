@@ -109,7 +109,6 @@ image =
                             , className: ""
                             , css: E.css
                                 { maxWidth: E.percent 100.0
-                                -- , maxHeight: E.percent 100.0
                                 , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
