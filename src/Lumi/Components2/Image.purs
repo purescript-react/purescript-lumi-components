@@ -5,11 +5,16 @@ module Lumi.Components2.Image
   , medium
   , large
   , extraLarge
+  , smallAvatar
+  , mediumAvatar
+  , largeAvatar
   , resize
   , resizeSquare
   , round
-  , Image
-  , Thumbnail
+  , ImageProps
+  , ThumbnailProps
+  , Image(..)
+  , Thumbnail(..)
   ) where
 
 import Prelude
@@ -27,7 +32,7 @@ import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, ($$$))
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Svg (placeholderSvg)
 import Lumi.Components2.Box as Box
-import Lumi.Styles (Style, StyleModifier, style, style_, toCSS)
+import Lumi.Styles (Style, StyleModifier, color, style, style_, toCSS)
 import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Box as Styles.Box
 import Lumi.Styles.Slat hiding (_interactive,slat) as Styles.Slat
@@ -82,7 +87,7 @@ image =
             { ref: containerRef
             , children:
                 [ if String.null props.content
-                    then fromMaybe placeholderSvg props.placeholder
+                    then fromMaybe placeholder props.placeholder
                     else
                       Box.column
                       $ Styles.Box._flex
@@ -103,9 +108,8 @@ image =
                             { src: props.content
                             , className: ""
                             , css: E.css
-                                { maxWidth: E.percent 100.0
-                                , maxHeight: E.percent 100.0
-                                , objectFit: E.str "contain"
+                                { width: E.percent 100.0
+                                , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
                             , onLoad: handler_ $ setLoaded true
@@ -261,3 +265,16 @@ largeAvatar =
 mkRound :: Style
 mkRound = E.css { borderRadius: E.percent 50.0 }
 
+placeholder :: JSX
+placeholder =
+  Box.column
+  $ Styles.Box._align Center
+  $ Styles.Box._justify Center
+  $ Styles.Box._flex
+  $ style do
+    \(LumiTheme { colors }) -> (E.css { backgroundColor: color colors.black6, width: E.percent 100.0 })
+  $$$
+    [ Box.box
+      $ style_ (E.css { width: E.percent 50.0 })
+      $$$ [ placeholderSvg ]
+    ]
