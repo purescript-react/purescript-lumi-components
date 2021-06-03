@@ -14,19 +14,19 @@ docs :: JSX
 docs =
   let flexo = "https://s3.amazonaws.com/lumi-blog/avatars/_x600/flexo.jpg"
   in Array.intercalate (vspace S16)
-    [ h4_ "Image default (will respect image's aspect ratio)"
+    [ h4_ "Image default (will respect image's original aspect ratio & dimensions)"
     , example
         $ Image.image
-        $$$ "http://via.placeholder.com/640x360"
-    , h4_ "Image + resize { width: 120px, height: 40px }, contains image to parent container's aspect ratio (will clip edges)"
+        $$$ flexo
+    , h4_ "Image + resize { width: 120px, height: 40px }, the image will fill the height and width of its parent (object-fit: cover), maintaining its aspect ratio but cropping the image"
     , example
         $ Image.image
         $ Image.resize { width: 120, height: 40 }
-        $$$ "http://via.placeholder.com/360x640"
+        $$$ flexo
     , h4_ "Thumbnail default (will always have a square aspect ratio)"
     , example
         $ Image.thumbnail
-        $$$ "http://via.placeholder.com/360x640"
+        $$$ flexo
     , h4_ "Thumbnail + resize 400px"
     , example
         $ Image.thumbnail
@@ -67,10 +67,10 @@ docs =
         $ Image.thumbnail
         $ Image.largeAvatar
         $$$ flexo
-    , h4_ "Placeholders (can be overriden)"
+    , h4_ "Default placeholder (can be overriden)"
     , example
         $ Image.image
-        $ Image.resize { width: 900, height: 50 }
+        $ Image.resize { width: 320, height: 240 }
         $$$ ""
     , example
         $ Image.thumbnail
