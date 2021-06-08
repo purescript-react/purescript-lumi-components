@@ -109,6 +109,7 @@ image =
                             , className: ""
                             , css: E.css
                                 { width: E.percent 100.0
+                                , height: E.percent 100.0
                                 , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
@@ -135,6 +136,7 @@ image =
           , display: E.flex
           , flexFlow: E.column
           , alignItems: E.center
+          , justifyContent: E.center
           , border: E.str "1px solid"
           , borderColor: E.color colors.black4
           }
