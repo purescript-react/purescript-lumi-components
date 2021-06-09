@@ -115,6 +115,7 @@ image =
                                 , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
+                                <> defaultImageStyle theme
                                 <> props.css theme
                             , onLoad: handler_ $ setLoaded true
                             , onError: handler_ $ setLoaded true
@@ -122,7 +123,7 @@ image =
                         ]
                 ]
             , className: props.className
-            , css: defaultImageStyle theme
+            , css: defaultImageContainerStyle theme
             }
     where
       defaults =
@@ -131,8 +132,8 @@ image =
         , placeholder: Nothing
         }
 
-      defaultImageStyle :: LumiTheme -> Style
-      defaultImageStyle theme@(LumiTheme { colors }) =
+      defaultImageContainerStyle :: LumiTheme -> Style
+      defaultImageContainerStyle theme@(LumiTheme { colors }) =
         E.css
           { boxSizing: E.borderBox
           , overflow: E.hidden
@@ -140,7 +141,12 @@ image =
           , flexFlow: E.column
           , alignItems: E.center
           , justifyContent: E.center
-          , border: E.str "1px solid"
+          }
+
+      defaultImageStyle :: LumiTheme -> Style
+      defaultImageStyle theme@(LumiTheme { colors }) =
+        E.css
+          { border: E.str "1px solid"
           , borderColor: E.color colors.black4
           }
 
