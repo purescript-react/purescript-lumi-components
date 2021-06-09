@@ -30,7 +30,7 @@ import Data.Traversable (traverse)
 import Data.Tuple.Nested ((/\))
 import Effect.Timer (clearTimeout, setTimeout)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, ($$$))
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier, ($$$))
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Svg (placeholderSvg)
 import Lumi.Components2.Box as Box
@@ -52,6 +52,7 @@ type ImageProps
   = ( component :: Image
     , content :: String
     , placeholder :: Maybe JSX
+    , imgStyle :: Style
     )
 
 -- | An image has no size restrictions
@@ -115,25 +116,25 @@ image =
                                 , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
-                                <> defaultImageStyle theme
-                                <> props.css theme
+                                <> props.imgStyle
                             , onLoad: handler_ $ setLoaded true
                             , onError: handler_ $ setLoaded true
                             }
                         ]
                 ]
             , className: props.className
-            , css: defaultImageContainerStyle theme
+            , css: defaultImageStyle theme <> props.css theme
             }
     where
       defaults =
         { component: Image
         , content: ""
         , placeholder: Nothing
+        , imgStyle: E.css {}
         }
 
-      defaultImageContainerStyle :: LumiTheme -> Style
-      defaultImageContainerStyle theme@(LumiTheme { colors }) =
+      defaultImageStyle :: LumiTheme -> Style
+      defaultImageStyle theme@(LumiTheme { colors }) =
         E.css
           { boxSizing: E.borderBox
           , overflow: E.hidden
@@ -141,15 +142,9 @@ image =
           , flexFlow: E.column
           , alignItems: E.center
           , justifyContent: E.center
-          }
-
-      defaultImageStyle :: LumiTheme -> Style
-      defaultImageStyle theme@(LumiTheme { colors }) =
-        E.css
-          { border: E.str "1px solid"
+          , border: E.str "1px solid"
           , borderColor: E.color colors.black4
           }
-
 
 data Thumbnail = Thumbnail
 
@@ -157,6 +152,7 @@ type ThumbnailProps
   = ( component :: Thumbnail
     , content :: String
     , placeholder :: Maybe JSX
+    , imgStyle :: Style
     )
 
 -- | A thumbnail can support size restrictions
@@ -170,6 +166,7 @@ thumbnail =
         $ _ { content = props.content
             , placeholder = props.placeholder
             , css = toCSS defaultSize <> props.css
+            , imgStyle = props.imgStyle
             }
 
       where
@@ -177,19 +174,8 @@ thumbnail =
           { component: Thumbnail
           , content: ""
           , placeholder: Nothing
+          , imgStyle: E.css {}
           }
-
-cover :: StyleModifier
-cover =
-  style_ $ E.css
-      { objectFit: E.str "cover"
-      }
-
-contain :: StyleModifier
-contain =
-  style_ $ E.css
-      { objectFit: E.str "contain"
-      }
 
 -- | The `c` type parameter lets us constrain the type of component to which
 -- | an image modifier may be applied
@@ -207,6 +193,20 @@ resize props =
 -- | restricted to only Thumbnail
 round :: ImageModifier Thumbnail
 round = style_ mkRound
+
+cover :: PropsModifier ThumbnailProps
+cover =
+  propsModifier
+    _
+      { imgStyle = E.css { objectFit: E.str "cover" }
+      }
+
+contain :: PropsModifier ThumbnailProps
+contain =
+  propsModifier
+    _
+      { imgStyle = E.css { objectFit: E.str "contain" }
+      }
 
 resizeSquare :: Int -> ImageModifier Thumbnail
 resizeSquare size =
