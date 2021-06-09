@@ -7,7 +7,6 @@ import Lumi.Components (($$$))
 import Lumi.Components.Example (example)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (h4_)
-import Lumi.Components2.Image (ObjectFit(..))
 import Lumi.Components2.Image as Image
 import React.Basic.Classic (JSX)
 
@@ -25,15 +24,15 @@ docs =
         $ Image.image
         $ Image.resize { width: 40, height: 120 }
         $$$ flexo
-    , h4_ "Thumbnail default (will always have a square aspect ratio); and defaults to object-fit: contain"
+    , h4_ "Thumbnail default (will always have a square aspect ratio); and defaults to object-fit: cover"
     , example
         $ Image.thumbnail
         $$$ flexo
-    , h4_ "Thumbnail default (will always have a square aspect ratio); but can be override with object-fit: cover"
+    , h4_ "Thumbnail default (will always have a square aspect ratio); but can be override with object-fit: contain"
     , example
         $ Image.thumbnail
+        $ Image.contain
         $ _ { content = flexo
-            , objectFit = Cover
             }
     , h4_ "Thumbnail + resize 400px"
     , example

@@ -11,11 +11,12 @@ module Lumi.Components2.Image
   , resize
   , resizeSquare
   , round
+  , cover
+  , contain
   , ImageProps
   , ThumbnailProps
   , Image(..)
   , Thumbnail(..)
-  , ObjectFit(..)
   ) where
 
 import Prelude
@@ -38,7 +39,6 @@ import Lumi.Styles.Box (FlexAlign(..))
 import Lumi.Styles.Box as Styles.Box
 import Lumi.Styles.Slat hiding (_interactive,slat) as Styles.Slat
 import Lumi.Styles.Theme (LumiTheme(..), useTheme)
-import React.Basic.DOM (object)
 import React.Basic.DOM as R
 import React.Basic.Emotion as E
 import React.Basic.Events (handler_)
@@ -48,15 +48,10 @@ import Web.HTML.HTMLElement as HTMLElement
 
 data Image = Image
 
-data ObjectFit =
-  Cover
-  | Contain
-
 type ImageProps
   = ( component :: Image
     , content :: String
     , placeholder :: Maybe JSX
-    , objectFit :: ObjectFit
     )
 
 -- | An image has no size restrictions
@@ -117,26 +112,23 @@ image =
                             , css: E.css
                                 { width: E.percent 100.0
                                 , height: E.percent 100.0
-                                , objectFit: E.str $
-                                    case props.objectFit of
-                                      Cover -> "cover"
-                                      Contain -> "contain"
+                                , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
+                                <> props.css theme
                             , onLoad: handler_ $ setLoaded true
                             , onError: handler_ $ setLoaded true
                             }
                         ]
                 ]
             , className: props.className
-            , css: defaultImageStyle theme <> props.css theme
+            , css: defaultImageStyle theme
             }
     where
       defaults =
         { component: Image
         , content: ""
         , placeholder: Nothing
-        , objectFit: Cover
         }
 
       defaultImageStyle :: LumiTheme -> Style
@@ -159,7 +151,6 @@ type ThumbnailProps
   = ( component :: Thumbnail
     , content :: String
     , placeholder :: Maybe JSX
-    , objectFit :: ObjectFit
     )
 
 -- | A thumbnail can support size restrictions
@@ -173,7 +164,6 @@ thumbnail =
         $ _ { content = props.content
             , placeholder = props.placeholder
             , css = toCSS defaultSize <> props.css
-            , objectFit = props.objectFit
             }
 
       where
@@ -181,8 +171,19 @@ thumbnail =
           { component: Thumbnail
           , content: ""
           , placeholder: Nothing
-          , objectFit: Contain
           }
+
+cover :: StyleModifier
+cover =
+  style_ $ E.css
+      { objectFit: E.str "cover"
+      }
+
+contain :: StyleModifier
+contain =
+  style_ $ E.css
+      { objectFit: E.str "contain"
+      }
 
 -- | The `c` type parameter lets us constrain the type of component to which
 -- | an image modifier may be applied
