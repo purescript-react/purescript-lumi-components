@@ -196,17 +196,15 @@ round = style_ mkRound
 
 cover :: PropsModifier ThumbnailProps
 cover =
-  propsModifier
-    _
-      { imgStyle = E.css { objectFit: E.str "cover" }
-      }
+  propsModifier  \props -> props
+    { imgStyle = props.imgStyle <> E.css { objectFit: E.str "cover" }
+    }
 
 contain :: PropsModifier ThumbnailProps
 contain =
-  propsModifier
-    _
-      { imgStyle = E.css { objectFit: E.str "contain" }
-      }
+  propsModifier  \props -> props
+    { imgStyle = props.imgStyle <> E.css { objectFit: E.str "contain" }
+    }
 
 resizeSquare :: Int -> ImageModifier Thumbnail
 resizeSquare size =
