@@ -11,6 +11,8 @@ module Lumi.Components2.Image
   , resize
   , resizeSquare
   , round
+  , cover
+  , contain
   , ImageProps
   , ThumbnailProps
   , Image(..)
@@ -28,7 +30,7 @@ import Data.Traversable (traverse)
 import Data.Tuple.Nested ((/\))
 import Effect.Timer (clearTimeout, setTimeout)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, ($$$))
+import Lumi.Components (LumiComponent, PropsModifier, lumiComponent, propsModifier, ($$$))
 import Lumi.Components.Loader (loader)
 import Lumi.Components.Svg (placeholderSvg)
 import Lumi.Components2.Box as Box
@@ -50,6 +52,7 @@ type ImageProps
   = ( component :: Image
     , content :: String
     , placeholder :: Maybe JSX
+    , imgStyle :: Style
     )
 
 -- | An image has no size restrictions
@@ -113,6 +116,7 @@ image =
                                 , objectFit: E.str "cover"
                                 , display: E.str $ if loaded then "block" else "none"
                                 }
+                                <> props.imgStyle
                             , onLoad: handler_ $ setLoaded true
                             , onError: handler_ $ setLoaded true
                             }
@@ -126,6 +130,7 @@ image =
         { component: Image
         , content: ""
         , placeholder: Nothing
+        , imgStyle: E.css {}
         }
 
       defaultImageStyle :: LumiTheme -> Style
@@ -141,13 +146,13 @@ image =
           , borderColor: E.color colors.black4
           }
 
-
 data Thumbnail = Thumbnail
 
 type ThumbnailProps
   = ( component :: Thumbnail
     , content :: String
     , placeholder :: Maybe JSX
+    , imgStyle :: Style
     )
 
 -- | A thumbnail can support size restrictions
@@ -161,6 +166,7 @@ thumbnail =
         $ _ { content = props.content
             , placeholder = props.placeholder
             , css = toCSS defaultSize <> props.css
+            , imgStyle = props.imgStyle
             }
 
       where
@@ -168,6 +174,7 @@ thumbnail =
           { component: Thumbnail
           , content: ""
           , placeholder: Nothing
+          , imgStyle: E.css {}
           }
 
 -- | The `c` type parameter lets us constrain the type of component to which
@@ -186,6 +193,18 @@ resize props =
 -- | restricted to only Thumbnail
 round :: ImageModifier Thumbnail
 round = style_ mkRound
+
+cover :: PropsModifier ThumbnailProps
+cover =
+  propsModifier  \props -> props
+    { imgStyle = props.imgStyle <> E.css { objectFit: E.str "cover" }
+    }
+
+contain :: PropsModifier ThumbnailProps
+contain =
+  propsModifier  \props -> props
+    { imgStyle = props.imgStyle <> E.css { objectFit: E.str "contain" }
+    }
 
 resizeSquare :: Int -> ImageModifier Thumbnail
 resizeSquare size =

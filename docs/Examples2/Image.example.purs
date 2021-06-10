@@ -12,21 +12,28 @@ import React.Basic.Classic (JSX)
 
 docs :: JSX
 docs =
-  let flexo = "https://s3.amazonaws.com/lumi-blog/avatars/_x600/flexo.jpg"
+  let flexo = "https://i.picsum.photos/id/985/1000/300.jpg?hmac=t_lmj43iuzwGqZaRMY1ee9udE_pCzfYLgCD49YrCPjw"
+        -- "https://s3.amazonaws.com/lumi-blog/avatars/_x600/flexo.jpg"
   in Array.intercalate (vspace S16)
     [ h4_ "Image default (will respect image's original aspect ratio & dimensions)"
     , example
         $ Image.image
         $$$ flexo
-    , h4_ "Image + resize { width: 120px, height: 40px }, the image will fill the height and width of its parent (object-fit: cover), maintaining its aspect ratio but cropping the image"
+    , h4_ "Image + resize { width: 40px, height: 120px }, the image will fill the height and width of its parent (object-fit: cover), maintaining its aspect ratio but cropping the image"
     , example
         $ Image.image
-        $ Image.resize { width: 120, height: 40 }
+        $ Image.resize { width: 40, height: 120 }
         $$$ flexo
-    , h4_ "Thumbnail default (will always have a square aspect ratio)"
+    , h4_ "Thumbnail default (will always have a square aspect ratio); and defaults to object-fit: cover"
     , example
         $ Image.thumbnail
         $$$ flexo
+    , h4_ "Thumbnail default (will always have a square aspect ratio); but can be override with object-fit: contain"
+    , example
+        $ Image.thumbnail
+        $ Image.contain
+        $ _ { content = flexo
+            }
     , h4_ "Thumbnail + resize 400px"
     , example
         $ Image.thumbnail
