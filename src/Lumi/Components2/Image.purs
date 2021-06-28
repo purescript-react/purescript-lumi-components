@@ -63,6 +63,7 @@ image =
     lumiComponent "Image" defaults \props -> Hooks.do
       theme <- useTheme
       loaded /\ setLoaded <- Hooks.useState' false
+      error /\ setError <- Hooks.useState' false
 
       containerRef <- Hooks.useRef Nullable.null
       dimensions /\ setDimensions <- Hooks.useState { width: 20.0, height: 20.0 }
@@ -97,7 +98,7 @@ image =
                       $ Styles.Box._align Center
                       $ Styles.Box._justify Center
                       $$$
-                        [ Monoid.guard (not loaded)
+                        [ Monoid.guard (not loaded && not error)
                             $ let d = fromMaybe 20.0 ([ dimensions.height, dimensions.width ] # minimum)
                               in loader
                                 { style: R.css
@@ -111,14 +112,21 @@ image =
                             { src: props.content
                             , className: ""
                             , css: E.css
-                                { width: E.percent 100.0
-                                , height: E.percent 100.0
-                                , objectFit: E.str "cover"
-                                , display: E.str $ if loaded then "block" else "none"
+                                { objectFit: E.str "cover"
+                                , display: E.str $ if loaded || error then "block" else "none"
                                 }
+                                <> if error
+                                    then E.css
+                                      { width: E.str "auto"
+                                      , height: E.str "auto"
+                                      }
+                                    else E.css
+                                      { height: E.percent 100.0
+                                      , width: E.percent 100.0
+                                      }
                                 <> props.imgStyle
                             , onLoad: handler_ $ setLoaded true
-                            , onError: handler_ $ setLoaded true
+                            , onError: handler_ $ setError true
                             }
                         ]
                 ]
