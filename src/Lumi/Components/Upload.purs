@@ -248,7 +248,9 @@ upload = make component { initialState, render }
             runUpload self files
 
           NewPendingFile pendingFileInfo ->
-            self.setState \state -> state { pendingFiles = Array.snoc state.pendingFiles pendingFileInfo }
+            self.setState \state ->
+              if self.props.allowMultiple then state { pendingFiles = Array.snoc state.pendingFiles pendingFileInfo }
+                else state { pendingFiles = [ pendingFileInfo ] }
 
           UpdatePendingFile name progress -> do
             let
