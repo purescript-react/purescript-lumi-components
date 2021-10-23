@@ -79,6 +79,6 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
     "webpack-manifest-plugin": "^2.2.0",
-    "webpack-subresource-integrity": "^1.4.1"
+    "webpack-subresource-integrity": "^1.5.1"
   }
 }
