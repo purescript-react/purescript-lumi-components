@@ -3,6 +3,7 @@ module Lumi.Components.Table
   , ColumnName(..)
   , SortString(..)
   , table
+  , labelText
   , styles
   ) where
 
@@ -46,7 +47,6 @@ import Web.DOM (Node)
 import Web.Event.Event (EventType(..))
 import Web.Event.Internal.Types (Event)
 import Web.HTML (window)
-import Web.HTML.History (URL)
 import Web.HTML.Window (localStorage)
 import Web.Storage.Storage (getItem, setItem)
 
@@ -58,9 +58,17 @@ derive newtype instance wfColumnName :: WriteForeign ColumnName
 
 newtype SortString = SortString String
 derive instance eqSortString :: Eq SortString
+derive instance ntSortString :: Newtype SortString _
+
+
+-- helper to ease the use of label text since label and filterLabel both require
+-- a Maybe JSX
+labelText :: String -> Maybe JSX
+labelText = Just <<< subtext_
 
 type TableProps row =
   { name :: String
+  , tableInnerStyle :: R.CSS
   , dropdownMenu :: Boolean
   , sortable :: Boolean
   , sort :: Nullable SortString
@@ -72,16 +80,15 @@ type TableProps row =
   , rows :: Array row
   , getRowKey :: row -> String
   , rowEq :: row -> row -> Boolean
-  , onNavigate :: EffectFn1 URL Unit
   , variant :: Nullable String
   , primaryColumn ::
       Nullable
         { name :: ColumnName
-        , label :: Nullable String
-        , filterLabel :: Nullable String
+        , label :: Maybe JSX
+        , filterLabel :: Maybe JSX
         , sortBy :: Nullable ColumnName
         , style :: R.CSS
-        , getLink :: Nullable (row -> URL)
+        , onRowClick :: row -> Maybe (Effect Unit)
         , renderCell :: row -> JSX
         , sticky :: Boolean
         }
@@ -89,8 +96,8 @@ type TableProps row =
       Array
         { required :: Boolean
         , name :: ColumnName
-        , label :: Nullable String
-        , filterLabel :: Nullable String
+        , label :: Maybe JSX
+        , filterLabel :: Maybe JSX
         , sortBy :: Nullable ColumnName
         , style :: R.CSS
         , renderCell :: row -> JSX
@@ -103,8 +110,8 @@ type TableProps row =
           ( Array
               { required :: Boolean
               , name :: ColumnName
-              , label :: Nullable String
-              , filterLabel :: Nullable String
+              , label :: Maybe JSX
+              , filterLabel :: Maybe JSX
               , sortBy :: Nullable ColumnName
               , style :: R.CSS
               , renderCell :: row -> JSX
@@ -293,7 +300,6 @@ table = make component
                                 , selectable: self.props.selectable
                                 , getRowKey: self.props.getRowKey
                                 , rowEq: self.props.rowEq
-                                , onNavigate: self.props.onNavigate
                                 , onSelect: onSelect self
                                 }
                             in
@@ -314,9 +320,7 @@ table = make component
       where
         selected = fromMaybe self.state.selected (toMaybe self.props.selected)
 
-        primaryColumn = cleanUpNullables <$> toMaybe self.props.primaryColumn
-          where
-            cleanUpNullables x = x { getLink = toMaybe x.getLink }
+        primaryColumn = toMaybe self.props.primaryColumn
 
         renderTableHead columns tableRef =
           R.thead
@@ -373,7 +377,7 @@ table = make component
 
         renderHeadCell col =
           let
-            label    = fromMaybe "" (toMaybe col.label)
+            label    = fromMaybe (R.text "") col.label
             sort     = fromMaybe (SortString "asc") (toMaybe self.props.sort)
             sortBy   = toMaybe self.props.sortBy
             flippedSort = if self.props.sortBy /= col.sortBy || sort /= SortString "asc"
@@ -397,7 +401,7 @@ table = make component
                               , children:
                                   [ R.span
                                       { style: R.css { marginRight: "5px" }
-                                      , children: [ subtext_ label ]
+                                      , children: [ label ]
                                       }
                                   , R.span
                                       { style: R.css
@@ -412,7 +416,7 @@ table = make component
                                   ]
                               }
                           _   , _ ->
-                            subtext_ label
+                            label
                       ]
                   }
 
@@ -441,6 +445,7 @@ table = make component
                       case maybeTableRef of
                         Nothing       -> []
                         Just tableRef -> renderChildren tableRef
+                  , style: self.props.tableInnerStyle
                   }
             ]
         }
@@ -450,7 +455,7 @@ table = make component
         windowEvent
           { eventType: EventType "click"
           , handler: case maybeMenuRef of
-              Nothing      -> \e -> pure unit
+              Nothing -> \_ -> pure unit
               Just menuRef -> \e -> do
 
                 isEventTargetInTree <- runEffectFn2 checkIsEventTargetInTree menuRef e
@@ -482,14 +487,13 @@ type TableRowProps row col_ pcol_ =
           { name :: ColumnName
           , renderCell :: row -> JSX
           , style :: R.CSS
-          , getLink :: Maybe (row -> URL)
+          , onRowClick :: row -> Maybe (Effect Unit)
           , sticky :: Boolean
           | pcol_
           }
       , selectable :: Boolean
       , getRowKey :: row -> String
       , rowEq :: row -> row -> Boolean
-      , onNavigate :: EffectFn1 URL Unit
       , onSelect :: { shift :: Boolean, key :: String, checked :: Boolean } -> Effect Unit
       }
   , row :: row
@@ -512,16 +516,14 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
       R.tr
         { className: joinWith " "
             $  guard (tableProps.selectable && isSelected) [ "active" ]
-            <> guard (isJust $ _.getLink =<< tableProps.primaryColumn) [ "active-row" ]
+            <> guard (isJust $ (\pc -> pc.onRowClick row) =<< tableProps.primaryColumn) [ "active-row" ]
         , onClick:
-            case tableProps.primaryColumn of
-              Just { getLink: Just getLink } ->
-                Events.handler syntheticEvent \event -> do
-                  s <- hasWindowSelection
-                  when (not s) $
-                    runEffectFn1 tableProps.onNavigate (getLink row)
-              _ ->
-                Events.handler_ (pure unit)
+            fromMaybe (Events.handler_ $ pure unit) do
+              { onRowClick } <- tableProps.primaryColumn
+              onRowClickAction <- onRowClick row
+              pure $ Events.handler syntheticEvent \_ -> do
+                s <- hasWindowSelection
+                when (not s) $ onRowClickAction
         , children:
             [ if not tableProps.selectable
                 then empty
@@ -535,7 +537,7 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
                         tableProps.onSelect { shift, key, checked: fromMaybe false targetChecked }
                     }
             ]
-            <> maybe [] (pure <<< renderPrimaryCell tableProps.onNavigate row) tableProps.primaryColumn
+            <> maybe [] (pure <<< renderPrimaryCell row) tableProps.primaryColumn
             <> tableProps.columns `flip mapMaybe` \col ->
                 if col.hidden
                   then Nothing
@@ -556,7 +558,7 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
             ]
         }
 
-    renderPrimaryCell onNavigate row col =
+    renderPrimaryCell row col =
       R.td
         { key: un ColumnName col.name
         , className: joinWith " " $ fold
@@ -566,16 +568,13 @@ tableRow = make tableRowComponent { initialState: unit, shouldUpdate, render }
         , style: col.style
         , _data: fromHomogeneous { required: show true }
         , children:
-            [ case col.getLink of
-                Nothing ->
-                  col.renderCell row
-                Just getLink ->
-                  Link.link Link.defaults
-                    { href = getLink row
-                    , navigate = Just (runEffectFn1 onNavigate (getLink row))
-                    , text = col.renderCell row
-                    , className = Just "primary-cell-link"
-                    }
+            [ fromMaybe (col.renderCell row) do
+                onRowClickAction <- col.onRowClick row
+                pure $ Link.link Link.defaults
+                  { navigate = Just onRowClickAction
+                  , text = col.renderCell row
+                  , className = Just "primary-cell-link"
+                  }
             ]
         }
 

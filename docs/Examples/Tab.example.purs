@@ -2,7 +2,7 @@ module Lumi.Components.Examples.Tab where
 
 import Prelude
 
-import Control.MonadZero (guard)
+import Control.Alternative (guard)
 import Data.Array (index, (..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (Pattern(..), split, toLower)

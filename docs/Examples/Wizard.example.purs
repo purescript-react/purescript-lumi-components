@@ -6,7 +6,6 @@ import Data.Either (Either(..), isRight)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(..), isJust, isNothing, maybe)
 import Data.String.NonEmpty (toString) as NES
-import Data.Symbol (SProxy(..))
 import Effect.Uncurried (mkEffectFn1)
 import Lumi.Components.Button as Button
 import Lumi.Components.Column (column, column_)
@@ -23,6 +22,7 @@ import Lumi.Components.Example (example)
 import React.Basic.Classic (JSX, createComponent, make)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, capture_)
+import Type.Proxy (Proxy(..))
 
 data Action a
   = OnChange (FormData -> FormData)
@@ -133,17 +133,17 @@ exampleWizard :: Wizard Step { readonly :: Boolean } FormData Result
 exampleWizard = do
   firstStep <-
     W.step FirstStep
-    $ F.focus (prop (SProxy :: SProxy "firstStep"))
+    $ F.focus (prop (Proxy :: Proxy "firstStep"))
     $ firstStepForm
 
   secondStep <-
     W.step SecondStep
-    $ F.focus (prop (SProxy :: SProxy "secondStep"))
+    $ F.focus (prop (Proxy :: Proxy "secondStep"))
     $ secondStepForm firstStep.age
 
   thirdStep <-
     W.step ThirdStep
-    $ F.focus (prop (SProxy :: SProxy "thirdStep"))
+    $ F.focus (prop (Proxy :: Proxy "thirdStep"))
     $ thirdStepForm firstStep secondStep
 
   let { firstName, lastName, age } = firstStep
@@ -179,19 +179,19 @@ firstStepForm :: forall props. FormBuilder { readonly :: Boolean | props } First
 firstStepForm = ado
   firstName <-
     F.indent "First name" Required
-    $ F.focus (prop (SProxy :: SProxy "firstName"))
+    $ F.focus (prop (Proxy :: Proxy "firstName"))
     $ F.validated (F.nonEmpty "First name")
     $ F.textbox
 
   lastName <-
     F.indent "Last name" Required
-    $ F.focus (prop (SProxy :: SProxy "lastName"))
+    $ F.focus (prop (Proxy :: Proxy "lastName"))
     $ F.validated (F.nonEmpty "Last name")
     $ F.textbox
 
   age <-
     F.indent "Age" Neither
-    $ F.focus (prop (SProxy :: SProxy "age"))
+    $ F.focus (prop (Proxy :: Proxy "age"))
     $ F.validated (F.optional (F.validInt "Age"))
     $ F.number
         { min: Just 0.0
@@ -220,7 +220,7 @@ secondStepForm :: forall props. Maybe Int -> FormBuilder { readonly :: Boolean |
 secondStepForm age = ado
   country <-
     F.indent "Country" Required
-    $ F.focus (prop (SProxy :: SProxy "country"))
+    $ F.focus (prop (Proxy :: Proxy "country"))
     $ F.validated (F.nonEmpty "Country")
     $ F.textbox
 
@@ -229,18 +229,18 @@ secondStepForm age = ado
       then pure false
       else
         F.indent "Work from home?" Neither
-        $ F.focus (prop (SProxy :: SProxy "workFromHome"))
+        $ F.focus (prop (Proxy :: Proxy "workFromHome"))
         $ F.switch
 
   height <-
     F.indent "Height (in)" Optional
-    $ F.focus (prop (SProxy :: SProxy "height"))
+    $ F.focus (prop (Proxy :: Proxy "height"))
     $ F.validated (F.optional (F.validNumber "Height"))
     $ F.number { min: Just 0.0, max: Nothing, step: Input.Any }
 
   favoriteColor <-
     F.indent "Favorite color" Required
-    $ F.focus (prop (SProxy :: SProxy "favoriteColor"))
+    $ F.focus (prop (Proxy :: Proxy "favoriteColor"))
     $ F.validated (F.nonNull "Favorite color")
     $ F.select identity pure
         [ { label: "Red", value: "red" }
@@ -281,7 +281,7 @@ thirdStepForm { firstName, lastName, age } { country, workFromHome, height, favo
 
   hasAdditionalInfo <- F.sequential "hasAdditionalInfo"
     $ F.indent "Do you want to give me additional information?" Neither
-    $ F.focus (prop (SProxy :: SProxy "hasAdditionalInfo"))
+    $ F.focus (prop (Proxy :: Proxy "hasAdditionalInfo"))
     $ F.switch
 
   additionalInfo <- F.sequential "additionalInfo"
@@ -289,7 +289,7 @@ thirdStepForm { firstName, lastName, age } { country, workFromHome, height, favo
         then pure Nothing
         else
           F.indent "Additional information" Required
-          $ F.focus (prop (SProxy :: SProxy "additionalInfo"))
+          $ F.focus (prop (Proxy :: Proxy "additionalInfo"))
           $ map (Just <<< NES.toString)
           $ F.validated (F.nonEmpty "Additional info")
           $ F.textarea

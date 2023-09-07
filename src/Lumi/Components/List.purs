@@ -116,7 +116,28 @@ keyValueList
      , borders :: Boolean
      }
   -> JSX
-keyValueList { rightAligned, rows, borders } =
+keyValueList args = keyValueList' $ args { rows = textRow <$> args.rows }
+  where
+    textRow { label, value } =
+      { value: value
+      , label: T.text T.body
+                { style = R.css {}
+                , color = notNull colorNames.black1
+                , children = [ R.text label ]
+                }
+     }
+
+keyValueList'
+  :: { rightAligned :: Boolean
+     , rows ::
+         Array
+           { label :: JSX
+           , value :: JSX
+           }
+     , borders :: Boolean
+     }
+  -> JSX
+keyValueList' { rightAligned, rows, borders } =
   let
     lumiKeyValueListElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-key-value-list")
     lumiKeyValueListLabelElement = element (unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-key-value-list-label")
@@ -133,11 +154,7 @@ keyValueList { rightAligned, rows, borders } =
             , children:
                 [ lumiKeyValueListLabelElement
                     { children:
-                        [ T.text T.body
-                            { style = R.css {}
-                            , color = notNull colorNames.black1
-                            , children = [ R.text label ]
-                            }
+                        [ label
                         ]
                     , style: R.css {}
                     }

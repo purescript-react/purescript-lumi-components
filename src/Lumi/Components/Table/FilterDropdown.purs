@@ -7,8 +7,7 @@ import Control.Alt ((<|>))
 import Data.Array (drop, mapWithIndex, take, (!!))
 import Data.Foldable (for_)
 import Data.Int as Int
-import Data.Maybe (fromMaybe, maybe)
-import Data.Nullable (Nullable, toMaybe)
+import Data.Maybe (Maybe, fromMaybe, maybe)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
 import Lumi.Components.Color (colors)
@@ -72,8 +71,8 @@ newtype HoverIndex = HoverIndex Int
 
 type Item =
   { name :: String
-  , label :: Nullable String
-  , filterLabel :: Nullable String
+  , label :: Maybe JSX
+  , filterLabel :: Maybe JSX
   , hidden :: Boolean
   }
 
@@ -132,7 +131,7 @@ filterItem_ =
     renderInput onChange items item =
       input checkbox
         { size = small
-        , disabled = not maybe false (const true) (toMaybe item.label)
+        , disabled = not maybe false (const true) item.label
         , checked = if item.hidden then Off else On
         , onChange =
             Events.handler targetChecked
@@ -156,7 +155,7 @@ filterItem_ =
             , overflow: "hidden"
             , textOverflow: "ellipsis"
             }
-        , children: [ text (fromMaybe "" (toMaybe item.filterLabel <|> toMaybe item.label)) ]
+        , children: [ fromMaybe (text "") (item.filterLabel <|> item.label) ]
         }
 
     renderDragIcon =

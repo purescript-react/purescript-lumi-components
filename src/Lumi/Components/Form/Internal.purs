@@ -2,7 +2,7 @@ module Lumi.Components.Form.Internal where
 
 import Prelude
 
-import Control.MonadZero (class Alt, class Alternative, class MonadZero, class Plus)
+import Control.Alternative (class Alt, class Alternative, class Plus)
 import Control.Parallel.Class (class Parallel)
 import Data.Array as Array
 import Data.Either (either)
@@ -181,8 +181,8 @@ instance monadSeqFormBuilder :: Monoid ui => Monad (SeqFormBuilder' ui props unv
 instance altSeqFormBuilder :: Monoid ui => Alt (SeqFormBuilder' ui props unvalidated) where
   alt (SeqFormBuilder f) (SeqFormBuilder g) =
     SeqFormBuilder $ FormBuilder \props unvalidated ->
-      let rf@{ edit: editF, validate: validateF } = un FormBuilder f props unvalidated
-          rg@{ edit: editG, validate: validateG } = un FormBuilder g props unvalidated
+      let rf@{ validate: validateF } = un FormBuilder f props unvalidated
+          rg@{ validate: validateG } = un FormBuilder g props unvalidated
        in case validateF, validateG of
             Just _, _ -> rf
             _, _ -> rg
@@ -191,7 +191,6 @@ instance plusSeqFormBuilder :: Monoid ui => Plus (SeqFormBuilder' ui props unval
   empty = SeqFormBuilder $ FormBuilder \_ _ -> { edit: mempty, validate:  Nothing }
 
 instance alternativeSeqFormBuilder :: Monoid ui => Alternative (SeqFormBuilder' ui props unvalidated)
-instance monadZeroSeqFormBuilder :: Monoid ui => MonadZero (SeqFormBuilder' ui props unvalidated)
 
 -- | Create a `FormBuilder` from a function which produces a form
 -- | element as `JSX` and a validated result.
@@ -240,8 +239,21 @@ revalidate
   -> Maybe result
 revalidate editor props value = (un FormBuilder editor props value).validate
 
--- | Listens for changes in a form's value and allows for performing
--- | asynchronous effects and additional value changes.
+-- | Listens for changes in a form's state and allows for performing
+-- | asynchronous effects and additional state changes.
+-- |
+-- | The asynchronous effect is fired on every state change. Note that from a UI
+-- | perspective, the effect is not observably asynchronous: the asynchronous
+-- | action is executed in the background, but the wrapped form's UI is not
+-- | responsive to the user until the action completes. To use this function
+-- | effectively, the supplied callback must return promptly. Setting some React
+-- | state in the callback would be appropriate but making network calls should
+-- | be done judiciously. Network calls can be justified if they are in response
+-- | to infrequent updates (e.g. selecting an item in a dropdown that causes
+-- | loading of data specific to that selection) but if the calls are in
+-- | response to every digit typed into a number input field for example, a user
+-- | may experience delays with their inputs and the backend will be hit
+-- | excessively.
 listen
   :: forall ui props unvalidated result
    . (unvalidated -> Aff (unvalidated -> unvalidated))

@@ -1,8 +1,8 @@
-"use strict";
 
-var React = require("react");
+
+import React from 'react';
 var h = React.createElement;
-var ReactDOM = require("react-dom");
+import ReactDOM from 'react-dom';
 var modalRoot = document.getElementById("modal-root");
 
 function assign(target, from) {
@@ -14,7 +14,7 @@ function assign(target, from) {
   return target;
 }
 
-exports.modalBuilder = function (ModalPortal) {
+export const modalBuilder = function (ModalPortal) {
   var ModalComponent = function constructor(_props) {
     this.el = document.createElement("div");
     var this_ = this;
@@ -61,7 +61,7 @@ exports.modalBuilder = function (ModalPortal) {
   return ModalComponent;
 };
 
-exports.toggleBodyClass = function (className, on) {
+export const toggleBodyClass = function (className, on) {
   if (on) {
     document.body.classList.add(className);
   } else {

@@ -67,6 +67,7 @@ docs =
                             { title: R.text rowData.name
                             , subtitle: Just $ R.text rowData.companyName
                             , image: Just $ avatar_ { size: Large, image: R.img { src: rowData.src } }
+                            , tooltipProps: Nothing
                             }
                       }
                     , { renderCell: \rowData ->
@@ -91,6 +92,7 @@ docs =
                             { image: Just $ avatar_ { size: Large, image: R.img { src: rowData.src } }
                             , title: R.text rowData.name
                             , subtitle: Just $ R.text rowData.companyName
+                            , tooltipProps: Nothing
                             }
                       }
                     , { renderCell: \rowData ->
@@ -213,6 +215,7 @@ docs =
                       { src: "https://s3.amazonaws.com/lumi-flapjack-staging/mockups/9e7f08b801e6bb3a428ef72e93c49fe5.jpg"
                       }
                 }
+            , tooltipProps: Nothing
             }
         }
       ]

@@ -1,6 +1,4 @@
-"use strict";
-
-var React = require("react");
+import React from 'react';
 
 var LumiInputElement = function (_props) {
   this.inputRef = React.createRef();
@@ -36,4 +34,4 @@ LumiInputElement.prototype.render = function () {
   return React.createElement("input", props);
 };
 
-exports.lumiInputElement = LumiInputElement;
+export const lumiInputElement = LumiInputElement;

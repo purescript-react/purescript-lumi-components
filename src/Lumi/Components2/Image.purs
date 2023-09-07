@@ -13,6 +13,7 @@ module Lumi.Components2.Image
   , round
   , cover
   , contain
+  , scaleDown
   , ImageProps
   , ThumbnailProps
   , Image(..)
@@ -44,6 +45,7 @@ import React.Basic.Emotion as E
 import React.Basic.Events (handler_)
 import React.Basic.Hooks (JSX)
 import React.Basic.Hooks as Hooks
+import Web.DOM.Element (getBoundingClientRect) as HTMLElement
 import Web.HTML.HTMLElement as HTMLElement
 
 data Image = Image
@@ -72,7 +74,7 @@ image =
         case container of
           Nothing -> mempty
           Just container' -> do
-            rect <- traverse HTMLElement.getBoundingClientRect (HTMLElement.fromNode container')
+            rect <- traverse HTMLElement.getBoundingClientRect (HTMLElement.toElement <$> HTMLElement.fromNode container')
             let
               newDimentions =
                 { height: maybe 0.0 (\r -> r.height + 2.0) rect
@@ -212,6 +214,12 @@ contain :: PropsModifier ThumbnailProps
 contain =
   propsModifier  \props -> props
     { imgStyle = props.imgStyle <> E.css { objectFit: E.str "contain" }
+    }
+
+scaleDown :: PropsModifier ThumbnailProps
+scaleDown =
+  propsModifier  \props -> props
+    { imgStyle = props.imgStyle <> E.css { objectFit: E.str "scale-down" }
     }
 
 resizeSquare :: Int -> ImageModifier Thumbnail

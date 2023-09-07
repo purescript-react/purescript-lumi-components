@@ -20,7 +20,7 @@ import Lumi.Components.Link as Link
 import Lumi.Components.Lockup (lockup)
 import Lumi.Components.NativeSelect (defaults, nativeSelect)
 import Lumi.Components.Size (Size(..))
-import Lumi.Components.Table (ColumnName(..), SortString(..), table)
+import Lumi.Components.Table (ColumnName(..), SortString(..), table, labelText)
 import Lumi.Components.Text (p_)
 import React.Basic.Classic (Component, JSX, createComponent, make)
 import React.Basic.DOM (css)
@@ -43,8 +43,8 @@ docs = unit # make component { initialState, render }
       , ex2Columns:
           [ { required: true
             , name: ColumnName "product-type"
-            , label: notNull "Product type"
-            , filterLabel: null
+            , label: labelText "Product type"
+            , filterLabel: Nothing
             , sortBy: notNull $ ColumnName "title"
             , style: css {}
             , hidden: false
@@ -57,8 +57,8 @@ docs = unit # make component { initialState, render }
             }
           , { required: true
             , name: ColumnName "created-date"
-            , label: notNull "Created date"
-            , filterLabel: null
+            , label: labelText "Created date"
+            , filterLabel: Nothing
             , sortBy: notNull $ ColumnName "createdDate"
             , style: css {}
             , hidden: false
@@ -69,8 +69,8 @@ docs = unit # make component { initialState, render }
       , ex3Columns:
           [ { required: true
             , name: ColumnName "input"
-            , label: notNull "Input"
-            , filterLabel: null
+            , label: labelText "Input"
+            , filterLabel: Nothing
             , sortBy: null
             , style: css {}
             , hidden: false
@@ -90,6 +90,7 @@ docs = unit # make component { initialState, render }
               , children:
                   [ table
                       { name: "Items"
+                      , tableInnerStyle: R.css {}
                       , dropdownMenu: true
                       , sortable: true
                       , sort: toNullable (Just self.state.sort)
@@ -108,29 +109,28 @@ docs = unit # make component { initialState, render }
                           in Array.sortBy tableFieldSort tableData
                       , getRowKey: _.id
                       , rowEq: eq
-                      , onNavigate: mkEffectFn1 \href ->
-                          log $ "navigate to: " <> un URL href
                       , variant: null
                       , primaryColumn: notNull
                           { name: ColumnName "product-lockup"
-                          , label: null
-                          , filterLabel: notNull "Product lockup"
+                          , label: Nothing
+                          , filterLabel: labelText "Product lockup"
                           , sortBy: null
                           , style: css {}
-                          , getLink: notNull _.link
                           , renderCell: \rowData ->
                               lockup
                                 { image: Just $ productThumb_ { image: R.img { src: rowData.imgSrc }, size: Small }
                                 , title: R.text rowData.title
                                 , subtitle: Just $ R.text rowData.dimensions
+                                , tooltipProps: Nothing
                                 }
                           , sticky: true
+                          , onRowClick: mempty
                           }
                       , columns:
                           [ { required: true
                             , name: ColumnName "product-type"
-                            , label: notNull "Product type"
-                            , filterLabel: null
+                            , label: labelText "Product type"
+                            , filterLabel: Nothing
                             , sortBy: notNull $ ColumnName "title"
                             , style: css {}
                             , hidden: false
@@ -144,8 +144,8 @@ docs = unit # make component { initialState, render }
                             }
                           , { required: true
                             , name: ColumnName "created-date"
-                            , label: notNull "Created date"
-                            , filterLabel: null
+                            , label: labelText "Created date"
+                            , filterLabel: Nothing
                             , sortBy: notNull $ ColumnName "createdDate"
                             , style: css {}
                             , hidden: false
@@ -165,6 +165,7 @@ docs = unit # make component { initialState, render }
               , children:
                   [ table
                       { name: "Items"
+                      , tableInnerStyle: R.css {}
                       , dropdownMenu: false
                       , sortable: true
                       , sort: notNull self.state.sort
@@ -183,18 +184,16 @@ docs = unit # make component { initialState, render }
                           in Array.sortBy tableFieldSort tableData
                       , getRowKey: _.id
                       , rowEq: eq
-                      , onNavigate: mkEffectFn1 \href ->
-                          log $ "navigate to: " <> un URL href
                       , variant: notNull "compact"
                       , primaryColumn: notNull
                           { name: ColumnName "product-title"
-                          , label: notNull "Items"
-                          , filterLabel: notNull "Product title"
+                          , label: labelText "Items"
+                          , filterLabel: Nothing
                           , sortBy: null
                           , style: css {}
-                          , getLink: null -- notNull _.link
                           , renderCell: R.text <<< _.title
                           , sticky: false
+                          , onRowClick: mempty
                           }
                       , columns: self.state.ex2Columns
                       , onColumnChange: notNull $ mkEffectFn1 \columns ->
@@ -210,6 +209,7 @@ docs = unit # make component { initialState, render }
               , children:
                   [ table
                       { name: "Items"
+                      , tableInnerStyle: R.css {}
                       , dropdownMenu: true
                       , sortable: true
                       , sort: notNull self.state.sort
@@ -228,18 +228,16 @@ docs = unit # make component { initialState, render }
                           in Array.sortBy tableFieldSort tableData
                       , getRowKey: _.id
                       , rowEq: eq
-                      , onNavigate: mkEffectFn1 \href ->
-                          log $ "navigate to: " <> un URL href
                       , variant: notNull "compact"
                       , primaryColumn: notNull
                           { name: ColumnName "product-title"
-                          , label: notNull "Items"
-                          , filterLabel: notNull "Product title"
+                          , label: labelText "Items"
+                          , filterLabel: labelText "Product title"
                           , sortBy: null
                           , style: css {}
-                          , getLink: notNull _.link
                           , renderCell: R.text <<< _.title
                           , sticky: false
+                          , onRowClick: mempty
                           }
                       , columns:
                           Array.concat
@@ -247,8 +245,8 @@ docs = unit # make component { initialState, render }
                             , self.state.ex3Columns
                             , [ { required: true
                                 , name: ColumnName "select"
-                                , label: notNull "Select"
-                                , filterLabel: null
+                                , label: labelText "Select"
+                                , filterLabel: Nothing
                                 , sortBy: null
                                 , style: css {}
                                 , hidden: false

@@ -1,4 +1,4 @@
-"use strict";
+
 
 const selectNodeContents = node => {
   const range = document.createRange();
@@ -9,7 +9,7 @@ const selectNodeContents = node => {
   return sel;
 };
 
-exports.copyNodeContents = (success, failure, node) => {
+export const copyNodeContents = (success, failure, node) => {
   try {
     const sel = selectNodeContents(node);
     if (window.navigator.clipboard != null) {

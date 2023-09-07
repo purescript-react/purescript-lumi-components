@@ -52,7 +52,7 @@ docs = unit # make component { initialState, didMount, render }
       , startUpload: Nothing
       }
 
-    didMount self = launchAff_ do send self <<< InitializeUploadBuffer <$> AVar.empty
+    didMount self = launchAff_ do void $ send self <<< InitializeUploadBuffer <$> AVar.empty
 
     send self = case _ of
       NoOp ->
@@ -78,7 +78,7 @@ docs = unit # make component { initialState, didMount, render }
 
       StartUpload -> do
         launchAff_ do
-          maybe
+          void $ maybe
             (InitializeUploadBuffer <$> AVar.new unit)
             (map (const NoOp) <<< AVar.tryPut unit)
             self.state.startUpload

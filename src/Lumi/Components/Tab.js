@@ -1,6 +1,6 @@
-"use strict";
 
-exports.urlParts = function (href) {
+
+export const urlParts = function (href) {
   var base = href;
   var path = "";
   var query = "";

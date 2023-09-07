@@ -42,7 +42,6 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty (fromString) as NES
 import Data.String.Pattern (Pattern(..))
 import Data.Traversable (traverse)
-import Foreign.Generic (class Decode, class Encode, decode, encode)
 import Heterogeneous.Mapping (class MapRecordWithIndex, class Mapping, ConstMapping, hmap, mapping)
 import Lumi.Components.Column (column)
 import Lumi.Components.Form.Internal (Forest, FormBuilder, FormBuilder'(..), Tree(..))
@@ -168,13 +167,6 @@ instance genericValidated :: Generic value rep => Generic (Validated value) rep 
   from (Fresh value) = from value
   from (Modified value) = from value
 
-instance decodeValidated :: Decode value => Decode (Validated value) where
-  decode value = Fresh <$> decode value
-
-instance encodeValidated :: Encode value => Encode (Validated value) where
-  encode (Fresh value) = encode value
-  encode (Modified value) = encode value
-
 -- | Lens for viewing and modifying `Validated` values.
 _Validated :: forall a b. Lens (Validated a) (Validated b) a b
 _Validated = flip lens ($>) $
@@ -234,12 +226,6 @@ instance ordValidatedNewtype :: Ord value => Ord (ModifyValidatedProxy value) wh
 instance genericValidatedNewtype :: Generic value rep => Generic (ModifyValidatedProxy value) rep where
   to = ModifyValidatedProxy <<< to
   from = from <<< unModifyValidatedProxy
-
-instance decodeValidatedNewtype :: Decode value => Decode (ModifyValidatedProxy value) where
-  decode value = ModifyValidatedProxy <$> decode value
-
-instance encodeValidatedNewtype :: Encode value => Encode (ModifyValidatedProxy value) where
-  encode (ModifyValidatedProxy value) = encode value
 
 class CustomModifyValidated a where
   customModifyValidated :: ModifyValidated -> a -> a

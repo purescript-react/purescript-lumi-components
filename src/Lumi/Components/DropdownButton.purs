@@ -3,12 +3,13 @@ module Lumi.Components.DropdownButton where
 import Prelude
 
 import Color (cssStringHSLA)
-import Control.MonadZero (guard)
+import Control.Alternative (guard)
 import Data.Foldable (fold, foldMap, intercalate)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), fromMaybe, isNothing, maybe)
 import Data.Monoid as Monoid
 import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.Number as Math
 import Data.Traversable (for_)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
@@ -22,7 +23,6 @@ import Lumi.Components.Icon as Icon
 import Lumi.Components.Link as Link
 import Lumi.Components.Text (p_)
 import Lumi.Components.ZIndex (ziDropdownButton)
-import Math as Math
 import React.Basic.Classic (Component, JSX, createComponent, element, fragment, make, makeStateless, readProps, readState)
 import React.Basic.DOM as R
 import React.Basic.DOM.Components.GlobalEvents (windowEvent)
@@ -38,9 +38,10 @@ import Web.DOM.Node (appendChild) as DOM
 import Web.DOM.NonElementParentNode (getElementById) as DOM
 import Web.Event.Event (EventType(..))
 import Web.Event.Internal.Types (Event)
+import Web.DOM.Element (getBoundingClientRect) as HTML
 import Web.HTML (window) as HTML
 import Web.HTML.HTMLDocument (body, toDocument, toNonElementParentNode) as HTML
-import Web.HTML.HTMLElement (HTMLElement, fromNode, getBoundingClientRect, toNode) as HTML
+import Web.HTML.HTMLElement (HTMLElement, fromNode, toNode, toElement) as HTML
 import Web.HTML.Window (document, innerWidth, scrollX, scrollY) as HTML
 import Web.HTML.Window (requestAnimationFrame)
 
@@ -53,6 +54,7 @@ type DropdownButtonProps =
  , className :: String
  , onOpen :: Effect Unit
  , alignment :: Nullable String
+ , style :: R.CSS
  }
 
 dropdownButtonComponent :: Component DropdownButtonProps
@@ -106,7 +108,7 @@ dropdownButton =
         props <- readProps self
         state <- readState self
 
-        { bottom, left } <- HTML.getBoundingClientRect el
+        { bottom, left } <- HTML.getBoundingClientRect $ HTML.toElement el
         let p0'@{ bottom: bottom0, left: left0 } = fromMaybe { bottom, left } p0
 
         -- Close the dropdown if the user has scrolled too far.
@@ -143,6 +145,7 @@ dropdownButton =
                     [ button secondary
                         { title = props.label
                         , onPress = capture_ $ toggleOpen self maybeDropdownButtonRef
+                        , style = props.style
                         }
                     , fold ado
                         rootEl <- state.root
@@ -200,6 +203,7 @@ type DropdownMenuProps =
        { label :: String
        , action :: Maybe (Effect Unit)
        })
+  , style :: R.CSS
   }
 
 dropdownMenuComponent :: Component DropdownMenuProps
@@ -207,7 +211,7 @@ dropdownMenuComponent = createComponent "DropdownMenu"
 
 dropdownMenu :: DropdownMenuProps -> JSX
 dropdownMenu = makeStateless dropdownMenuComponent render where
-  render { label, className, items, alignment } =
+  render { label, className, items, alignment, style } =
     dropdownButton
       { label
       , className: "lumi-dropdown-menu " <> className
@@ -229,6 +233,7 @@ dropdownMenu = makeStateless dropdownMenuComponent render where
                   }
           in
             fragment [ intercalate divider_ (map fromItems items) ]
+      , style
       }
 
 dropdownButtonDefaults :: DropdownButtonProps
@@ -238,6 +243,7 @@ dropdownButtonDefaults =
   , className: ""
   , onOpen: pure unit
   , alignment: toNullable Nothing
+  , style: R.css {}
   }
 
 dropdownMenuDefaults :: DropdownMenuProps
@@ -246,6 +252,7 @@ dropdownMenuDefaults =
   , className: ""
   , alignment: toNullable Nothing
   , items: []
+  , style: R.css {}
   }
 
 type DropdownIconProps =
@@ -253,6 +260,7 @@ type DropdownIconProps =
  , content :: Effect Unit -> JSX
  , onOpen :: Effect Unit
  , alignment :: Nullable String
+ , style :: R.CSS
  }
 
 dropdownIconDefaults :: DropdownIconProps
@@ -264,6 +272,7 @@ dropdownIconDefaults =
   , content: mempty
   , onOpen: pure unit
   , alignment: toNullable Nothing
+  , style: R.css {}
   }
 
 dropdownIcon :: DropdownIconProps -> JSX
@@ -276,13 +285,14 @@ dropdownIcon props =
     , className: "lumi-dropdown-icon"
     , onOpen: props.onOpen
     , alignment: props.alignment
+    , style: props.style
     }
 
 foreign import checkIsEventTargetInTree :: EffectFn2 Node Event Boolean
 
 getDimensions :: HTML.HTMLElement -> Effect { width :: Number, height :: Number }
 getDimensions el = do
-  { width, height } <- HTML.getBoundingClientRect el
+  { width, height } <- HTML.getBoundingClientRect $ HTML.toElement el
   pure
     { width: width
     , height: height
@@ -291,9 +301,9 @@ getDimensions el = do
 getAbsolutePosition :: HTML.HTMLElement -> Effect { bottom :: Number, left :: Number, right :: Number }
 getAbsolutePosition el = do
   window <- HTML.window
-  { bottom, left, right } <- HTML.getBoundingClientRect el
-  scrollX <- map toNumber (HTML.scrollX window)
-  scrollY <- map toNumber (HTML.scrollY window)
+  { bottom, left, right } <- HTML.getBoundingClientRect $ HTML.toElement el
+  scrollX <- HTML.scrollX window
+  scrollY <- HTML.scrollY window
   innerWidth <- map toNumber (HTML.innerWidth window)
   pure
     { bottom: bottom + scrollY

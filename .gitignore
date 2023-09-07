@@ -4,6 +4,7 @@
 /node_modules/
 /bower_components/
 /.psc-package/
+.spago
 
 # testing
 /coverage
@@ -26,6 +27,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.direnv
 
 npm-debug.log*
 yarn-debug.log*

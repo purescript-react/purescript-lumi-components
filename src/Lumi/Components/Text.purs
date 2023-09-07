@@ -3,7 +3,7 @@ module Lumi.Components.Text where
 import Prelude
 
 import Color (cssStringHSLA)
-import Data.Array (foldMap)
+import Data.Foldable (foldMap)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (Pattern(Pattern), indexOf)
@@ -21,6 +21,7 @@ type TextProps
     , style :: CSS
     , tag :: String
     , testId :: Nullable String
+    , title :: Nullable String
     }
 
 component :: Component TextProps
@@ -29,7 +30,7 @@ component = createComponent "Text"
 text :: TextProps -> JSX
 text = makeStateless component render
   where
-  render { children, className, color, style, tag, testId } = case indexOf (Pattern "lumi-") tag of
+  render { children, className, color, style, tag, testId, title: title' } = case indexOf (Pattern "lumi-") tag of
     Just 0 ->
       element (unsafeTextTagToComponent tag)
         { children
@@ -37,6 +38,7 @@ text = makeStateless component render
         , "data-color": color
         , "data-testid": testId
         , style
+        , title: title'
         }
     _ ->
       element (unsafeTextTagToComponent tag)
@@ -45,8 +47,9 @@ text = makeStateless component render
         , "data-color": color
         , "data-testid": testId
         , style
+        , title: title'
         }
-  
+
   unsafeTextTagToComponent :: forall props. String -> ReactComponent props
   unsafeTextTagToComponent = unsafeCoerce
 
@@ -132,6 +135,7 @@ body =
   , style: css {}
   , tag: "lumi-body"
   , testId: toNullable Nothing
+  , title: toNullable Nothing
   }
 
 body_ :: String -> JSX

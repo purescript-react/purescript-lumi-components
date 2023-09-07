@@ -1,4 +1,21 @@
-module Lumi.Components.Tab where
+module Lumi.Components.Tab
+  ( TabId(..)
+  , TabKey(..)
+  , TabProps
+  , TabsProps
+  , URLParts
+  , fromUrlParts
+  , getTab
+  , hasTab
+  , setTab
+  , styles
+  , tab
+  , tabComponent
+  , tabs
+  , tabsComponent
+  , urlParts
+  )
+  where
 
 import Prelude
 
@@ -6,21 +23,25 @@ import Color (cssStringHSLA)
 import Control.Alt ((<|>))
 import Data.Array (filter, find, head, index, partition)
 import Data.Array as Array
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, maybe)
 import Data.Newtype (class Newtype, un)
 import Data.String (Pattern(..), drop, indexOf, joinWith, null, split)
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
-import Global.Unsafe (unsafeEncodeURIComponent)
 import JSS (JSS, jss)
+import JSURI (encodeURIComponent)
 import Lumi.Components.Badge (badge)
 import Lumi.Components.Color (colors)
 import Lumi.Components.Column (column_)
 import Lumi.Components.Link as Link
+import Partial.Unsafe (unsafePartial)
 import React.Basic.Classic (Component, JSX, createComponent, element, empty, fragment, makeStateless)
 import React.Basic.DOM (CSS, mergeStyles)
 import React.Basic.DOM as R
 import Web.HTML.History (URL(..))
+
+unsafeEncodeURIComponent :: String -> String
+unsafeEncodeURIComponent str = unsafePartial $ fromJust $ encodeURIComponent str
 
 type TabProps =
   { active :: Boolean

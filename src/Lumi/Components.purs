@@ -126,7 +126,7 @@ lumiElement (LumiInternalComponent { component, defaults, className }) modifyPro
   element component
     $ appendClassName
     $ modifyProps
-    $ unsafeUnion { css: mempty, className: "" }
+    $ unsafeUnion ({ css: mempty, className: "" } :: LumiProps ())
     $ defaults
   where
   appendClassName props =

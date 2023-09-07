@@ -3,7 +3,6 @@ module Lumi.Components2.Examples.Button where
 import Prelude
 
 import Color (lighten)
-import Color.Scheme.MaterialDesign as Colors
 import Data.Array (intercalate)
 import Effect.Aff (Milliseconds(..), delay)
 import Effect.Class (liftEffect)
@@ -11,6 +10,7 @@ import Lumi.Components (($$$))
 import Lumi.Components.Column (column_)
 import Lumi.Components.Example (example)
 import Lumi.Components.Icon (IconType(..), icon)
+import Lumi.Components.MUIColorScheme as Colors
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Spacing (Space(..), hspace, vspace)
 import Lumi.Components.Text (h2_, h4_)

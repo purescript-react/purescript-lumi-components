@@ -1,0 +1,1 @@
+export {default as passwordStrengthBar} from 'react-password-strength-bar';

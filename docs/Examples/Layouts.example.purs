@@ -22,7 +22,7 @@ import Lumi.Components.List (compactList, list, defaultList)
 import Lumi.Components.Lockup (lockup)
 import Lumi.Components.Size (Size(..))
 import Lumi.Components.Tab (TabId(..), TabKey(..), urlParts)
-import Lumi.Components.Table (ColumnName(..), table)
+import Lumi.Components.Table (ColumnName(..), table, labelText)
 import Lumi.Components.Text (body_, h2_, p_, sectionHeader_)
 import Lumi.Components.Utility.ReactRouter (RouterProps, withRouter)
 import React.Basic.Classic (Component, JSX, createComponent, element, toReactComponent)
@@ -184,6 +184,7 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
                       { src: "https://s3.amazonaws.com/lumi-flapjack-staging/mockups/9e7f08b801e6bb3a428ef72e93c49fe5.jpg"
                       }
                   }
+          , tooltipProps: Nothing
           }
       ]
     , [ body_ "ID"
@@ -233,32 +234,29 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
   overviewTable =
     table
       { name: "Items"
+      , tableInnerStyle: R.css {}
       , dropdownMenu: true
       , sortable: true
       , sort: toNullable Nothing
       , sortBy: toNullable Nothing
       , updateSort:
-        mkEffectFn2 \sort sortBy -> do
-          log "update sort click"
+          mkEffectFn2 \sort sortBy -> do
+            log "update sort click"
       , selectable: true
       , selected: toNullable Nothing
       , onSelect: mkEffectFn1 (log <<< show)
       , rows: overviewTableData
       , getRowKey: _.id
       , rowEq: eq
-      , onNavigate:
-        mkEffectFn1 \href ->
-          log $ "Should navigate to: " <> un URL href
       , variant: toNullable Nothing
       , primaryColumn:
         toNullable
           $ Just
               { name: ColumnName "product"
-              , label: toNullable $ Just "Product title"
-              , filterLabel: toNullable $ Just "Product title"
+              , label: labelText "Product title"
+              , filterLabel: Nothing
               , sortBy: toNullable Nothing
               , style: R.css {}
-              , getLink: notNull _.link
               , sticky: false
               , renderCell:
                 \rowData ->
@@ -266,13 +264,15 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
                     { image: Just $ productThumb_ { size: Small, image: R.img { src: rowData.imgSrc } }
                     , title: R.text rowData.title
                     , subtitle: Nothing
+                    , tooltipProps: Nothing
                     }
+              , onRowClick: mempty
               }
       , columns:
         [ { required: true
           , name: ColumnName "product-type"
-          , label: toNullable $ Just "Product type"
-          , filterLabel: toNullable Nothing
+          , label: labelText "Product type"
+          , filterLabel: Nothing
           , sortBy: toNullable $ Just $ ColumnName "title"
           , style: R.css {}
           , hidden: false
@@ -287,8 +287,8 @@ docs = (\c -> element c {}) $ withRouter $ toReactComponent identity component {
           }
         , { required: true
           , name: ColumnName "created-date"
-          , label: toNullable $ Just "Created date"
-          , filterLabel: toNullable Nothing
+          , label: labelText "Created date"
+          , filterLabel: Nothing
           , sortBy: toNullable $ Just $ ColumnName "createdDate"
           , style: R.css {}
           , hidden: false

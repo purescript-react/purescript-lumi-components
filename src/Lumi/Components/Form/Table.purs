@@ -6,6 +6,8 @@ module Lumi.Components.Form.Table
   , defaultRowMenu
   , column
   , column_
+  , infoColumn
+  , infoColumn_
   , withProps
   ) where
 
@@ -28,6 +30,7 @@ import Effect.Aff (Aff, launchAff_)
 import Effect.Class (liftEffect)
 import Lumi.Components.Column as Column
 import Lumi.Components.EditableTable as EditableTable
+import Lumi.Components.Form (static)
 import Lumi.Components.Form.Internal (FormBuilder, FormBuilder'(..), Tree(..), Forest, formBuilder)
 import Lumi.Components.LabeledField (ValidationMessage(..))
 import Lumi.Components.Orientation (Orientation(..))
@@ -49,6 +52,9 @@ newtype TableFormBuilder props row result =
              { label :: String
              , render :: row -> ((row -> row) -> Effect Unit) -> JSX
              }
+         , infoColumns :: Array
+             { render :: row -> ((row -> row) -> Effect Unit) -> JSX
+             }
          , validate :: row -> Maybe result
          }
     )
@@ -59,16 +65,18 @@ instance applyTableFormBuilder :: Apply (TableFormBuilder props row) where
   apply (TableFormBuilder ff) (TableFormBuilder fa) =
     TableFormBuilder \props ->
       let
-        { columns: columnsF, validate: validateF } = ff props
-        { columns: columnsA, validate: validateA } = fa props
+        { columns: columnsF, infoColumns: infoColsF, validate: validateF } = ff props
+        { columns: columnsA, infoColumns: infoColsA, validate: validateA } = fa props
       in
         { columns: columnsF <> columnsA
+        , infoColumns: infoColsF <> infoColsA
         , validate: \row -> validateF row <*> validateA row
         }
 instance applicativeTableFormBuilder :: Applicative (TableFormBuilder props row) where
   pure a =
     TableFormBuilder \_ ->
       { columns: []
+      , infoColumns: []
       , validate: \_ -> pure a
       }
 
@@ -116,7 +124,7 @@ editableTable
 editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
-      { columns, validate } = (un TableFormBuilder builder) props
+      { columns, infoColumns, validate } = (un TableFormBuilder builder) props
       validateRows = traverse validate rows
     in
       { edit: \onChange ->
@@ -153,6 +161,13 @@ editableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summar
                   { label
                   , renderCell: \(Tuple i r) ->
                       render r (onChange <<< ix i)
+                  , renderHeader: R.text
+                  , headerStyle: mempty
+                  }
+            , infoColumns:
+                infoColumns <#> \{ render } ->
+                  { renderCell: \(Tuple i r) ->
+                      render r (onChange <<< ix i)
                   }
             }
       , validate: validateRows
@@ -185,7 +200,7 @@ nonEmptyEditableTable
 nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu, summary } =
   formBuilder \props rows ->
     let
-      { columns, validate } = (un TableFormBuilder builder) props
+      { columns, infoColumns, validate } = (un TableFormBuilder builder) props
       validateRows = traverse validate rows
     in
       { edit: \onChange ->
@@ -221,6 +236,13 @@ nonEmptyEditableTable { addLabel, addRow, formBuilder: builder, maxRows, rowMenu
                 columns <#> \{ label, render } ->
                   { label
                   , renderCell: \(Tuple i r) ->
+                      render r (onChange <<< ix i)
+                  , renderHeader: R.text
+                  , headerStyle: mempty
+                  }
+            , infoColumns:
+                infoColumns <#> \{ render } ->
+                  { renderCell: \(Tuple i r) ->
                       render r (onChange <<< ix i)
                   }
             }
@@ -258,102 +280,133 @@ column
   -> FormBuilder { readonly :: Boolean | props } row
   ~> TableFormBuilder { readonly :: Boolean | props } row
 column label orientation (FormBuilder f) =
-  let
-    renderer =
-      case orientation of
-        Horizontal ->
-          horizontalRenderer
-        Vertical ->
-          verticalRenderer
-  in
-    TableFormBuilder \props ->
-      { columns:
-          [ { label
-            , render: \row onChange ->
-                renderer props.readonly ((f props row).edit onChange)
-            }
+  TableFormBuilder \props ->
+    { columns:
+        [ { label
+          , render: \row onChange ->
+              renderer orientation props.readonly $ (f props row).edit onChange
+          }
+        ]
+    , infoColumns: []
+    , validate: \row ->
+        (f props row).validate
+    }
+
+-- | Convert a `FormBuilder` into a readonly info column of a table form with
+-- | the specified label where all fields are laid out horizontally.
+infoColumn_
+  :: forall props row
+   . FormBuilder { readonly :: Boolean | props } row
+  ~> TableFormBuilder { readonly :: Boolean | props } row
+infoColumn_ = infoColumn Horizontal
+
+-- | Convert a `FormBuilder` into a readonly info column of a table form with
+-- | the specified orientation.
+infoColumn
+  :: forall props row
+   . Orientation
+  -> FormBuilder { readonly :: Boolean | props } row
+  ~> TableFormBuilder { readonly :: Boolean | props } row
+infoColumn orientation (FormBuilder f) =
+  TableFormBuilder \props ->
+    let props' = props { readonly = true }
+     in { columns: []
+        , infoColumns:
+            [ { render: \row onChange ->
+                  renderer orientation props'.readonly $ (f props' row).edit onChange
+              }
+            ]
+        , validate: \row ->
+            (f props' row).validate
+        }
+
+renderer :: Orientation -> Boolean -> Array Tree -> JSX
+renderer orientation =
+  case orientation of
+    Horizontal ->
+      horizontalRenderer
+    Vertical ->
+      verticalRenderer
+
+innerColumn_ :: Array JSX -> JSX
+innerColumn_ children =
+  Column.column
+    { style: R.css { maxWidth: "100%" }
+    , children
+    }
+
+innerRow_ :: Array JSX -> JSX
+innerRow_ children =
+  Row.row
+    { style: R.css { maxWidth: "100%" }
+    , children
+    }
+
+horizontalRenderer :: Boolean -> Forest -> JSX
+horizontalRenderer readonly forest =
+  innerRow_
+    [ intercalate (hspace S12) (map (toColumn readonly) forest)
+    ]
+
+toColumn :: Boolean -> Tree -> JSX
+toColumn readonly =
+  case _ of
+    Child { key, child } ->
+      maybe identity keyed key $ child
+    Wrapper { key, wrap, children } ->
+      maybe identity keyed key $ wrap
+        [ innerRow_
+            [ intercalate (hspace S12) (map (toColumn readonly) children)
+            ]
+        ]
+    Node { key, validationError, children } ->
+      maybe identity keyed key $
+        innerColumn_
+          [ innerRow_
+              [ intercalate (hspace S12) (map (toColumn readonly) children)
+              ]
+          , guard (not readonly) $
+              foldMap errLine validationError
           ]
-      , validate: \row ->
-          (f props row).validate
-      }
-  where
-    innerColumn_ children =
-      Column.column
-        { style: R.css { maxWidth: "100%" }
-        , children
-        }
 
-    innerRow_ children =
-      Row.row
-        { style: R.css { maxWidth: "100%" }
-        , children
-        }
+verticalRenderer :: Boolean -> Forest -> JSX
+verticalRenderer readonly forest =
+  innerColumn_
+    [ intercalate (vspace S8) (map (toRow readonly) forest)
+    ]
 
-    horizontalRenderer :: Boolean -> Forest -> JSX
-    horizontalRenderer readonly forest =
-      innerRow_
-        [ intercalate (hspace S12) (map (toColumn readonly) forest)
-        ]
-
-    toColumn :: Boolean -> Tree -> JSX
-    toColumn readonly =
-      case _ of
-        Child { key, child } ->
-          maybe identity keyed key $ child
-        Wrapper { key, wrap, children } ->
-          maybe identity keyed key $ wrap
-            [ innerRow_
-                [ intercalate (hspace S12) (map (toColumn readonly) children)
-                ]
+toRow :: Boolean -> Tree -> JSX
+toRow readonly =
+  case _ of
+    Child { key, child } ->
+      maybe identity keyed key $ child
+    Wrapper { key, wrap, children } ->
+      maybe identity keyed key $ wrap
+        [ innerColumn_
+            [ intercalate (vspace S8) (map (toColumn readonly) children)
             ]
-        Node { key, validationError, children } ->
-          maybe identity keyed key $
-            innerColumn_
-              [ innerRow_
-                  [ intercalate (hspace S12) (map (toColumn readonly) children)
-                  ]
-              , guard (not readonly) $
-                  foldMap errLine validationError
-              ]
-
-    verticalRenderer :: Boolean -> Forest -> JSX
-    verticalRenderer readonly forest =
-      innerColumn_
-        [ intercalate (vspace S8) (map (toRow readonly) forest)
         ]
+    Node { key, validationError, children } ->
+      maybe identity keyed key $
+        innerColumn_
+          [ intercalate (vspace S8) (map (toColumn readonly) children)
+          , guard (not readonly) $
+              foldMap errLine validationError
+          ]
 
-    toRow :: Boolean -> Tree -> JSX
-    toRow readonly =
-      case _ of
-        Child { key, child } ->
-          maybe identity keyed key $ child
-        Wrapper { key, wrap, children } ->
-          maybe identity keyed key $ wrap
-            [ innerColumn_
-                [ intercalate (vspace S8) (map (toColumn readonly) children)
-                ]
-            ]
-        Node { key, validationError, children } ->
-          maybe identity keyed key $
-            innerColumn_
-              [ intercalate (vspace S8) (map (toColumn readonly) children)
-              , guard (not readonly) $
-                  foldMap errLine validationError
-              ]
-
-    errLine :: ValidationMessage -> JSX
-    errLine =
-      case _ of
-        Error e ->
-          T.text T.subtext
-            { className = Nullable.notNull "labeled-field--validation-error"
-            , children = [ R.text e ]
-            }
-        Warning w ->
-          T.text T.subtext
-            { className = Nullable.notNull "labeled-field--validation-warning"
-            , children = [ R.text w ]
-            }
+errLine :: ValidationMessage -> JSX
+errLine =
+  case _ of
+    Error e ->
+      T.text T.subtext
+        { className = Nullable.notNull "labeled-field--validation-error"
+        , children = [ R.text e ]
+        }
+    Warning w ->
+      T.text T.subtext
+        { className = Nullable.notNull "labeled-field--validation-warning"
+        , children = [ R.text w ]
+        }
 
 -- | Make the props available. This allows for changing the structure of a table
 -- | form builder based on the current props.

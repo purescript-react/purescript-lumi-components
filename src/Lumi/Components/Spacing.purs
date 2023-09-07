@@ -1,6 +1,7 @@
 module Lumi.Components.Spacing
   ( Space(..)
   , hspace
+  , hspaceWithStyle
   , vspace
   , toPixels
   ) where
@@ -15,13 +16,16 @@ data Space
   = S4 | S8 | S12 | S16 | S24 | S32 | S40 | S48 | S56
   | S64 | S72 | S80 | S88 | S96 | S104 | S112
 
-hspace :: Space -> JSX
-hspace size =
+hspaceWithStyle :: R.CSS -> Space -> JSX
+hspaceWithStyle sty size =
   R.div
-    { style: R.css
+    { style: sty <> R.css
         { paddingLeft: toPixels size
         }
     }
+
+hspace :: Space -> JSX
+hspace = hspaceWithStyle mempty
 
 vspace :: Space -> JSX
 vspace size =

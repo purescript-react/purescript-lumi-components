@@ -10,10 +10,9 @@ import Data.Foldable as Array
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.NonEmpty ((:|))
 import Data.Nullable as Nullable
-import Data.Number (isNaN)
+import Data.Number as Number
 import Data.Number.Format (fixed, toStringWith)
 import Effect.Console (log)
-import Global (readFloat)
 import Lumi.Components.Column (column_)
 import Lumi.Components.DropdownButton (dropdownIcon, dropdownIconDefaults)
 import Lumi.Components.EditableTable (editableTable, editableTableDefaults)
@@ -71,6 +70,8 @@ docs = unit # make component
                           updateRow self row { description = fromMaybe row.description value }
                       , style = R.css { width: "100%" }
                       }
+                  , renderHeader: R.text
+                  , headerStyle: mempty
                   }
                 , { label: "Quantity"
                   , renderCell: \row -> Input.input Input.number
@@ -78,23 +79,26 @@ docs = unit # make component
                       , onChange = handler targetValue \value ->
                           updateRow self row { quantity = fromMaybe row.quantity $ fromString =<< value }
                       }
+                  , renderHeader: R.text
+                  , headerStyle: mempty
                   }
                 , { label: "Price"
                   , renderCell: \row -> Input.input Input.number
                       { value = show row.price
                       , step = Nullable.notNull $ Input.Step 0.01
                       , onChange = handler targetValue \value ->
-                          updateRow self $ fromMaybe row do
-                            value' <- readFloat <$> value
-                            pure if isNaN value'
-                              then row
-                              else row { price = value' }
+                          updateRow self row { price = fromMaybe row.price $ Number.fromString =<< value }
                       }
+                  , renderHeader: R.text
+                  , headerStyle: mempty
                   }
                 , { label: "Total"
                   , renderCell: \row -> R.text $ toMoneyString (calculateTotal row)
+                  , renderHeader: R.text
+                  , headerStyle: mempty
                   }
                 ]
+            , infoColumns: []
             , maxRows: 5
             , onRowAdd: addRow self
             , onRowRemove: removeRow self

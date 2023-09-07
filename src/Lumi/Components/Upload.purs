@@ -695,7 +695,7 @@ nativeClientY = either (const Nothing) Just <<< runExcept <<< (readNumber <=< re
 
 fileListToArray :: FileList -> Array File
 fileListToArray fileList = ST.run do
-  arr <- STArray.empty
+  arr <- STArray.new
   ST.for 0 (FileList.length fileList) \i -> do
     for_ (FileList.item i fileList) \file -> do
       void $ STArray.push file arr

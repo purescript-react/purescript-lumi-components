@@ -4,7 +4,7 @@ import Prelude
 
 import Color (cssStringHSLA)
 import Control.Coroutine.Aff (close, emit, produceAff)
-import Control.MonadZero (guard)
+import Control.Alternative (guard)
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Foldable (foldMap)
@@ -19,7 +19,6 @@ import Data.Newtype (class Newtype, un)
 import Data.Nullable as Nullable
 import Data.String as String
 import Data.String.NonEmpty (NonEmptyString, appendString, length, toString)
-import Data.Symbol (SProxy(..))
 import Effect.Aff (Milliseconds(..), delay, error, throwError)
 import Effect.Class (liftEffect)
 import Effect.Random (randomRange)
@@ -48,6 +47,7 @@ import React.Basic.DOM.Events (preventDefault)
 import React.Basic.Events (handler, handler_)
 import React.Basic.Hooks (Component, JSX, component, useState, (/\))
 import React.Basic.Hooks as React
+import Type.Proxy (Proxy(..))
 import Web.File.File as File
 
 docs :: JSX
@@ -88,19 +88,19 @@ metaForm
 metaForm = ado
   inlineTable <-
     F.indent "Inline table" Neither
-    $ F.focus (prop (SProxy :: SProxy "inlineTable"))
+    $ F.focus (prop (Proxy :: Proxy "inlineTable"))
     $ F.switch
   forceTopLabels <-
     F.indent "Force top labels" Neither
-    $ F.focus (prop (SProxy :: SProxy "forceTopLabels"))
+    $ F.focus (prop (Proxy :: Proxy "forceTopLabels"))
     $ F.switch
   readonly <-
     F.indent "Readonly" Neither
-    $ F.focus (prop (SProxy :: SProxy "readonly"))
+    $ F.focus (prop (Proxy :: Proxy "readonly"))
     $ F.switch
   simulatePauses <-
     F.indent "Simulate pauses (pet color picker)" Neither
-    $ F.focus (prop (SProxy :: SProxy "simulatePauses"))
+    $ F.focus (prop (Proxy :: Proxy "simulatePauses"))
     $ F.switch
   in unit
 
@@ -257,7 +257,7 @@ userForm
 userForm = ado
   firstName <-
     F.indent "First Name" Required
-    $ F.focus (prop (SProxy :: SProxy "firstName"))
+    $ F.focus (prop (Proxy :: Proxy "firstName"))
     $ F.warn (\x ->
         Monoid.guard
           (length x <= 2)
@@ -267,33 +267,33 @@ userForm = ado
     $ F.inputBox $ Input.text_ { placeholder = "First name" }
   lastName <-
     F.indent "Last Name" Required
-    $ F.focus (prop (SProxy :: SProxy "lastName"))
+    $ F.focus (prop (Proxy :: Proxy "lastName"))
     $ F.validated (F.nonEmpty "Last name")
     $ F.textbox
   password <-
-    F.focus (prop (SProxy :: SProxy "password"))
+    F.focus (prop (Proxy :: Proxy "password"))
     $ F.parallel "password" do
         password1 <- F.sequential "password1"
           $ F.indent "Password" Required
-          $ F.focus (prop (SProxy :: SProxy "password1"))
+          $ F.focus (prop (Proxy :: Proxy "password1"))
           $ F.validated (F.nonEmpty "Password")
           $ F.passwordBox
         password2 <- F.sequential "password2"
           $ F.indent "Confirm password" Required
-          $ F.focus (prop (SProxy :: SProxy "password2"))
+          $ F.focus (prop (Proxy :: Proxy "password2"))
           $ F.validated (F.mustEqual (toString password1) "Passwords do not match.")
           $ F.passwordBox
         pure password1
   admin <-
     F.indent "Admin?" Neither
-    $ F.focus (prop (SProxy :: SProxy "admin"))
+    $ F.focus (prop (Proxy :: Proxy "admin"))
     $ F.switch
   checkbox <-
     F.indent "Checked?" Neither
-    $ F.focus (prop (SProxy :: SProxy "checkbox"))
+    $ F.focus (prop (Proxy :: Proxy "checkbox"))
     $ F.checkbox
   descriptiveCheckbox <-
-    F.focus (prop (SProxy :: SProxy "descriptiveCheckbox"))
+    F.focus (prop (Proxy :: Proxy "descriptiveCheckbox"))
     $ F.labeledCheckbox
     $ column
         { style: R.css { maxWidth: "300px" }
@@ -309,11 +309,11 @@ userForm = ado
   F.section "Personal data"
   height <-
     F.indent "Height (in)" Optional
-    $ F.focus (prop (SProxy :: SProxy "height"))
+    $ F.focus (prop (Proxy :: Proxy "height"))
     $ F.validated (F.optional (F.validNumber "Height"))
     $ F.number { min: Nothing, max: Nothing, step: Input.Any }
   addresses <-
-    F.focus (prop (SProxy :: SProxy "addresses"))
+    F.focus (prop (Proxy :: Proxy "addresses"))
     $ F.warn (\as ->
         Monoid.guard (Array.null as) (pure "No address added.")
       )
@@ -325,7 +325,7 @@ userForm = ado
         }
   leastFavoriteColors <-
     F.indent "Least Favorite Colors" Required
-    $ F.focus (prop (SProxy :: SProxy "leastFavoriteColors"))
+    $ F.focus (prop (Proxy :: Proxy "leastFavoriteColors"))
     $ F.validated (F.nonEmptyArray' "This is absolutely essential. Don't skip it!!")
     $ F.multiSelect show
     $ map (\x -> { label: x, value: x })
@@ -338,16 +338,16 @@ userForm = ado
       ]
   notes <-
     F.indent "Notes" Optional
-    $ F.focus (prop (SProxy :: SProxy "notes"))
+    $ F.focus (prop (Proxy :: Proxy "notes"))
     $ F.textarea
   notes <-
     F.indent "Notes (with placeholder)" Optional
-    $ F.focus (prop (SProxy :: SProxy "notes"))
+    $ F.focus (prop (Proxy :: Proxy "notes"))
     $ F.textarea_ $ Textarea.defaults { placeholder = "Placeholder text..." }
 
   F.section "Pets"
   pets <-
-    F.focus (prop (SProxy :: SProxy "pets") <<< mapping (mapping (_Newtype <<< _Newtype)))
+    F.focus (prop (Proxy :: Proxy "pets") <<< mapping (mapping (_Newtype <<< _Newtype)))
     $ F.warn (\pets ->
         Monoid.guard (Array.null pets) (pure "You should adopt a pet.")
       )
@@ -366,11 +366,11 @@ userForm = ado
         , formBuilder: ado
             name <- FT.column_ "Name" ado
               firstName <-
-                F.focus (prop (SProxy :: SProxy "firstName"))
+                F.focus (prop (Proxy :: Proxy "firstName"))
                 $ F.validated (F.nonEmpty "First name")
                 $ F.textbox
               lastName <-
-                F.focus (prop (SProxy :: SProxy "lastName"))
+                F.focus (prop (Proxy :: Proxy "lastName"))
                 $ F.warn (\lastName -> do
                     guard (not String.null lastName)
                     pure "Did you really give your pet a surname?"
@@ -383,7 +383,7 @@ userForm = ado
                   $ Just lastName
             animal <-
               FT.column_ "Animal"
-              $ F.focus (prop (SProxy :: SProxy "animal"))
+              $ F.focus (prop (Proxy :: Proxy "animal"))
               $ F.validated (F.nonNull "Animal")
               $ F.select identity pure
               $ map (\value -> { label: value, value })
@@ -400,7 +400,7 @@ userForm = ado
                   ]
             age <-
               FT.column_ "Age"
-              $ F.focus (prop (SProxy :: SProxy "age"))
+              $ F.focus (prop (Proxy :: Proxy "age"))
               $ F.validated (F.validInt "Age")
               $ F.number
                   { step: Input.Step 1.0
@@ -410,7 +410,7 @@ userForm = ado
             color <-
               FT.column_ "Color"
               $ F.withProps \props ->
-                  F.focus (prop (SProxy :: SProxy "color"))
+                  F.focus (prop (Proxy :: Proxy "color"))
                   $ F.warn (\x ->
                       Monoid.guard
                         (isNothing x)
@@ -434,7 +434,7 @@ userForm = ado
   F.section "Images"
   avatar <-
     F.indent "Avatar" Optional
-    $ F.focus (prop (SProxy :: SProxy "avatar"))
+    $ F.focus (prop (Proxy :: Proxy "avatar"))
     $ F.match_ (iso (maybe [] pure) Array.head)
     $ F.file
         { variant: Upload.Avatar
@@ -526,28 +526,28 @@ addressForm
 addressForm = ado
   name <-
     F.indent "Name" Required
-    $ F.focus (prop (SProxy :: SProxy "name"))
+    $ F.focus (prop (Proxy :: Proxy "name"))
     $ F.validated (F.nonEmpty "Name")
     $ F.textbox
   street <-
     F.indent "Street" Required
-    $ F.focus (prop (SProxy :: SProxy "street"))
+    $ F.focus (prop (Proxy :: Proxy "street"))
     $ F.validated (F.nonEmpty "Street")
     $ F.textbox
   city <-
     F.indent "City" Required
-    $ F.focus (prop (SProxy :: SProxy "city"))
+    $ F.focus (prop (Proxy :: Proxy "city"))
     $ F.validated (F.nonEmpty "City")
     $ F.textbox
   { country, state } <- F.parallel "countryState" do
       country <- F.sequential "country"
         $ F.indent "Country" Neither
-        $ F.focus (prop (SProxy :: SProxy "country"))
+        $ F.focus (prop (Proxy :: Proxy "country"))
         $ F.validated (F.nonNull "Country")
         $ countryFormBuilder
       state <- F.sequential "state"
         $ F.indent "State" Neither
-        $ F.focus (prop (SProxy :: SProxy "state"))
+        $ F.focus (prop (Proxy :: Proxy "state"))
         $ F.validated (F.nonNull "State")
         $ stateFormBuilder country
       pure { country, state }

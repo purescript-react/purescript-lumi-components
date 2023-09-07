@@ -12,11 +12,11 @@ module Lumi.Components2.Text
 
   , ParagraphProps
   , paragraph_, paragraph
+  , boldBody_
 
   , Header
   , HeaderProps
-  , subsectionHeader
-  , sectionHeader
+  , sectionHeader, subsectionHeader, subSubsectionHeader
   , title
   , mainHeader
   ) where
@@ -25,7 +25,7 @@ import Prelude
 
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Effect.Unsafe (unsafePerformEffect)
-import Lumi.Components (LumiComponent, PropsModifier, PropsModifier', lumiComponent, propsModifier)
+import Lumi.Components (LumiComponent, PropsModifier, PropsModifier', lumiComponent, propsModifier, ($$$))
 import Lumi.Components.Color (ColorMap)
 import Lumi.Styles (Style, StyleModifier)
 import Lumi.Styles as S
@@ -223,6 +223,9 @@ type HeaderProps =
   , content :: String
   )
 
+subSubsectionHeader :: LumiComponent HeaderProps
+subSubsectionHeader = mkHeaderComponent R.h6' <<< textStyle _.subSubsectionHeader
+
 subsectionHeader :: LumiComponent HeaderProps
 subsectionHeader = mkHeaderComponent R.h4' <<< textStyle _.subsectionHeader
 
@@ -283,3 +286,10 @@ textStyle selector =
       , lineHeight: S.px $ textLineHeight theme selector
       , marginBottom: S.px $ textMargin theme selector
       }
+
+boldBody_ :: String -> JSX
+boldBody_ s =
+  paragraph_
+  $ strong
+  $ S.style_ ( E.css { marginBottom: E.px 0, marginTop: E.px 4 } )
+  $$$ s

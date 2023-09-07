@@ -1,5 +1,8 @@
 module Lumi.Components.StatusSlat where
 
+-- TODO remove this in favor of Lumi.Common.Components.StatusSlat or vice-versa.
+-- We probably don't need both
+
 import Prelude
 
 import Color (cssStringHSLA)

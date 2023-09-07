@@ -25,6 +25,7 @@ import Prelude
 import Color (Color)
 import Data.Array (fold)
 import Data.Array as Array
+import Data.Foldable (foldMap)
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff, finally, launchAff_)
 import Effect.Class (liftEffect)
@@ -88,11 +89,13 @@ button = primary >>>
     theme <- useTheme
     clickInProgress /\ setClickInProgress <- useState' false
     let
+      loading :: Boolean
       loading =
         clickInProgress || case props.state of
           Enabled -> false
           Disabled -> false
           Loading -> true
+      disabled :: Boolean
       disabled =
         loading || case props.state of
           Enabled -> false
@@ -402,7 +405,7 @@ linkButton = recolor _.primary >>>
                 else
                   Nothing
           , children:
-              [ props.loadingContent # Array.foldMap \lc ->
+              [ props.loadingContent # foldMap \lc ->
                   Box.box
                     $ _row
                     $ _justify Baseline

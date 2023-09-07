@@ -17,6 +17,7 @@ module Lumi.Components.Form
   , textarea
   , textarea_
   , switch
+  , switch'
   , checkbox
   , labeledCheckbox
   , radioGroup
@@ -26,6 +27,8 @@ module Lumi.Components.Form
   , fromString
   , toString
   , select
+  , SelectConfig
+  , selectWith
   , multiSelect
   , asyncSelect
   , asyncSelectByKey
@@ -34,6 +37,7 @@ module Lumi.Components.Form
   , fixedSizeArray
   , arrayModal
   , fetch
+  , fetchWithDebounce
   , fetch_
   , asyncEffect
   , effect
@@ -48,6 +52,7 @@ module Lumi.Components.Form
   , mapUI
   , mapUI_
   , indent
+  , jsxIndent
   , wrap
   , filterWithProps
   , withKey
@@ -68,7 +73,8 @@ import Data.Monoid (guard)
 import Data.Newtype (un)
 import Data.Nullable (notNull, null, toNullable)
 import Data.String as String
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
+import Data.Time.Duration (Milliseconds)
 import Data.Traversable (intercalate, traverse, traverse_)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
@@ -104,6 +110,8 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Events (capture, stopPropagation, targetChecked, targetValue)
 import React.Basic.Events as Events
 import React.Basic.Hooks as Hooks
+import Record (merge)
+import Type.Proxy (Proxy(..))
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Create a React component for a form from a `FormBuilder`.
@@ -419,6 +427,22 @@ switch = formBuilder_ \{ readonly } b onChange ->
            , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
            }
 
+-- | A `switch` is an editor for booleans which displays Yes or No.
+switch'
+  :: forall props
+   . Input.InputProps ->
+     FormBuilder
+       { readonly :: Boolean | props }
+       Boolean
+       Boolean
+switch' inputProps = formBuilder_ \{ readonly } b onChange ->
+  if readonly
+    then Input.alignToInput $ R.text (if b then "Yes" else "No")
+    else Input.input (inputProps `merge` Input.switch)
+           { checked = if b then Input.On else Input.Off
+           , onChange = Events.handler (stopPropagation >>> targetChecked) (traverse_ onChange)
+           }
+
 -- | A `checkbox` is an editor for booleans which displays checked or not checked.
 checkbox :: forall props. FormBuilder { readonly :: Boolean | props } Boolean Boolean
 checkbox = labeledCheckbox mempty
@@ -532,16 +556,40 @@ file opts = formBuilder_ \{ readonly } value onChange ->
     , backend = opts.backend
     }
 
--- | A editor consisting of a single-select dropdown.
+-- | An editor consisting of a single-select dropdown. For more customization,
+-- | see 'selectWith'.
 select
   :: forall props a
    . (a -> String)
   -> (String -> Maybe a)
   -> Array { label :: String, value :: a }
   -> FormBuilder { readonly :: Boolean | props } (Maybe a) (Maybe a)
-select toString fromString opts = formBuilder_ \{ readonly } selected onChange ->
-  if readonly
-    then
+select toString fromString opts =
+  selectWith
+    { toString
+    , fromString
+    , opts
+    , placeholderLabel: "Select an option ..."
+    , initialValue: Nothing
+    }
+
+type SelectConfig a =
+  { "toString" :: a -> String
+  , "fromString" :: String -> Maybe a
+  , "opts" :: Array { label :: String, value :: a }
+  , "placeholderLabel" :: String
+  , "initialValue" :: Maybe a
+  }
+
+-- | An editor consisting of a single-select dropdown. For a simpler variant,
+-- | see 'select'.
+selectWith
+  :: forall props a
+   . SelectConfig a
+  -> FormBuilder { readonly :: Boolean | props } (Maybe a) (Maybe a)
+selectWith config =
+  formBuilder_ \{ readonly } selected onChange ->
+    if readonly then
       let toLabel a =
             Array.findMap (\{ label, value } ->
               if toString value == toString a
@@ -549,11 +597,20 @@ select toString fromString opts = formBuilder_ \{ readonly } selected onChange -
                 else Nothing) opts
        in Input.alignToInput $ R.text (fromMaybe "" (selected >>= toLabel))
     else
-      NativeSelect.nativeSelect NativeSelect.defaults
-        { options = { label: "Select an option ...", value: "" } : map (\{ label, value } -> { label, value: toString value }) opts
-        , onChange = capture targetValue \newValue -> onChange (fromString =<< newValue)
-        , value = maybe "" toString selected
-        }
+        NativeSelect.nativeSelect NativeSelect.defaults
+          { options =
+              { label: placeholderLabel, value: "" }
+                : map (\{ label, value } -> { label, value: toString value }) opts
+          , onChange =
+              capture targetValue \newValue ->
+                onChange (fromString =<< newValue)
+          , value =
+              case selected of
+                Nothing -> maybe "" toString initialValue
+                Just x -> toString x
+          }
+  where
+  { toString, fromString, opts, placeholderLabel, initialValue } = config
 
 class GenericSelect rep where
   fromString :: String -> Maybe rep
@@ -567,8 +624,8 @@ instance sumGenericSelect :: (GenericSelect a, GenericSelect b) => GenericSelect
     Nothing -> map Inr (fromString s)
 
 instance sumGenericSelectConstructor :: (IsSymbol name) => GenericSelect (Constructor name NoArguments) where
-  toString _ = reflectSymbol (SProxy :: SProxy name)
-  fromString s | s == reflectSymbol (SProxy :: SProxy name) = Just (Constructor NoArguments)
+  toString _ = reflectSymbol (Proxy :: Proxy name)
+  fromString s | s == reflectSymbol (Proxy :: Proxy name) = Just (Constructor NoArguments)
                | otherwise = Nothing
 
 -- | given values which are composed from a sum-type, generate a select dropdown from its elements
@@ -905,9 +962,15 @@ arrayModal { label, addLabel, defaultValue, summary, component, componentProps }
 -- | The result is `Nothing` while the effect is not completed, and a `Just`
 -- | after the value is available.
 fetch :: forall props a. JSX -> String -> (String -> Aff a) -> FormBuilder props (Maybe a) (Maybe a)
-fetch = \loading id getData ->
+fetch = fetchWithDebounce mempty
+
+-- | Form that performs an asynchronous effect whenever `id` changes.
+-- | The result is `Nothing` while the effect is not completed, and a `Just`
+-- | after the value is available.
+fetchWithDebounce :: forall props a. Milliseconds -> JSX -> String -> (String -> Aff a) -> FormBuilder props (Maybe a) (Maybe a)
+fetchWithDebounce = \debounce loading id getData ->
   formBuilder_ \props value onChange ->
-    FetchCache.single
+    FetchCache.singleWithDebounce
       { id: Just id
       , getData: \id' -> do
           liftEffect $ onChange Nothing
@@ -916,6 +979,7 @@ fetch = \loading id getData ->
           if isJust v
             then keyed id $ async (mempty <$ liftEffect (onChange v))
             else loading
+      , debounce: debounce
       }
 
 -- | Performs an asynchronous effect once and returns its result encapsulated in
@@ -958,8 +1022,8 @@ effect key = asyncEffect key mempty <<< liftEffect
 -- |       }
 -- |
 -- |   sequential ado
--- |     foo <- focus (SProxy :: SProxy "foo") textbox
--- |     bar <- focus (SProxy :: SProxy "bar") switch
+-- |     foo <- focus (Proxy :: Proxy "foo") textbox
+-- |     bar <- focus (Proxy :: Proxy "bar") switch
 -- |     in { foo, bar }
 -- | ```
 initializer
@@ -1092,18 +1156,18 @@ withValue
   -> FormBuilder' ui props unvalidated result
 withValue f = FormBuilder \props value -> un FormBuilder (f value) props value
 
--- | Indent a `Forest` of editors by one level, providing a label.
-indent
+-- | As 'indent' but takes any 'JSX' as the label
+jsxIndent
   :: forall props u a
-   . String
+   . JSX
   -> RequiredField
   -> FormBuilder props u a
   -> FormBuilder props u a
-indent label required editor = FormBuilder \props val ->
+jsxIndent label required editor = FormBuilder \props val ->
   let { edit, validate } = un FormBuilder editor props val
    in { edit: \k ->
           pure $ Node
-            { label: R.text label
+            { label: label
             , key: Nothing
             , required: required
             , validationError: Nothing
@@ -1111,6 +1175,15 @@ indent label required editor = FormBuilder \props val ->
             }
       , validate
       }
+
+-- | Indent a `Forest` of editors by one level, providing a label.
+indent
+  :: forall props u a
+   . String
+  -> RequiredField
+  -> FormBuilder props u a
+  -> FormBuilder props u a
+indent label required editor = jsxIndent (R.text label) required editor
 
 wrap
   :: forall props u a

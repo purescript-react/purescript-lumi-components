@@ -1,4 +1,10 @@
-module Lumi.Components.EditableTable where
+module Lumi.Components.EditableTable
+  ( EditableTableProps
+  , editableTableDefaults
+  , defaultRemoveCell
+  , editableTable
+  , styles
+  ) where
 
 import Prelude
 
@@ -7,6 +13,7 @@ import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Either (Either(..))
+import Data.Foldable (foldMap, null)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Effect (Effect)
@@ -32,7 +39,10 @@ type EditableTableProps row =
   , columns :: Array
       { label :: String
       , renderCell :: row -> JSX
+      , renderHeader :: String -> JSX
+      , headerStyle :: R.CSS
       }
+  , infoColumns :: Array { renderCell :: row -> JSX }
   , maxRows :: Int
   , onRowAdd :: Effect Unit
   , onRowRemove :: row -> Effect Unit
@@ -47,6 +57,7 @@ editableTableDefaults :: forall row. Eq row => EditableTableProps row
 editableTableDefaults =
   { addLabel: "Add row"
   , columns: []
+  , infoColumns: []
   , maxRows: top
   , onRowAdd: pure unit
   , onRowRemove: \_ -> pure unit
@@ -59,11 +70,11 @@ editableTableDefaults =
 
 defaultRemoveCell :: forall row. Maybe (row -> Effect Unit) -> row -> JSX
 defaultRemoveCell onRowRemove item =
-  onRowRemove # Array.foldMap \onRowRemove' ->
+  onRowRemove # foldMap \onRowRemove' ->
     linkButton
     $ recolor _.black1
     $ S.style
-        ( \(LumiTheme { colors }) ->
+        ( \(LumiTheme { colors: _ }) ->
           S.css
             { fontSize: S.px 20
             , textDecoration: S.important S.none
@@ -97,14 +108,22 @@ editableTable = makeStateless component render
             then mempty
             else header props.columns
         , body case props.rows of
-            Left rows -> map (row_ (not props.readonly)) rows
+            Left rows ->
+              Array.zipWith
+                (<>)
+                (map (row_ $ not props.readonly) rows)
+                (map infoRow_ rows)
             Right rows ->
               if NonEmptyArray.length rows == 1
                 then
                   [ row_ false (NonEmptyArray.head rows)
+                  , infoRow_ (NonEmptyArray.head rows)
                   ]
                 else
-                  map (row_ (not props.readonly)) (NonEmptyArray.toArray rows)
+                  Array.zipWith
+                    (<>)
+                    (map (row_ $ not props.readonly) $ NonEmptyArray.toArray rows)
+                    (map infoRow_ $ NonEmptyArray.toArray rows)
         , let
             canAddRows = not props.readonly && lengthRows props.rows < props.maxRows
           in
@@ -117,8 +136,26 @@ editableTable = makeStateless component render
         ]
         props.readonly
       where
-        row_ = tableRow props.columns props.onRowRemove props.removeCell
+        row_ =
+          tableRow
+            props.columns
+            props.onRowRemove
+            props.removeCell
+            -- Swap out the CSS class to control border rendering based on
+            -- whether or not we expect an info row.
+            ( if null props.infoColumns then
+                "editable-table-row"
+              else
+                "editable-table-row-with-info"
+            )
 
+        infoRow_ =
+          tableRow
+            props.infoColumns
+            props.onRowRemove
+            props.removeCell
+            "editable-table-info-row"
+            false
 
     container children readonly =
       editableTableElement
@@ -129,26 +166,17 @@ editableTable = makeStateless component render
     header columns =
       R.thead_
         [ R.tr_ $
-            (columns <#> \column -> R.th_ [ R.text column.label ])
-              <> [ R.th_ [ {- removal column -} ] ]
+            Array.concat
+              [ columns <#> \column -> R.th
+                  { children: [ column.renderHeader column.label ]
+                  , style: column.headerStyle
+                  }
+              , [ R.th_ [ {- removal column -} ] ]
+              ]
         ]
 
     body =
       R.tbody_
-
-    tableRow columns onRowRemove removeCell isRemovable item =
-      R.tr_ $
-        (cell item <$> columns)
-          <> [ R.td_
-                [ if isRemovable
-                    then removeCell (Just onRowRemove) item
-                    else removeCell Nothing item
-                ]
-              ]
-
-    cell item column =
-      R.td_ [ column_ [ column.renderCell item ] ]
-
 
     footer canAddRows onRowAdd addLabel summary columnCount =
       R.tfoot_
@@ -188,6 +216,44 @@ editableTable = makeStateless component render
 
     editableTableElement = element $ unsafePerformEffect $ R.unsafeCreateDOMComponent "lumi-editable-table"
 
+tableRow
+  :: forall row r
+   . Array { renderCell :: row -> JSX | r }
+  -> (row -> Effect Unit)
+  -> (Maybe (row -> Effect Unit) -> row -> JSX)
+  -> String
+  -> Boolean
+  -> row
+  -> JSX
+tableRow columns onRowRemove removeCell className isRemovable item =
+  R.tr_ $
+    (cell className item <$> columns)
+      <> [ R.td
+             { children:
+                 [ if isRemovable
+                     then removeCell (Just onRowRemove) item
+                     else removeCell Nothing item
+                 ]
+             , className
+             }
+          ]
+
+cell
+  :: forall row r
+   . String
+  -> row
+  -> { renderCell :: row -> JSX | r }
+  -> JSX
+cell className item column =
+  R.td
+    { children:
+        [ column_
+            [ column.renderCell item
+            ]
+        ]
+    , className
+    }
+
 styles :: JSS
 styles = jss
   { "@global":
@@ -202,8 +268,22 @@ styles = jss
               , borderSpacing: "0"
               , width: "100%"
 
-              , "& thead > tr > th, & tbody > tr > td":
+              , "& thead > tr > th, & tbody > tr > td.editable-table-row":
                   { borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
+                  }
+
+              , "& tbody > tr > td.editable-table-row-with-info":
+                  { borderBottom: [ "0px" ]
+                  , "&:not(:first-child)": { paddingLeft: "8px" }
+                  , "&:not(:last-child)": { paddingRight: "8px" }
+                  , padding: "12px 0px 0px 0px"
+                  }
+
+              , "& tbody > tr > td.editable-table-info-row":
+                  { borderBottom: [ "1px", "solid", cssStringHSLA colors.black4 ]
+                  , "&:not(:first-child)": { paddingLeft: "8px" }
+                  , "&:not(:last-child)": { paddingRight: "8px" }
+                  , padding: "6px 0px 6px 0px"
                   }
 
               , "& th, & td":

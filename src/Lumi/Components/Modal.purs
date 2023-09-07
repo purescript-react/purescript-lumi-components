@@ -248,7 +248,13 @@ modalPortal = toReactComponent identity modalPortalComponent
         }
         $ lumiModalContainer
           { onClick: Events.handler (Events.merge { target, currentTarget })
-              \{ target, currentTarget } -> do
+              \{ target, currentTarget } ->
+                -- if there is a close button rendered, don't close the modal on
+                -- clicking outside. If there is no close button we have to
+                -- close it on clicking outside.
+                if props.closeButton
+                then pure unit
+                else do
                   props.requestClose
                   closeModal
               , children:

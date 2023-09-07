@@ -27,3 +27,22 @@ link =
                   , textDecoration: underline
                   }
           }
+
+secondary :: StyleModifier
+secondary = style \(LumiTheme theme) ->
+  css
+    { color: color theme.colors.black
+    , textDecoration: none
+    , "&:visited":
+      nested
+        $ css
+            { color: color theme.colors.black
+            , textDecoration: none
+            }
+    , "&:hover":
+      nested
+        $ css
+            { cursor: pointer
+            , textDecoration: underline
+            }
+    }

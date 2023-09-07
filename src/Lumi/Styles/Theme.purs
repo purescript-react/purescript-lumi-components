@@ -25,6 +25,7 @@ newtype LumiTheme
 type TextMap a =
   { subtext :: a
   , body :: a
+  , subSubsectionHeader :: a
   , subsectionHeader :: a
   , sectionHeader :: a
   , title :: a
@@ -40,6 +41,7 @@ defaultTheme = LumiTheme
   , fontSizes:
       { subtext: 12
       , body: 14
+      , subSubsectionHeader: 15
       , subsectionHeader: 17
       , sectionHeader: 20
       , title: 24

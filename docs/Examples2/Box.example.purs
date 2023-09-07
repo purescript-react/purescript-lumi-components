@@ -2,9 +2,9 @@ module Lumi.Components2.Examples.Box where
 
 import Prelude
 
-import Color.Scheme.MaterialDesign (blue, green, red)
 import Lumi.Components (($$$))
 import Lumi.Components.Example (example)
+import Lumi.Components.MUIColorScheme (blue, green, red)
 import Lumi.Components.Spacing (Space(..), vspace)
 import Lumi.Components.Text (h2_, p_)
 import Lumi.Components2.Box (box, column, row)

@@ -1,6 +1,4 @@
-"use strict";
-
-var React = require("react");
+import React from 'react';
 
 function Input(props) {
   var this_ = this;
@@ -54,9 +52,9 @@ Input.prototype.render = function () {
   );
 };
 
-exports.input_ = Input;
+export const input_ = Input;
 
-exports.cancelWhenNotMatch = function (regex, e) {
+export const cancelWhenNotMatch = function (regex, e) {
   if (e.cancelable && !e.defaultPrevented && !regex.test(e.key)) {
     e.preventDefault();
   }

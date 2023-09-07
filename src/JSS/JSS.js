@@ -1,22 +1,18 @@
-"use strict";
+import * as jssGlobal from 'jss';
+export {default as preset} from 'jss-preset-default';
 
-var jssGlobal = require("jss");
-var preset = require("jss-preset-default");
-
-exports.createInstance_ = function (p) {
+export const createInstance_ = function (p) {
   return jssGlobal.create(p());
 };
 
-exports.preset = preset.default;
-
-exports.createStyleSheet_ = function (jss, styles) {
+export const createStyleSheet_ = function (jss, styles) {
   return jss.createStyleSheet(styles);
 };
 
-exports.globalAttachStyleSheet_ = function (stylesheet) {
+export const globalAttachStyleSheet_ = function (stylesheet) {
   return stylesheet.attach();
 };
 
-exports.toStringStyleSheet = function (stylesheet) {
+export const toStringStyleSheet = function (stylesheet) {
   return stylesheet.toString();
 };

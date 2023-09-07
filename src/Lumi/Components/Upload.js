@@ -1,10 +1,10 @@
-"use strict";
 
-exports.createObjectURL = function (file) {
+
+export const createObjectURL = function (file) {
   return URL.createObjectURL(file);
 };
 
-exports.xhrUpload = function (uri, file, onProgress, onError, onComplete) {
+export const xhrUpload = function (uri, file, onProgress, onError, onComplete) {
   var xhr = new XMLHttpRequest();
 
   xhr.upload.addEventListener(

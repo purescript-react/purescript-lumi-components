@@ -13,12 +13,12 @@ import Data.Foldable (for_)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Nullable (toMaybe, toNullable)
+import Data.Number as Math
 import Data.String as String
 import Data.String.Regex (Regex, regex, test)
 import Data.String.Regex.Flags (noFlags)
 import Effect.Uncurried (EffectFn2, mkEffectFn2, runEffectFn2)
 import Lumi.Components.Size (Size(..))
-import Math as Math
 import React.Basic.Classic (Component, JSX, ReactComponent, createComponent, element, makeStateless)
 import React.Basic.DOM (CSS, css, mergeStyles)
 import React.Basic.DOM.Events (targetValue)

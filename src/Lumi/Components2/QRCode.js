@@ -1,8 +1,6 @@
-"use strict";
+export {default as qrcode_} from "qrcode.react";
 
-exports.qrcode_ = require("qrcode.react");
-
-exports.generateSVGUrl = ref => () => {
+export const generateSVGUrl = ref => () => {
   const containerNode = ref.current;
   if (containerNode == null) {
     throw new Error("Cannot save the contents of an empty ref");

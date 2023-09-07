@@ -26,6 +26,7 @@ module Lumi.Components.Input
   , number
   , radio
   , checkbox
+  , color
   , switch
   , range
   , label
@@ -275,6 +276,11 @@ range = text_
   { "type" = "range"
   }
 
+color :: InputProps
+color = text_
+  { "type" = "color"
+  }
+
 label :: { children :: Array JSX, for :: Nullable String, style :: CSS } -> JSX
 label = lumiLabelElement <<< mapProps
   where
@@ -483,7 +489,7 @@ styles = jss
                   { content: "'Off'"
                   , position: "absolute"
                   , left: "-29px"
-                  , top: "-5px"
+                  , top: "-3px"
                   }
               , "&::after":
                   { content: "' '"
