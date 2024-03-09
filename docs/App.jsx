@@ -121,6 +121,7 @@ const componentLoaders = [
 ].map(fromComponentPath);
 
 const componentv2Loaders = [
+  "Banner",
   "Box",
   "Button",
   "ButtonGroup",

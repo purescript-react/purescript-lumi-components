@@ -42,6 +42,11 @@ _flex =
   style_
     $ css { flex: str "1" }
 
+_flex :: StyleModifier
+_flex =
+  style_
+    $ css { flex: str "1" }
+
 data FlexAlign
   = Start
   | End
