@@ -243,7 +243,7 @@ selectBackend = make component
                     map
                       (\external -> let { label, value } = props.toSelectOption external
                                     in { label, value, external })
-                      <<< Array.nubBy
+                      <<< Array.sortBy
                             ((fromMaybe
                               (defaultOptionSort (_.label <<< props.toSelectOption)) props.optionSort)
                               searchTerm)
