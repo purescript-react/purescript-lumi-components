@@ -1,34 +1,54 @@
 {
-  description = "Provide an environment for working in this repo";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    purescript-overlay = {
+      url = "github:thomashoneyman/purescript-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
 
-  # to handle mac and linux
-  inputs.flake-utils.url = "github:numtide/flake-utils";
+  outputs = { self, nixpkgs, ... }@inputs:
+    let
+      supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
 
-  # we want to use a consistent nixpkgs across developers.
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
-  outputs = all@{ self, nixpkgs, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-        };
-        packages =
-          let
-            # everything we want available in our development environment that isn't managed by
-            # npm, spago
-            # we do not differentiate between libraries needed for building and tools at the moment.
-            sharedPackages = with pkgs; [
-              nodejs-16_x
+      nixpkgsFor = forAllSystems (system: import nixpkgs {
+        inherit system;
+        config = { };
+        overlays = builtins.attrValues self.overlays;
+      });
+    in {
+      overlays = {
+        purescript = inputs.purescript-overlay.overlays.default;
+      };
+
+      packages = forAllSystems (system:
+        let pkgs = nixpkgsFor.${system}; in {
+          default = pkgs.hello; # your package here
+        });
+
+      devShells = forAllSystems (system:
+        # pkgs now has access to the standard PureScript toolchain
+        let pkgs = nixpkgsFor.${system}; in {
+          default = pkgs.mkShell {
+            name = "my-purescript-project";
+            inputsFrom = builtins.attrValues self.packages.${system};
+            buildInputs = with pkgs; [
+              purs
+              spago-unstable
+              purs-tidy-bin.purs-tidy-0_10_0
+              purs-backend-es
+              # nodejs-16_x
+              nodejs-18_x
+              # nodejs_latest
             ];
-          in
-            sharedPackages;
-      in {
-        # produce our actual shell
-        devShell = pkgs.mkShell rec {
-          # make our packages available
-          buildInputs = packages;
-        };
-      }
-    );
+
+            shellHook = ''
+              source <(spago --bash-completion-script `which spago`)
+              source <(node --completion-bash)
+            '';
+          };
+        });
+  };
 }

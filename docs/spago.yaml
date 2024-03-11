@@ -1,0 +1,6 @@
+package:
+  name: docs
+  dependencies:
+    - effect
+    - console
+    - prelude

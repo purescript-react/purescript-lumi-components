@@ -1,0 +1,112 @@
+package:
+  name: lumi-components
+  dependencies:
+  - aff
+  - aff-coroutines
+  - arrays
+  - bifunctors
+  - colors
+  - console
+  - control
+  - coroutines
+  - datetime
+  - effect
+  - either
+  - enums
+  - exceptions
+  - fixed-precision
+  - foldable-traversable
+  - foreign
+  - foreign-object
+  - free
+  - heterogeneous
+  - integers
+  - js-timers
+  - js-uri
+  - maybe
+  - media-types
+  - newtype
+  - nonempty
+  - nullable
+  - numbers
+  - ordered-collections
+  - parallel
+  - partial
+  - prelude
+  - profunctor-lenses
+  - react-basic
+  - react-basic-classic
+  - react-basic-dnd
+  - react-basic-dom
+  - react-basic-emotion
+  - react-basic-hooks
+  - record
+  - refs
+  - simple-json
+  - st
+  - strings
+  - tailrec
+  - transformers
+  - tuples
+  - unsafe-coerce
+  - unsafe-reference
+  - web-dom
+  - web-events
+  - web-file
+  - web-html
+  - web-storage
+  - web-uievents
+  test:
+    main: Test.Main
+    dependencies: []
+workspace:
+  package_set:
+    registry: 50.4.0
+  extra_packages: 
+    foreign-generic:
+      dependencies:
+      - arrays
+      - assert
+      - bifunctors
+      - console
+      - control
+      - effect
+      - either
+      - exceptions
+      - foldable-traversable
+      - foreign
+      - foreign-object
+      - identity
+      - lists
+      - maybe
+      - newtype
+      - partial
+      - prelude
+      - record
+      - strings
+      - transformers
+      - tuples
+      - typelevel-prelude
+      - unsafe-coerce
+      git: https://github.com/lumihq/purescript-foreign-generic.git
+      ref: proxy-instances
+    metadata:
+      dependencies: []
+      git: https://github.com/purescript/purescript-metadata.git
+      ref: v0.15.2
+    promises:
+      dependencies:
+      - arrays
+      - console
+      - datetime
+      - effect
+      - either
+      - exceptions
+      - foldable-traversable
+      - functions
+      - maybe
+      - prelude
+      - transformers
+      - unfoldable
+      git: https://github.com/clipperz/purescript-promises.git
+      ref: a87a9b1cbab5446574a289a770c4f26bcd9dd21d

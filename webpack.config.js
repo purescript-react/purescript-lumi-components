@@ -74,12 +74,12 @@ module.exports = (_env, options) => ({
     new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: "async"
     }),
-    new SubresourceIntegrityWebpackPlugin({
-      hashFuncNames: ["sha256", "sha384"],
-      // this is here as an example, comes at a perf cost so
-      // we probably only want to use it for 3rd party scripts
-      enabled: false // isProd(options)
-    }),
+    // new SubresourceIntegrityWebpackPlugin({
+    //   hashFuncNames: ["sha256", "sha384"],
+    //   // this is here as an example, comes at a perf cost so
+    //   // we probably only want to use it for 3rd party scripts
+    //   enabled: false // isProd(options)
+    // }),
     new ManifestPlugin(),
     new BundleAnalyzerPlugin({
       analyzerMode: isProd(options) ? "static" : "disabled",
